@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "scene_hash": "ba634bd21a7aa1e07e72e01028d94cff95badc00875d684b0c49a2a471d14b04",
+  "config": {},
+  "resolution": 0.5,
+  "results": [
+    {
+      "method": "fixed-y-boustrophedon",
+      "status": "success",
+      "plan_hash": "c8a1307bbc98d93ac4e4e110eb880057fa08d1c59ae1f45f2359f5ae546cbad4",
+      "timeline_id": "b9e3d6c1ac201ae83c569fbaed19c38fa17989b1b1b63072fc1b2793060e7f31",
+      "path_length": 254.7927696748046,
+      "duration": 127.3963848374023,
+      "spray_seconds": 69.94112549695424,
+      "coverage": 0.546875,
+      "covered": 420,
+      "missed": 348,
+      "repeated": 0,
+      "violation": false
+    },
+    {
+      "method": "naive-target-order",
+      "status": "success",
+      "plan_hash": "9dbf234550620e9b130269fa692078bb990192609e390cc7ec9721fcaf60f5b6",
+      "timeline_id": "97929e1fcfdaa1465eceba8824b6493112414c39461ff30ffcda80d114cdb293",
+      "path_length": 254.7927696748046,
+      "duration": 127.3963848374023,
+      "spray_seconds": 69.94112549695424,
+      "coverage": 0.546875,
+      "covered": 420,
+      "missed": 348,
+      "repeated": 0,
+      "violation": false
+    }
+  ]
+}

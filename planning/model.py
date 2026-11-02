@@ -1,0 +1,59 @@
+"""Single-aircraft geometric baseline; all coordinates in metres."""
+
+import hashlib
+import json
+import math
+from scene import validate_scene
+from scene.geometry import polygon_bounds
+
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed")
+
+
+def _canonical(value):
+    if isinstance(value, dict):
+        return {k: _canonical(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_canonical(v) for v in value]
+    if type(value) is float and math.isfinite(value) and value.is_integer():
+        return int(value)
+    return value
+
+
+def _digest(value) -> str:
+    return hashlib.sha256(
+        json.dumps(_canonical(value), sort_keys=True, allow_nan=False).encode()
+    ).hexdigest()
+
+
+def fingerprint(scene: dict) -> str:
+    """Exact scene content fingerprint; list reordering changes association, not routes."""
+    return _digest(scene)
+
+
+def config_fingerprint(config: dict) -> str:
+    """Fingerprint of the effective job configuration, including transition mode."""
+    return _digest(config)
+
+
+def with_transition_mode(raw: dict, mode) -> dict:
+    """CLI transition mode takes precedence over the job JSON value when given."""
+    out = dict(raw)
+    if mode is not None:
+        out["transition_mode"] = mode
+    return out
+
+
+def configuration(raw: dict) -> dict:
+    c = dict(DEFAULT)
+    if set(raw) - set(c):
+        raise ValueError("未知作业配置字段")
+    c.update(raw)
+    if not isinstance(c["target_type"], str) or not c["target_type"]: raise ValueError("target_type 必须为非空字符串")
+    if c["transition_mode"] not in ("fixed", "search"): raise ValueError("transition_mode 必须为 fixed 或 search")
+    for k, v in c.items():
+        if k in ("target_type", "transition_mode"): continue
+        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction') else v <= 0):
+            raise ValueError(f"{k}={v!r}：需要有限正数")
+    if c["height_offset"] <= c["clearance"]:
+        raise ValueError("作业高度差必须大于安全净空")
+    return c

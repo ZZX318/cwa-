@@ -1,0 +1,19 @@
+# 虚拟环境与 Python 缓存
+.venv/
+__pycache__/
+*.pyc
+
+# 操作系统 / 编辑器 / 工具本地配置
+.DS_Store
+.claude/
+
+# 运行时在仓库根目录生成的输出（README 中 --save 的默认位置）
+/results.json
+/policy.json
+/transition.results.json
+/*.plan.json
+/*.execution.json
+/*.samples.json
+
+# 按 README 示例在 examples/ 下生成的个人场景
+/examples/my.*.json

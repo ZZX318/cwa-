@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      果园场景实验台
+    </title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span>
+          ◈
+        </span>
+        果园场景实验台
+        <small>
+          ORCHARD / SCENE LAB
+        </small>
+      </div>
+      <span class="stage">
+        03 · 单机时间回放
+      </span>
+    </header>
+    <main>
+      <aside>
+        <h2>
+          规则果园
+          <small>
+            局部米制 · 可配置几何
+          </small>
+        </h2>
+        <form id="config">
+          <div id="fields">
+          </div>
+          <details>
+            <summary>
+              边界与树干参数
+            </summary>
+            <div id="advanced">
+            </div>
+          </details>
+          <details>
+            <summary>
+              附加对象 · JSON
+            </summary>
+            <p>
+              单位 m。障碍：box + min/max。区域：polygon_prism + footprint（polygon / vertices）+ z_min/z_max。示例见 examples/。
+            </p>
+            <label>
+              障碍物
+              <textarea id="obstacles">
+                []
+              </textarea>
+            </label>
+            <label>
+              禁飞区
+              <textarea id="no_fly_zones">
+                []
+              </textarea>
+            </label>
+            <label>
+              禁喷区
+              <textarea id="no_spray_zones">
+                []
+              </textarea>
+            </label>
+          </details>
+          <button class="primary" type="submit">
+            生成场景
+          </button>
+        </form>
+        <div id="status" role="status">
+          正在加载默认场景…
+        </div>
+        <div class="files">
+          <button id="save">
+            保存场景
+          </button>
+          <button id="load">
+            加载场景
+          </button>
+          <input id="file" type="file" accept=".json" hidden>
+          <button id="defaults">
+            恢复默认
+          </button>
+        </div>
+        <h3>
+          图层显示
+        </h3>
+        <div id="layers">
+        </div>
+        <label class="opacity">
+          树冠透明度
+          <input id="opacity" type="range" min="0.15" max="1" step="0.05" value="0.75">
+        </label>
+      </aside>
+      <section class="viewport">
+        <nav>
+          <div>
+            <button id="iso" class="selected">
+              三维
+            </button>
+            <button id="top">
+              俯视
+            </button>
+            <button id="pan">
+              平移
+            </button>
+            <button id="reset">
+              重置视角
+            </button>
+          </div>
+          <span>
+            左键旋转 · 滚轮缩放 · 右键 / Shift 拖动平移
+          </span>
+        </nav>
+        <canvas id="view" tabindex="0" aria-label="可旋转的三维果园场景">
+        </canvas>
+        <div class="overlay">
+          <div class="eyebrow">
+            MATERIALIZED SCENE
+          </div>
+          <h1 id="sceneTitle">
+            规则果园
+          </h1>
+          <p id="sceneInfo">
+          </p>
+        </div>
+        <div class="legend">
+          <span style="color:#7ec28d">
+            ● 树冠实体
+          </span>
+          <span style="color:#d5ae76">
+            ━ 地块边界
+          </span>
+          <span style="color:#56d9ee">
+            ● 起降点
+          </span>
+          <span style="color:#ed9b68">
+            ■ 障碍
+          </span>
+          <span style="color:#c58cf2">
+            ■ 禁飞
+          </span>
+          <span style="color:#edc96c">
+            ■ 禁喷
+          </span>
+        </div>
+        <div class="foot">
+          <span id="scale">
+          </span>
+          <span>
+            地块边界 ≠ 禁飞边界 · 外围空间可表达转场与起降
+          </span>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+    <script src="/execution.js"></script>
+  </body>
+</html>

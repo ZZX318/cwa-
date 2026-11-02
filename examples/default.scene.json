@@ -1,0 +1,1120 @@
+{
+  "format_version": "1.0",
+  "coordinates": {
+    "unit": "m",
+    "origin": [
+      0,
+      0,
+      0
+    ],
+    "x": "跨行方向",
+    "y": "沿行方向",
+    "z": "竖直向上",
+    "handedness": "right"
+  },
+  "source": {
+    "kind": "regular_orchard",
+    "parameters": {
+      "rows": 4,
+      "trees_per_row": 6,
+      "row_spacing": 6.0,
+      "plant_spacing": 4.0,
+      "canopy_radius": 1.5,
+      "canopy_height": 2.4,
+      "trunk_radius": 0.15,
+      "trunk_height": 1.8,
+      "plot_margin": 2.5,
+      "reserve": 6.0,
+      "ground_z": 0.0,
+      "obstacles": [],
+      "no_fly_zones": [],
+      "no_spray_zones": []
+    }
+  },
+  "terrain": {
+    "kind": "flat",
+    "height": 0.0
+  },
+  "plot": {
+    "kind": "polygon",
+    "vertices": [
+      [
+        0,
+        0
+      ],
+      [
+        23.0,
+        0
+      ],
+      [
+        23.0,
+        25.0
+      ],
+      [
+        0,
+        25.0
+      ]
+    ]
+  },
+  "extent": {
+    "min": [
+      -6.0,
+      -6.0,
+      0.0
+    ],
+    "max": [
+      29.0,
+      31.0,
+      12.0
+    ]
+  },
+  "trees": [
+    {
+      "id": "tree-01-01",
+      "position": [
+        2.5,
+        2.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          2.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-01-02",
+      "position": [
+        2.5,
+        6.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          6.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-01-03",
+      "position": [
+        2.5,
+        10.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          10.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-01-04",
+      "position": [
+        2.5,
+        14.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          14.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-01-05",
+      "position": [
+        2.5,
+        18.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          18.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-01-06",
+      "position": [
+        2.5,
+        22.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          22.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-01",
+      "position": [
+        8.5,
+        2.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          2.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-02",
+      "position": [
+        8.5,
+        6.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          6.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-03",
+      "position": [
+        8.5,
+        10.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          10.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-04",
+      "position": [
+        8.5,
+        14.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          14.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-05",
+      "position": [
+        8.5,
+        18.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          18.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-02-06",
+      "position": [
+        8.5,
+        22.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          22.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-01",
+      "position": [
+        14.5,
+        2.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          2.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-02",
+      "position": [
+        14.5,
+        6.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          6.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-03",
+      "position": [
+        14.5,
+        10.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          10.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-04",
+      "position": [
+        14.5,
+        14.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          14.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-05",
+      "position": [
+        14.5,
+        18.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          18.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-03-06",
+      "position": [
+        14.5,
+        22.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          22.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-01",
+      "position": [
+        20.5,
+        2.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          2.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-02",
+      "position": [
+        20.5,
+        6.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          6.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-03",
+      "position": [
+        20.5,
+        10.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          10.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-04",
+      "position": [
+        20.5,
+        14.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          14.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-05",
+      "position": [
+        20.5,
+        18.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          18.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    },
+    {
+      "id": "tree-04-06",
+      "position": [
+        20.5,
+        22.5,
+        0.0
+      ],
+      "trunk": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          22.5
+        ],
+        "radius": 0.15,
+        "z_min": 0.0,
+        "z_max": 1.8
+      },
+      "canopy": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      }
+    }
+  ],
+  "targets": [
+    {
+      "id": "target-tree-01-01",
+      "tree_id": "tree-01-01",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-01-02",
+      "tree_id": "tree-01-02",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-01-03",
+      "tree_id": "tree-01-03",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-01-04",
+      "tree_id": "tree-01-04",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-01-05",
+      "tree_id": "tree-01-05",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-01-06",
+      "tree_id": "tree-01-06",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          2.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-01",
+      "tree_id": "tree-02-01",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-02",
+      "tree_id": "tree-02-02",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-03",
+      "tree_id": "tree-02-03",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-04",
+      "tree_id": "tree-02-04",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-05",
+      "tree_id": "tree-02-05",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-02-06",
+      "tree_id": "tree-02-06",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          8.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-01",
+      "tree_id": "tree-03-01",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-02",
+      "tree_id": "tree-03-02",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-03",
+      "tree_id": "tree-03-03",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-04",
+      "tree_id": "tree-03-04",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-05",
+      "tree_id": "tree-03-05",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-03-06",
+      "tree_id": "tree-03-06",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          14.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-01",
+      "tree_id": "tree-04-01",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          2.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-02",
+      "tree_id": "tree-04-02",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          6.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-03",
+      "tree_id": "tree-04-03",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          10.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-04",
+      "tree_id": "tree-04-04",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          14.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-05",
+      "tree_id": "tree-04-05",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          18.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    },
+    {
+      "id": "target-tree-04-06",
+      "tree_id": "tree-04-06",
+      "geometry": {
+        "kind": "cylinder",
+        "center": [
+          20.5,
+          22.5
+        ],
+        "radius": 1.5,
+        "z_min": 1.8,
+        "z_max": 4.2
+      },
+      "meaning": "需喷洒的树冠体积；不规定航高或路径"
+    }
+  ],
+  "launch_points": [
+    {
+      "id": "launch-1",
+      "position": [
+        -3.0,
+        12.5,
+        0.0
+      ]
+    }
+  ],
+  "obstacles": [],
+  "no_fly_zones": [],
+  "no_spray_zones": []
+}

@@ -1,0 +1,87 @@
+{
+  "rows": 4,
+  "trees_per_row": 6,
+  "row_spacing": 6.0,
+  "plant_spacing": 4.0,
+  "canopy_radius": 1.5,
+  "canopy_height": 2.4,
+  "trunk_radius": 0.15,
+  "trunk_height": 1.8,
+  "plot_margin": 2.5,
+  "reserve": 6.0,
+  "ground_z": 0.0,
+  "obstacles": [
+    {
+      "id": "shed",
+      "kind": "box",
+      "min": [
+        -5,
+        -4,
+        0
+      ],
+      "max": [
+        -2,
+        -1,
+        3
+      ]
+    }
+  ],
+  "no_fly_zones": [
+    {
+      "id": "restricted",
+      "kind": "polygon_prism",
+      "footprint": {
+        "kind": "polygon",
+        "vertices": [
+          [
+            24,
+            2
+          ],
+          [
+            27,
+            2
+          ],
+          [
+            27,
+            7
+          ],
+          [
+            24,
+            7
+          ]
+        ]
+      },
+      "z_min": 0,
+      "z_max": 8
+    }
+  ],
+  "no_spray_zones": [
+    {
+      "id": "water",
+      "kind": "polygon_prism",
+      "footprint": {
+        "kind": "polygon",
+        "vertices": [
+          [
+            0,
+            0
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            0,
+            4
+          ]
+        ]
+      },
+      "z_min": 0,
+      "z_max": 5
+    }
+  ]
+}
