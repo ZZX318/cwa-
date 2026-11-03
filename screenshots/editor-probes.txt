@@ -1,0 +1,12 @@
+补充探针（审计修正前运行；修正集中在 commit 串行/草稿/空输入，这些路径未改变）
+
+[probe2.html]
+PASS · box corner resize · min=-5,7,0
+PASS · polygon vertex edit · v0=1,1
+PASS · JSON apply launch point · points=2 status=应用 JSON 附加对象 · 通过校验
+
+[probe3.html]
+PASS · 2500 棵树随机 API · 10 ms
+PASS · 2500 棵树俯视绘制 · 0 ms
+PASS · 2500 棵树快速校验 · 10 ms, warnings_complete=false
+PASS · 最终树数 · 2500

@@ -1,0 +1,23 @@
+浏览器页面内断言（8798 · 真实 Chrome headless=new · 审计修正后复验）
+
+PASS · 初始化默认场景 · trees=24
+PASS · 编辑器分组、工具栏与对象列表
+PASS · 俯视视图快照有效 · scale=13.19, 1148x683
+PASS · screenToWorld 往返误差 < 0.01 px · max=0.0000
+PASS · 矩形工具激活与屏幕坐标 · 356.4,400.9 -> 395.9,361.3
+PASS · 矩形拖拽创建障碍 · obstacles=1 · 创建障碍 obstacle-01 · 通过校验
+PASS · 编辑后计划立即失效
+PASS · JSON 障碍文本框同步
+PASS · 选择并拖动障碍 · min=-2.5,6.5,0
+PASS · 删除后撤销恢复 · delete=0, undo=1
+PASS · 多边形禁飞闭合创建 · zones=1
+PASS · 添加起降点 · points=2
+PASS · 随机面板生成 jitter_rows seed 7 · trees=24
+PASS · 同 seed API 序列逐字节一致
+PASS · 三维 ghost 放置障碍 · obstacles=1
+PASS · 越界矩形被拒绝并保留原因 · 障碍未创建：障碍超出场景范围
+草稿保留，可调整或按 Esc 取消
+PASS · 随机锁禁用重新随机按钮
+PASS · 最终场景树数 · trees=24
+
+终端：main.py --check → 134 通过 / 0 失败

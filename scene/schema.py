@@ -30,12 +30,17 @@ DEFAULT = dict(
 
 
 class SceneError(ValueError):
-    pass
+    """Invalid scene content. ``field`` locates the first blocking problem."""
+
+    def __init__(self, message, field=None, code=None):
+        super().__init__(message)
+        self.field = field
+        self.code = code
 
 
-def require(ok, field, value, reason):
+def require(ok, field, value, reason, code=None):
     if not ok:
-        raise SceneError(f"{field} = {value!r}：{reason}")
+        raise SceneError(f"{field} = {value!r}：{reason}", field=field, code=code)
 
 
 def number(v, field, positive=False):

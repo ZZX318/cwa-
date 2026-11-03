@@ -6,6 +6,7 @@ import json
 import math
 from pathlib import Path
 from planning import check, fingerprint
+from planning.wind import segment_time
 
 
 def build(scene: dict, plan: dict) -> dict:
@@ -18,11 +19,16 @@ def build(scene: dict, plan: dict) -> dict:
         segment = copy.deepcopy(original)
         a, b = segment["start"], segment["end"]
         length = math.dist(a, b)
-        wind_speed=plan.get("config",{}).get("wind_speed",0.0); wind_dir=plan.get("config",{}).get("wind_direction",0.0); cost=plan.get("config",{}).get("wind_cost",0.25)
-        direction=math.atan2(b[1]-a[1],b[0]-a[0]) if length else 0.0
-        aligned=math.cos(direction-wind_dir)
-        effective=max(0.1, segment["speed"]*(1.0-cost*wind_speed/max(segment["speed"],0.1)*aligned))
-        duration = length / effective
+        config = plan.get("config", {})
+        version = plan.get("version", "1.0")
+        duration = segment_time(a, b, segment["speed"], config, version=version)
+        if version == "1.2":
+            effective = length / duration if duration > 0 else 0.0
+        else:
+            wind_speed=config.get("wind_speed",0.0); wind_dir=config.get("wind_direction",0.0); cost=config.get("wind_cost",0.25)
+            direction=math.atan2(b[1]-a[1],b[0]-a[0]) if length else 0.0
+            aligned=math.cos(direction-wind_dir)
+            effective=max(0.1, segment["speed"]*(1.0-cost*wind_speed/max(segment["speed"],0.1)*aligned))
         end = elapsed + duration
         if not math.isfinite(end) or end <= elapsed:
             raise ValueError(f"航段 {index} 时间无法有限且严格递增地表示")

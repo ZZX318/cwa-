@@ -1,0 +1,16 @@
+{
+  "rows": 2,
+  "trees_per_row": 2,
+  "row_spacing": 6.0,
+  "plant_spacing": 4.0,
+  "canopy_radius": 1.5,
+  "canopy_height": 2.4,
+  "trunk_radius": 0.15,
+  "trunk_height": 1.8,
+  "plot_margin": 2.5,
+  "reserve": 6.0,
+  "ground_z": 0.0,
+  "obstacles": [],
+  "no_fly_zones": [],
+  "no_spray_zones": []
+}

@@ -5,6 +5,7 @@ const $ = id => document.getElementById(id),
 let scene = null,
   config = null,
   dirty = false,
+  sceneEdited = false,
   mode = 'iso',
   yaw = -0.62,
   pitch = .67,
@@ -13,7 +14,8 @@ let scene = null,
   scale = 1,
   center = [0, 0, 0],
   drag = null,
-  panMode = false;
+  panMode = false,
+  lastView = null;
 const show = {
   canopies: true,
   trunks: true,
@@ -116,15 +118,18 @@ function accept(d, label) {
   invalidatePlan();
   scene = d.scene;
   dirty = false;
+  sceneEdited = false;
   fit();
   let s = d.summary;
   $('sceneTitle').textContent = `${s.trees} 棵 · 果园场景`;
   $('sceneInfo').textContent = `地块 ${s.plot_size.map(x=>x.toFixed(1)).join(' × ')} m  /  目标 ${s.targets} 个`;
   status(`${label} · ${s.trees} 棵树\n障碍 ${s.obstacles} / 禁飞 ${s.no_fly_zones} / 禁喷 ${s.no_spray_zones}` + (s.warnings.length ? '\n' + s.warnings.join('\n') : ''));
   draw();
+  if (typeof syncEditorFromScene === 'function') syncEditorFromScene();
 }
 $('config').onsubmit = async e => {
   e.preventDefault();
+  if (sceneEdited && !confirm('场景已有手动或随机编辑，重新生成会替换当前几何。继续？')) return;
   try {
     let c = readConfig();
     let d = await api('/api/generate', c);
@@ -155,6 +160,7 @@ $('file').onchange = async () => {
   try {
     let f = $('file').files[0];
     if (!f) return;
+    if (sceneEdited && !confirm('场景已有手动或随机编辑，加载会替换当前几何。继续？')) return;
     let d = await api('/api/load', JSON.parse(await f.text()));
     if (d.scene.source.kind === 'regular_orchard') populate({
       ...config,
@@ -169,6 +175,7 @@ $('file').onchange = async () => {
   }
 };
 $('defaults').onclick = async () => {
+  if (sceneEdited && !confirm('场景已有手动或随机编辑，恢复默认会替换当前几何。继续？')) return;
   try {
     let d = await (await fetch('/api/default')).json();
     populate(d.config);
@@ -257,6 +264,21 @@ function rectangle(b, z, color, fill = null, dash = []) {
 function polygon(p, z, color, fill = null, dash = []) {
   let vs = p.vertices.map(v => [...v, z]);
   path([...vs, vs[0]], color, 1, fill, dash)
+}
+
+function circleAt(center, radius, fill, stroke, width = 1) {
+  let p = project([center[0], center[1], scene.terrain.height]);
+  ctx.beginPath();
+  ctx.arc(p[0], p[1], Math.max(.6, radius * scale), 0, Math.PI * 2);
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = width;
+    ctx.stroke();
+  }
 }
 
 function label(text, p, color = '#95afbd') {
@@ -348,6 +370,17 @@ function draw() {
   let xs = corners.map(p => p[0]),
     ys = corners.map(p => p[1]);
   scale = Math.min((W - 95) / (Math.max(...xs) - Math.min(...xs)), (H - 195) / (Math.max(...ys) - Math.min(...ys))) * zoom;
+  lastView = {
+    W,
+    H,
+    scale,
+    center: center.slice(),
+    pan: pan.slice(),
+    yaw,
+    pitch,
+    mode,
+    zoom
+  };
   rectangle(b, z, '#274353', '#10212b');
   polygon(scene.plot, z, '#34483b', '#22352e');
   let step = Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(b.max[0] - b.min[0], b.max[1] - b.min[1]) / 10))));
@@ -364,23 +397,42 @@ function draw() {
   }
   if (show.extent) rectangle(b, z, '#557082', null, [5, 6]);
   if (show.plot) polygon(scene.plot, z, '#ccad78', null, [7, 4]);
-  let faces = [];
-  for (let t of scene.trees) {
-    if (show.trunks) faces.push(...cylinderFaces(t.trunk, [148, 111, 69]));
-    if (show.canopies) faces.push(...cylinderFaces(t.canopy, [86, 150, 98], Number($('opacity').value)));
+  if (mode === 'top') {
+    // Lightweight plan-view: circles and flat footprints, no cylinder faces.
+    let canopyAlpha = Number($('opacity').value);
+    for (let t of scene.trees) {
+      if (show.trunks) circleAt(t.trunk.center, t.trunk.radius, '#946f45', '#74552f', .6);
+      if (show.canopies) circleAt(t.canopy.center, t.canopy.radius, `rgba(86,150,98,${canopyAlpha})`, '#5f9e6b', .8);
+    }
+    if (show.objects)
+      for (let [key, color] of [
+          ['obstacles', '#ed9b68'],
+          ['no_fly_zones', '#c58cf2'],
+          ['no_spray_zones', '#edc96c']
+        ])
+        for (let o of scene[key]) {
+          if (o.kind === 'box') rectangle(o, z, color, color + '25');
+          else polygon(o.footprint, z, color, color + '20');
+        }
+  } else {
+    let faces = [];
+    for (let t of scene.trees) {
+      if (show.trunks) faces.push(...cylinderFaces(t.trunk, [148, 111, 69]));
+      if (show.canopies) faces.push(...cylinderFaces(t.canopy, [86, 150, 98], Number($('opacity').value)));
+    }
+    if (show.objects)
+      for (let [key, color] of [
+          ['obstacles', '#ed9b68'],
+          ['no_fly_zones', '#c58cf2'],
+          ['no_spray_zones', '#edc96c']
+        ])
+        for (let o of scene[key]) faces.push(...(o.kind === 'box' ? boxFaces(o, color) : prismFaces(o, color)));
+    faces.sort((a, b) => {
+      let depth = f => f.points.reduce((v, p) => v + basis(p)[2], 0) / f.points.length;
+      return depth(a) - depth(b)
+    });
+    for (let f of faces) path(f.points, f.stroke, .5, f.fill);
   }
-  if (show.objects)
-    for (let [key, color] of [
-        ['obstacles', '#ed9b68'],
-        ['no_fly_zones', '#c58cf2'],
-        ['no_spray_zones', '#edc96c']
-      ])
-      for (let o of scene[key]) faces.push(...(o.kind === 'box' ? boxFaces(o, color) : prismFaces(o, color)));
-  faces.sort((a, b) => {
-    let depth = f => f.points.reduce((v, p) => v + basis(p)[2], 0) / f.points.length;
-    return depth(a) - depth(b)
-  });
-  for (let f of faces) path(f.points, f.stroke, .5, f.fill);
   if (show.targets)
     for (let t of scene.targets) {
       let g = t.geometry;
@@ -398,7 +450,9 @@ function draw() {
       };
       let r = ring(g, z + .025);
       path([...r, r[0]], '#56d9ee', 2, '#164b5d');
-      label('H · 起降点', [...p.position.slice(0, 2), z + .1], '#77e0f0')
+      let role = p.role || '';
+      let text = role === 'start' ? 'S · ' + p.id : role === 'return' ? 'R · ' + p.id : role === 'both' ? 'H · ' + p.id : 'H · 起降点';
+      label(text, [...p.position.slice(0, 2), z + .1], '#77e0f0')
     }
   if (show.objects)
     for (let k of ['obstacles', 'no_fly_zones', 'no_spray_zones'])
@@ -419,7 +473,10 @@ function draw() {
   }
   drawPlan();
   if(typeof drawCoverage === "function") drawCoverage();
-  if(typeof drawAircraft === "function") drawAircraft();
+  if(typeof drawPlaybackPaths === "function") drawPlaybackPaths();
+  if(typeof drawDynamic === "function") drawDynamic();
+  else if(typeof drawAircraft === "function") drawAircraft();
+  if (typeof drawEditor === 'function') drawEditor();
   $('scale').textContent = `网格 ${step} m · 正交投影 · 局部坐标 / m`;
   // A real metric scale bar, independent of scene orientation.
   ctx.strokeStyle = '#8da6b7';
@@ -446,14 +503,21 @@ function resize() {
 new ResizeObserver(resize).observe(canvas);
 canvas.oncontextmenu = e => e.preventDefault();
 canvas.onpointerdown = e => {
+  if (typeof editorPointerDown === 'function' && editorPointerDown(e)) {
+    try {
+      canvas.setPointerCapture(e.pointerId);
+    } catch (_) {}
+    return;
+  }
   canvas.setPointerCapture(e.pointerId);
   drag = {
     x: e.clientX,
     y: e.clientY,
-    pan: panMode || e.button !== 0 || e.shiftKey
+    pan: panMode || e.button !== 0 || e.shiftKey || !!window._editorSpace
   };
 };
 canvas.onpointermove = e => {
+  if (typeof editorPointerMove === 'function' && editorPointerMove(e)) return;
   if (!drag) return;
   let dx = e.clientX - drag.x,
     dy = e.clientY - drag.y;
@@ -468,11 +532,33 @@ canvas.onpointermove = e => {
   }
   draw()
 };
-canvas.onpointerup = canvas.onpointercancel = () => drag = null;
+canvas.onpointerup = e => {
+  if (typeof editorPointerUp === 'function' && editorPointerUp(e)) {
+    drag = null;
+    return;
+  }
+  drag = null;
+};
+canvas.onpointercancel = e => {
+  if (typeof editorPointerCancel === 'function') editorPointerCancel(e);
+  drag = null;
+};
 canvas.onwheel = e => {
   e.preventDefault();
+  let rect = canvas.getBoundingClientRect(),
+    sx = e.clientX - rect.left,
+    sy = e.clientY - rect.top,
+    anchor = typeof screenToWorld === 'function' ? screenToWorld(sx, sy) : null;
   zoom = Math.max(.2, Math.min(8, zoom * Math.exp(-e.deltaY * .001)));
-  draw()
+  draw();
+  if (anchor && typeof worldToScreen === 'function') {
+    let after = worldToScreen(anchor);
+    if (after) {
+      pan[0] += sx - after[0];
+      pan[1] += sy - after[1];
+      draw();
+    }
+  }
 };
 (async () => {
   try {
@@ -491,15 +577,19 @@ canvas.onwheel = e => {
 // Job settings and plans are independent of orchard generator settings.
 let currentPlan = null;
 const jobPanel = document.createElement('section');
-jobPanel.innerHTML = `<h3>单机作业计划</h3><p>几何喷幅模型 · 非执行结果</p>
+jobPanel.innerHTML = `<h3>单机作业计划</h3><p>几何喷幅模型 · 非执行结果。fixed-y 直线转场不会绕行；需要绕障碍/禁飞请选择旧转场 search 或算法 caw。场景编辑后必须重新“生成航线”。</p>
+<label class="field">算法<select id="job-algorithm"><option value="fixed-y-boustrophedon">fixed-y 固定 Y 条带</option><option value="naive-target-order">naive 逐目标短喷</option><option value="caw-a*-3d-wind">caw-a* 三维净空 + 顺序</option><option value="caw-a*-fixed-order">caw-a* 固定顺序（消融）</option><option value="caw-a*-nn">caw-a* NN 顺序（消融）</option></select></label>
+<label class="field">目标口径<select id="job-objective"><option value="time">时间</option><option value="energy">能量代理（CAW）</option></select></label>
+<label class="field" id="job-caw-only">顺序策略<select id="job-order_strategy"><option value="nn+2opt">NN + 2-opt</option><option value="nn">最近邻</option><option value="fixed">固定 Y 顺序</option></select></label>
+<label class="field" id="job-caw-grid">网格步长 m<select id="job-step_xy"><option value="0.5">0.5</option><option value="1" selected>1.0</option><option value="2">2.0</option></select></label>
 <label class="field">有效喷幅 m<input id="job-swath" type="number" value="2" step="0.1"></label>
 <label class="field">冠顶高度差 m<input id="job-height_offset" type="number" value="2" step="0.1"></label>
 <label class="field">安全净空 m<input id="job-clearance" type="number" value="0.5" step="0.1"></label>
 <label class="field">目标速度 m/s<input id="job-speed" type="number" value="2" step="0.1"></label>
 <label class="field">风速 m/s<input id="job-wind_speed" type="number" value="0" min="0" step="0.1"></label>
-<label class="field">风向 rad<input id="job-wind_direction" type="number" value="0" step="0.1"></label>
+<label class="field">风向（来向） rad<input id="job-wind_direction" type="number" value="0" step="0.1"></label>
 <label class="field">风向代价<input id="job-wind_cost" type="number" value="0.25" min="0.01" step="0.05"></label>
-<label class="field">转场模式<select id="job-transition_mode"><option value="fixed">固定直线</option><option value="search">净空搜索</option></select></label>
+<label class="field">旧转场模式<select id="job-transition_mode"><option value="fixed">固定直线</option><option value="search">净空搜索</option></select></label>
 <button id="plan-generate">生成航线</button><button id="plan-save">保存计划</button><button id="plan-load">加载计划</button>
 <input id="plan-file" type="file" hidden><label><input id="plan-visible" type="checkbox" checked>航线</label><p id="plan-status">尚未生成计划</p>`;
 document.querySelector('aside').append(jobPanel);
@@ -514,14 +604,41 @@ function invalidatePlan() {
 function jobConfig() {
   const c=Object.fromEntries(['swath', 'height_offset', 'clearance', 'speed','wind_speed','wind_direction','wind_cost'].map(k => [k, Number($('job-' + k).value)])); c.transition_mode=$('job-transition_mode').value; return c;
 }
+function plannerMethod() { return $('job-algorithm').value; }
+function plannerOptions() {
+  const method = plannerMethod();
+  if (method.startsWith('caw')) {
+    return {step_xy:Number($('job-step_xy').value), order_strategy:$('job-order_strategy').value, objective:$('job-objective').value, max_expansions:200000, max_grid_nodes:2000000};
+  }
+  if (method === 'naive-target-order') return {transition:'straight'};
+  return {};
+}
+function syncCawFields() {
+  const caw = plannerMethod().startsWith('caw');
+  if ($('job-caw-only')) $('job-caw-only').style.display = caw ? '' : 'none';
+  if ($('job-caw-grid')) $('job-caw-grid').style.display = caw ? '' : 'none';
+  if ($('job-objective')) {
+    for (const option of $('job-objective').options) {
+      if (option.value === 'energy') option.disabled = !caw;
+    }
+    if (!caw) $('job-objective').value = 'time';
+  }
+}
+syncCawFields();
 jobPanel.addEventListener('input', e => {
   if (e.target.id.startsWith('job-')) {
+    if (e.target.id === 'job-algorithm') syncCawFields();
     invalidatePlan();
     draw();
   }
 });
 $('plan-visible').onchange = draw;
 $('plan-generate').onclick = async () => {
+  if (typeof sceneEditorHasDraft === 'function' && sceneEditorHasDraft()) {
+    const what = typeof sceneEditorDraftDescription === 'function' ? sceneEditorDraftDescription() : '多边形草稿';
+    $('plan-status').textContent = `存在未闭合的${what}：请按 Enter/双击/点回首点闭合后再生成航线`;
+    return;
+  }
   invalidatePlan();
   draw();
   if (dirty) {
@@ -529,18 +646,26 @@ $('plan-generate').onclick = async () => {
     return;
   }
   const reference = scene,
-    values = JSON.stringify(jobConfig());
+    request = {scene, config: jobConfig(), method: plannerMethod(), options: plannerOptions()},
+    values = JSON.stringify({config: request.config, method: request.method, options: request.options});
   try {
-    const result = await api('/api/plan', {
-      scene,
-      config: jobConfig()
-    });
-    if (reference !== scene || values !== JSON.stringify(jobConfig()) || dirty) return;
-    if (result.status !== 'success') throw Error(result.reason);
+    const result = await api('/api/plan', request);
+    if (reference !== scene || values !== JSON.stringify({config: jobConfig(), method: plannerMethod(), options: plannerOptions()}) || dirty) return;
+    if (result.status !== 'success') throw Error((result.stage ? result.stage + '：' : '') + result.reason);
     currentPlan = result;
     if(typeof prepareExecution === "function") await prepareExecution();
-    const mode = result.config.transition_mode === 'search' ? '净空搜索' : '固定直线';
-    $('plan-status').textContent = `安全与任务结构通过 · ${mode} · ${result.strip_count} 带 · ${result.segments.length} 航段 · 高度 ${result.work_height.toFixed(2)} m；覆盖率未验证。青色喷洒 / 橙色虚线转场`;
+    const planner = result.planner || result.method;
+    const spray = result.segments.filter(s => s.spray).length;
+    const zs = result.segments.map(s => s.start[2]).concat(result.segments.map(s => s.end[2]));
+    const transitZ = result.segments.filter(s => s.type === 'transit').flatMap(s => [s.start[2], s.end[2]]);
+    const zText = transitZ.length ? `转场高度 ${Math.min(...transitZ).toFixed(2)}–${Math.max(...transitZ).toFixed(2)} m` : '无转场';
+    const search = result.search ? ` · 搜索节点 ${result.search.expanded ?? '-'} · 网格 ${result.search.step_xy ?? '-'} m` : '';
+    const order = result.order ? ` · 顺序 [${result.order.join(', ')}]` : '';
+    const orderSearch = result.order_search ? ` · 顺序策略 ${result.order_search.strategy}${result.order_search.matrix_mode ? ' · 矩阵 ' + result.order_search.matrix_mode : ''}${result.order_search.lower_bound != null ? ' · 相对下界 ' + result.order_search.lower_bound.toFixed(2) + ' s' : ''}` : '';
+    const run = (typeof timeline !== 'undefined' && timeline) ? ` · 路径 ${timeline.segments.reduce((v, s) => v + s.length, 0).toFixed(2)} m · 时长 ${timeline.duration.toFixed(2)} s` : '';
+    const wind = `风 ${result.config.wind_speed.toFixed(1)} m/s @ ${result.config.wind_direction.toFixed(2)} rad`;
+    const objValue = result.objective_value == null ? '' : ` · 目标值 ${result.objective_value.toFixed(2)}${result.objective === 'energy' ? ' eu（代理）' : ' s'}`;
+    $('plan-status').textContent = `安全与任务结构通过 · ${planner} · v${result.version} · 目标 ${result.objective || 'time'}${objValue} · ${result.segments.length} 航段（喷洒 ${spray}）· 高度 ${result.work_height.toFixed(2)} m · ${zText}${search}${order}${orderSearch}${run} · ${wind} · 指纹 ${(result.plan_hash || '').slice(0,8) || '-'} / 配置 ${(result.config_hash || '').slice(0,8)}\n覆盖率为网格近似，见 03/04 面板；青色喷洒 / 橙色虚线转场`;
   } catch (e) {
     $('plan-status').textContent = '规划失败：' + e.message;
   }
@@ -586,6 +711,15 @@ $('plan-file').onchange = async () => {
       const field = $('job-' + k);
       if (field) field.value = v;
     }
+    if (result.planner || result.method) {
+      const name = result.planner || result.method;
+      if ([...$('job-algorithm').options].some(o => o.value === name)) $('job-algorithm').value = name;
+    }
+    if (result.planner_options) {
+      if (result.planner_options.step_xy != null) $('job-step_xy').value = String(result.planner_options.step_xy);
+      if (result.planner_options.order_strategy) $('job-order_strategy').value = result.planner_options.order_strategy;
+    }
+    syncCawFields();
     currentPlan = result;
     if(typeof prepareExecution === "function") await prepareExecution();
     $('plan-status').textContent = '已加载匹配计划：安全与任务结构通过，覆盖率未验证';
@@ -597,6 +731,7 @@ $('plan-file').onchange = async () => {
 };
 
 function drawPlan() {
+  if (typeof multiPlaybackActive === "function" && multiPlaybackActive()) return;
   if (!currentPlan || !$('plan-visible').checked) return;
   for (const segment of currentPlan.segments) {
     const color = segment.spray ? '#41e6ed' : segment.type === 'transit' ? '#ffa34e' : '#d6b0ff';
@@ -620,3 +755,51 @@ function drawPlan() {
     if (segment.type === 'takeoff') label('起飞 / 返回降落', segment.end, color);
   }
 }
+
+// Minimal host surface for the optional editor script (web/editor.js).
+window.sceneEditorHost = {
+  getScene: () => scene,
+  setScene: s => {
+    scene = s;
+  },
+  getView: () => lastView,
+  project: p => project(p),
+  redraw: () => draw(),
+  fit: () => {
+    fit();
+    draw();
+  },
+  focus: (point, zoomLevel = 2) => {
+    if (!scene) return;
+    center[0] = point[0];
+    center[1] = point[1];
+    zoom = zoomLevel;
+    pan = [0, 0];
+    draw();
+  },
+  setMode: m => setMode(m),
+  getMode: () => mode,
+  invalidatePlan: () => invalidatePlan(),
+  api: (path, data) => api(path, data),
+  status: (text, type) => status(text, type),
+  markSceneEdited: () => {
+    sceneEdited = true;
+  },
+  isSceneEdited: () => sceneEdited,
+  clearSceneEdited: () => {
+    sceneEdited = false;
+  },
+  getConfig: () => config,
+  setConfig: c => {
+    config = c;
+  },
+  accept: (d, label) => accept(d, label),
+  terrainHeight: () => (scene ? scene.terrain.height : 0),
+  isDirty: () => dirty
+};
+window.addEventListener('beforeunload', event => {
+  if ((typeof dirty !== 'undefined' && dirty) || (typeof currentPlan !== 'undefined' && currentPlan)) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});

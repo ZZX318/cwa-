@@ -61,7 +61,15 @@ def at(evaluation, timeline, time):
             start = seg["t_start"]
             if end > start:
                 spray_seconds += end - start
-                foot = rectangle(seg, evaluation["resolution"])
+                flown = seg
+                if end < seg["t_end"]:
+                    fraction = (end - start) / (seg["t_end"] - seg["t_start"])
+                    flown = dict(seg)
+                    flown["end"] = [
+                        a + (b - a) * fraction
+                        for a, b in zip(seg["start"], seg["end"])
+                    ]
+                foot = rectangle(flown, evaluation["config"]["swath"])
                 for target in evaluation["cells"]:
                     tid, ix, iy = target
                     cx = (ix + 0.5) * evaluation["resolution"]

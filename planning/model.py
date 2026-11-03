@@ -8,6 +8,36 @@ from scene.geometry import polygon_bounds
 
 DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed")
 
+PLAN_VERSIONS = ("1.0", "1.1", "1.2")
+OBJECTIVES = ("time", "energy")
+
+# Registered plan v1.2 methods.  Unknown names are rejected by safety.check.
+V12_PLANNERS = {
+    "fixed-y-boustrophedon",
+    "fixed-y-boustrophedon+clearance-search",
+    "multi-contiguous-uav",
+    "multi-sortie-uav",
+    "naive-target-order",
+    "caw-a*-fixed-order",
+    "caw-a*-nn",
+    "caw-a*-3d-wind",
+    "exact-permutation+transition-fixed",
+    "exact-permutation+transition-search",
+    "exact-permutation+transition-caw",
+}
+
+# Methods that may appear in a legacy v1.0/v1.1 plan.  Kept explicit so an
+# arbitrary string cannot pass the version check by accident.
+LEGACY_METHODS = {
+    "fixed-y-boustrophedon",
+    "fixed-y-boustrophedon+clearance-search",
+    "naive-target-order",
+    "exact-permutation+transition-fixed",
+    "exact-permutation+transition-search",
+    "multi-contiguous-uav",
+    "multi-sortie-uav",
+}
+
 
 def _canonical(value):
     if isinstance(value, dict):
@@ -33,6 +63,11 @@ def fingerprint(scene: dict) -> str:
 def config_fingerprint(config: dict) -> str:
     """Fingerprint of the effective job configuration, including transition mode."""
     return _digest(config)
+
+
+def options_fingerprint(options: dict) -> str:
+    """Fingerprint for planner-specific options kept outside the job config."""
+    return _digest(options)
 
 
 def with_transition_mode(raw: dict, mode) -> dict:

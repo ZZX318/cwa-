@@ -1,0 +1,23 @@
+{
+  "rows": 1,
+  "trees_per_row": 3,
+  "row_spacing": 6.0,
+  "plant_spacing": 4.0,
+  "canopy_radius": 1.5,
+  "canopy_height": 2.4,
+  "trunk_radius": 0.15,
+  "trunk_height": 1.8,
+  "plot_margin": 2.5,
+  "reserve": 6.0,
+  "ground_z": 0.0,
+  "obstacles": [
+    {
+      "id": "wall",
+      "kind": "box",
+      "min": [-1.0, -5.0, 0.0],
+      "max": [0.0, 18.0, 7.0]
+    }
+  ],
+  "no_fly_zones": [],
+  "no_spray_zones": []
+}

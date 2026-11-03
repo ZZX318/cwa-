@@ -1,7 +1,17 @@
 import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
-from .model import configuration, config_fingerprint, fingerprint
+from scene.launch import resolve
+from .model import (
+    LEGACY_METHODS,
+    OBJECTIVES,
+    PLAN_VERSIONS,
+    V12_PLANNERS,
+    configuration,
+    config_fingerprint,
+    fingerprint,
+    options_fingerprint,
+)
 from .footprint import rectangle, overlaps_target, boxes_touch
 
 
@@ -25,28 +35,67 @@ def intersects(a, b, lo, hi):
 def check(scene: dict, plan: dict) -> None:
     """Independent safety and minimum task-structure checks; not coverage certification."""
     validate_scene(scene)
-    if plan.get("version") not in ("1.0", "1.1") or plan.get("scene_hash") != fingerprint(scene):
+    version = plan.get("version")
+    if version not in PLAN_VERSIONS or plan.get("scene_hash") != fingerprint(scene):
         raise ValueError("计划版本或场景指纹不匹配")
     if plan.get("status") != "success":
         raise ValueError("计划不是成功状态")
     c = configuration(plan["config"])
-    if plan["version"] == "1.1" and plan.get("config_hash") != config_fingerprint(c):
+    if version in ("1.1", "1.2") and plan.get("config_hash") != config_fingerprint(c):
         raise ValueError("配置指纹不匹配")
     method = plan.get("method")
-    expected = (
-        "fixed-y-boustrophedon+clearance-search"
-        if c["transition_mode"] == "search"
-        else "fixed-y-boustrophedon"
-    )
-    if method in ("fixed-y-boustrophedon", "fixed-y-boustrophedon+clearance-search") and method != expected:
-        raise ValueError("计划方法与转场模式不一致")
+    if version == "1.2":
+        planner = plan.get("planner")
+        if planner not in V12_PLANNERS:
+            raise ValueError("未知规划器")
+        if method != planner:
+            raise ValueError("规划器与方法不一致")
+        if plan.get("objective") not in OBJECTIVES:
+            raise ValueError("目标口径必须为 time 或 energy")
+        options = plan.get("planner_options")
+        if not isinstance(options, dict):
+            raise ValueError("planner_options 必须为对象")
+        if plan.get("planner_options_hash") != options_fingerprint(options):
+            raise ValueError("规划器参数指纹不匹配")
+    else:
+        if method not in LEGACY_METHODS:
+            raise ValueError("未知计划方法")
+        expected = (
+            "fixed-y-boustrophedon+clearance-search"
+            if c["transition_mode"] == "search"
+            else "fixed-y-boustrophedon"
+        )
+        if method in ("fixed-y-boustrophedon", "fixed-y-boustrophedon+clearance-search") and method != expected:
+            raise ValueError("计划方法与转场模式不一致")
     segs = plan["segments"]
-    launch = sorted(scene["launch_points"], key=lambda p: tuple(p["position"]))[0][
-        "position"
-    ]
+    explicit_scene = bool(scene.get("launch_assignments")) or any(
+        "role" in point for point in scene["launch_points"]
+    )
+    if version == "1.2" and (
+        "start_point_id" in plan or "end_point_id" in plan
+    ):
+        uav = plan.get("uav", 1)
+        if type(uav) is not int or uav < 1:
+            raise ValueError("计划 uav 必须是正整数")
+        resolved = resolve(scene, uav)
+        if (
+            plan.get("start_point_id") != resolved["start_id"]
+            or plan.get("end_point_id") != resolved["end_id"]
+        ):
+            raise ValueError("计划起降点元数据与场景分配不一致")
+        start = list(resolved["start"]["position"])
+        end = list(resolved["end"]["position"])
+    elif version == "1.2" and explicit_scene:
+        raise ValueError("计划缺少起降点元数据")
+    else:
+        legacy = sorted(scene["launch_points"], key=lambda p: tuple(p["position"]))[0][
+            "position"
+        ]
+        start = list(legacy)
+        end = list(legacy)
     if not segs or segs[0]["type"] != "takeoff" or segs[-1]["type"] != "landing":
         raise ValueError("缺少起降航段")
-    previous = launch
+    previous = start
     boxes = []
     for t in scene["trees"]:
         for kind in ("trunk", "canopy"):
@@ -63,6 +112,15 @@ def check(scene: dict, plan: dict) -> None:
     associated = set()
     spray_count = 0
     height = max(t["canopy"]["z_max"] for t in scene["trees"]) + c["height_offset"]
+    if version == "1.2":
+        if (
+            type(plan.get("work_height")) not in (int, float)
+            or not math.isfinite(plan["work_height"])
+            or abs(plan["work_height"] - height) > 1e-8
+        ):
+            raise ValueError("计划作业高度与场景配置不符")
+        transit_floor = scene["extent"]["min"][2] + c["clearance"]
+        transit_ceiling = scene["extent"]["max"][2] - c["clearance"]
     for i, s in enumerate(segs):
         a, b = s["start"], s["end"]
         kind = s["type"]
@@ -97,9 +155,16 @@ def check(scene: dict, plan: dict) -> None:
             raise ValueError(f"航段 {i} 非喷洒段不得声明目标关联")
         if not set(s["target_ids"]) <= ids:
             raise ValueError("目标引用无效")
-        if kind in ("takeoff", "landing"):
-            if a[:2] != launch[:2] or b[:2] != launch[:2]:
-                raise ValueError("起降须垂直")
+        if kind == "takeoff":
+            if a[:2] != start[:2] or b[:2] != start[:2]:
+                raise ValueError("起飞须在起点垂直")
+        elif kind == "landing":
+            if a[:2] != end[:2] or b[:2] != end[:2]:
+                raise ValueError("降落须在终点垂直")
+        elif version == "1.2" and kind == "transit":
+            for p in (a, b):
+                if p[2] < transit_floor - 1e-8 or p[2] > transit_ceiling + 1e-8:
+                    raise ValueError("转场高度超出净空范围")
         elif abs(a[2] - height) > 1e-8 or abs(b[2] - height) > 1e-8:
             raise ValueError("作业/转场高度不符")
         for p in (a, b):
@@ -130,8 +195,8 @@ def check(scene: dict, plan: dict) -> None:
                 if boxes_touch(footprint, (bounds["min"], bounds["max"])):
                     raise ValueError("喷洒足迹触及禁喷区；不支持禁喷切割")
         previous = b
-    if math.dist(previous, launch) > 1e-8:
-        raise ValueError("未返回起降点")
+    if math.dist(previous, end) > 1e-8:
+        raise ValueError("未返回终点")
     if spray_count == 0:
         raise ValueError("任务结构不完整：没有喷洒航段")
     missing = ids - associated
