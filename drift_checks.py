@@ -16,6 +16,8 @@ from planning.planner import fixed_y_lanes, generate_plan
 from scene import generate
 from scene.random_map import build
 
+import buffer_oracle as oracle
+
 
 def run() -> int:
     passed = 0
@@ -84,39 +86,135 @@ def run() -> int:
         out = expand_sensitive_inward(scene, c)
         assert out is scene  # d==0 时不做拷贝
 
-    def expand_on_moves_exterior():
-        c = configuration(
-            {"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0}
+    def _zone(zid, vs, z_max=10.0):
+        return dict(
+            id=zid,
+            kind="polygon_prism",
+            footprint=dict(kind="polygon", vertices=[list(v) for v in vs]),
+            z_min=0.0,
+            z_max=z_max,
         )
-        assert resolve_effective_buffer(c) == 10.0
-        scene = generate(dict(rows=2, trees_per_row=2))
-        pb = scene["plot"]["vertices"]
-        xmax = max(v[0] for v in pb)
-        scene = copy.deepcopy(scene)
-        scene["no_spray_zones"] = [
-            dict(
-                id="ns-out",
-                kind="polygon_prism",
-                footprint=dict(
-                    kind="polygon",
-                    vertices=[
-                        [xmax + 1, 5],
-                        [xmax + 5, 5],
-                        [xmax + 5, 10],
-                        [xmax + 1, 10],
-                    ],
-                ),
-                z_min=0.0,
-                z_max=10.0,
-            )
-        ]
+
+    def _legacy_translate_downwind(vs, d, wd):
+        """54aa1ad~5e925fe 的旧实现：整体沿下风平移 d、丢弃原区域（反例）。"""
+        return [[v[0] + d * math.cos(wd + math.pi), v[1] + d * math.sin(wd + math.pi)] for v in vs]
+
+    # 夹具：小场景 generate(rows=2, trees_per_row=3)：plot [0,11]x[0,13]，extent [-6,17]x[-6,19]
+    DOWNWIND_VS = [[-5.5, 1.0], [-1.0, 1.0], [-1.0, 12.0], [-5.5, 12.0]]  # -x 侧，wd=0 时在下风（ns-ablation 布局）
+    UPWIND_VS = [[12.0, 1.0], [16.5, 1.0], [16.5, 12.0], [12.0, 12.0]]  # +x 侧，wd=0 时在上风
+    OBLIQUE_VS = [[-5.5, -5.0], [-1.0, -5.0], [-1.0, 6.0], [-5.5, 6.0]]  # 西南角外，斜风 wd=π/4（来自东北）
+
+    # 计划级 (b) 用大一些的场景 generate(rows=6, trees_per_row=8)：plot [0,35]x[0,33]，extent [-6,41]x[-6,39]
+    # （小场景宽仅 11 m，d=10 时整园被切空 → "没有喷洒航段"，无法检验）
+    PLAN_DOWNWIND_VS = [[-5.5, 1.0], [-1.0, 1.0], [-1.0, 32.0], [-5.5, 32.0]]
+    PLAN_UPWIND_VS = [[36.0, 1.0], [40.5, 1.0], [40.5, 32.0], [36.0, 32.0]]
+    PLAN_OBLIQUE_VS = [[-5.5, -5.0], [-1.0, -5.0], [-1.0, 10.0], [-5.5, 10.0]]
+
+    def _fixture(vs, big=False):
+        kw = dict(rows=6, trees_per_row=8) if big else dict(rows=2, trees_per_row=3)
+        scene = copy.deepcopy(generate(kw))
+        scene["no_spray_zones"] = [_zone("ns-fix", vs)]
+        return scene
+
+    def expand_downwind_side_sweeps_into_plot():
+        c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
+        d = resolve_effective_buffer(c)
+        assert d == 10.0
+        scene = _fixture(DOWNWIND_VS)
         before = copy.deepcopy(scene["no_spray_zones"][0]["footprint"]["vertices"])
         out = expand_sensitive_inward(scene, c)
         after = out["no_spray_zones"][0]["footprint"]["vertices"]
-        # wind_direction=0 → 来自 +x；下风 = +π → -x，顶点 x 应减少 10
-        assert abs(after[0][0] - (before[0][0] - 10.0)) < 1e-9
-        # 原场景未被原地修改
-        assert scene["no_spray_zones"][0]["footprint"]["vertices"] == before
+        # 上风 u=(1,0)：原区域保留，向 +x（园内）连续扩 10 m → x∈[-5.5, 9]
+        xs = [v[0] for v in after]
+        ys = [v[1] for v in after]
+        assert abs(min(xs) - (-5.5)) < 1e-9 and abs(max(xs) - 9.0) < 1e-9, after
+        assert abs(min(ys) - 1.0) < 1e-9 and abs(max(ys) - 12.0) < 1e-9, after
+        oracle.check_expanded_contains(before, after, d, 0.0, scene["extent"])
+        assert scene["no_spray_zones"][0]["footprint"]["vertices"] == before  # 原场景未被修改
+
+    def expand_upwind_side_stays_out():
+        c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
+        d = resolve_effective_buffer(c)
+        scene = _fixture(UPWIND_VS)
+        before = copy.deepcopy(scene["no_spray_zones"][0]["footprint"]["vertices"])
+        out = expand_sensitive_inward(scene, c)
+        after = out["no_spray_zones"][0]["footprint"]["vertices"]
+        # 上风侧敏感区：向 +x（远离果园）扩，裁到 extent.max.x=17；不进入地块
+        assert abs(min(v[0] for v in after) - 12.0) < 1e-9, after
+        assert abs(max(v[0] for v in after) - scene["extent"]["max"][0]) < 1e-9, after
+        oracle.check_expanded_contains(before, after, d, 0.0, scene["extent"])
+
+    def expand_oblique_wind():
+        wd = math.pi / 4
+        c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": wd})
+        d = resolve_effective_buffer(c)
+        scene = _fixture(OBLIQUE_VS)
+        before = copy.deepcopy(scene["no_spray_zones"][0]["footprint"]["vertices"])
+        out = expand_sensitive_inward(scene, c)
+        after = out["no_spray_zones"][0]["footprint"]["vertices"]
+        assert len(after) == 6, after  # 矩形 ⊕ 斜线段 = 六边形
+        oracle.check_expanded_contains(before, after, d, wd, scene["extent"])
+
+    def legacy_translate_fails_oracle():
+        """(c) 反例：旧的仅平移实现喂给 (a) 必须报错；仅向上风平移（不并原区域）也必须报错。"""
+        extent = _fixture(DOWNWIND_VS)["extent"]
+        for vs, wd in ((DOWNWIND_VS, 0.0), (UPWIND_VS, 0.0), (OBLIQUE_VS, math.pi / 4)):
+            for bad in (
+                _legacy_translate_downwind(vs, 10.0, wd),
+                [[v[0] + 10.0 * math.cos(wd), v[1] + 10.0 * math.sin(wd)] for v in vs],
+            ):
+                try:
+                    oracle.check_expanded_contains(vs, bad, 10.0, wd, extent)
+                except AssertionError:
+                    continue
+                raise AssertionError("oracle 未识别错误实现：%s" % bad)
+
+    def nonconvex_raises():
+        c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
+        scene = _fixture([[-5.5, 1.0], [-1.0, 1.0], [-3.0, 6.5], [-1.0, 12.0], [-5.5, 12.0]])
+        try:
+            expand_sensitive_inward(scene, c)
+        except ValueError as e:
+            assert "非凸" in str(e)
+            return
+        raise AssertionError("非凸禁喷区应 raise")
+
+    def _plan_drift_clear(vs, wd, expect_cut):
+        raw = {"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": wd, "swath": 2.0}
+        scene = _fixture(vs, big=True)
+        d = resolve_effective_buffer(configuration(raw))
+        on = generate_plan(scene, raw)
+        assert on["status"] == "success", on.get("reason")
+        n, bad = oracle.check_plan_drift_clear(scene, on, d, wd, 2.0)
+        assert n > 0 and not bad, "漂移违规 %d/%d，例 %s" % (len(bad), n, bad[:3])
+        off = generate_plan(scene, {**raw, "buffer_expand": 0.0})
+        assert off["status"] == "success", off.get("reason")
+        _, bad_off = oracle.check_plan_drift_clear(scene, off, d, wd, 2.0)
+
+        def spray_len(p):
+            return sum(math.dist(s["start"][:2], s["end"][:2]) for s in p["segments"] if s.get("spray"))
+
+        lost = spray_len(off) - spray_len(on)
+        print(
+            "  指标 · wd=%.3f d=%.1f 采样=%d 违规(开)=0 违规(关)=%d 喷洒段长 关/开=%.3f/%.3f 排除目标 关/开=%d/%d"
+            % (wd, d, n, len(bad_off), spray_len(off), spray_len(on),
+               len(off.get("excluded_targets") or []), len(on.get("excluded_targets") or []))
+        )
+        if expect_cut:
+            # 非空验证：关缓冲时 oracle 必须能找到违规，开缓冲后喷洒段确实变短
+            assert bad_off, "夹具无效：关缓冲时也无漂移违规"
+            assert lost > 1e-6, "开缓冲未切掉任何喷洒段"
+        else:
+            assert abs(lost) < 1e-9 and not bad_off, (lost, len(bad_off))
+
+    def plan_drift_clear_downwind():
+        _plan_drift_clear(PLAN_DOWNWIND_VS, 0.0, True)
+
+    def plan_drift_clear_upwind():
+        _plan_drift_clear(PLAN_UPWIND_VS, 0.0, False)
+
+    def plan_drift_clear_oblique():
+        _plan_drift_clear(PLAN_OBLIQUE_VS, math.pi / 4, True)
 
     def skip_interior_island():
         c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
@@ -218,7 +316,7 @@ def run() -> int:
 
         scene = generate(dict(rows=2, trees_per_row=3))
         scene = copy.deepcopy(scene)
-        # 园外 +x 侧禁喷；风向 0 下风 -x，外扩 10 m 后盖住左侧树列
+        # 园外 +x 侧禁喷；风向 π（来自 -x，下风 +x）→ 禁喷区在下风，向上风 -x（园内）扩 d
         scene["no_spray_zones"] = [
             dict(
                 id="ns-out",
@@ -239,7 +337,8 @@ def run() -> int:
         c = {
             "buffer_expand": 1.0,
             "wind_speed": 2.0,
-            "wind_direction": 0.0,
+            "wind_direction": math.pi,
+            "drift_buffer": 6.0,  # 扩到 x≥6：盖住右列（x=8.5±1.5），左列（2.5±1.5）仍可喷
             "swath": 4.0,
         }
         truth = classify(scene, configuration(c))
@@ -305,7 +404,14 @@ def run() -> int:
     check("U=4→16", u4_is_16)
     check("U=6报错", u6_errors)
     check("buffer_expand=0不外扩", expand_off)
-    check("园外禁喷沿下风外扩", expand_on_moves_exterior)
+    check("下风侧园外禁喷沿上风扫掠进园(-x,wd=0)", expand_downwind_side_sweeps_into_plot)
+    check("上风侧园外禁喷不进园(+x,wd=0)", expand_upwind_side_stays_out)
+    check("斜风扫掠为六边形(wd=π/4)", expand_oblique_wind)
+    check("独立检查(c)：旧平移实现必须被(a)拒绝", legacy_translate_fails_oracle)
+    check("非凸禁喷区raise", nonconvex_raises)
+    check("独立检查(b)：下风侧计划无漂移违规且确有切带", plan_drift_clear_downwind)
+    check("独立检查(b)：上风侧计划无漂移违规且不切带", plan_drift_clear_upwind)
+    check("独立检查(b)：斜风计划无漂移违规且确有切带", plan_drift_clear_oblique)
     check("园内岛状禁喷不扩", skip_interior_island)
     check("显式drift_buffer覆盖查表", explicit_override)
     check("drift_mode白名单", drift_mode_allowlist)
