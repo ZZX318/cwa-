@@ -112,6 +112,16 @@ def run(scene, config, uavs=2):
         add(end_point, "landing")
         p["status"] = "success"
         p["method"] = "multi-contiguous-uav"
+        # base 若因禁飞绕行已升到 1.2，非 explicit 子机也必须同步 planner，
+        # 否则 safety 会报「规划器与方法不一致」。
+        if p.get("version") == "1.2":
+            p["planner"] = "multi-contiguous-uav"
+            p.setdefault("objective", "time")
+            if "planner_options" not in p:
+                p["planner_options"] = {}
+            if "planner_options_hash" not in p:
+                p["planner_options_hash"] = options_fingerprint(p["planner_options"])
+            p.setdefault("uav", i + 1)
         try:
             check(scene, p)
             timeline = build(scene, p)

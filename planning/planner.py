@@ -4,6 +4,7 @@ from scene import validate_scene
 from scene.geometry import polygon_bounds
 from scene.launch import resolve
 from .footprint import overlaps_target
+from .zones import rect_poly_positive_overlap
 from .model import configuration, config_fingerprint, fingerprint, options_fingerprint
 from .safety import check
 
@@ -88,14 +89,17 @@ def lane_parts(scene: dict, lane: dict, c: dict) -> list:
 
 
 def _split_lane(scene: dict, lane: dict, c: dict) -> list:
-    """Cut one fixed-Y spray lane where its footprint meets no-spray zones.
+    """Cut one fixed-Y spray lane at no-spray / no-fly conflicts.
 
     Returns ordered full segments covering the lane exactly: spray sub-lanes
-    on clear footprint intervals and same-height transit segments (sprayer
-    off) across the blocked intervals. Geometry uses the same conservative
-    XY AABB contract as ``planning.safety.check``; zone Z is ignored and the
-    aircraft may overfly a no-spray zone (禁喷 != 禁飞). With no intersecting
-    zone the output is the single original spray segment, byte-identical.
+    on clear footprint intervals, same-height transit (sprayer off) across
+    no-spray overlaps, and detour gaps across no-fly corridor blocks.
+    No-spray cuts where the swath rectangle has positive-area overlap with
+    the zone polygon (AABB is only a reject filter). No-fly cuts where the
+    centerline ± clearance corridor positively overlaps the zone polygon;
+    inactive when zone Z does not block work height. Overflying a no-spray
+    zone is allowed (禁喷 != 禁飞). With no intersecting zone the output is
+    the single original spray segment.
     """
     swath, speed = c["swath"], c["speed"]
     height = lane["start"][2]
@@ -106,19 +110,41 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
     x_lo, x_hi = x - swath / 2, x + swath / 2
 
     blocked = []
-    # 禁喷：只关喷头，飞机照常沿条带飞越（gap 类型 transit）。
-    # 禁飞：既不能喷也不能进入，条带在区外留出净空后断开，断口由规划器绕行（gap 类型 detour）。
+
+    def overlap_y_intervals(zone, xa, xb, search_lo, search_hi):
+        """Scan Y slices in [search_lo, search_hi] with positive-area rect∩polygon."""
+        if search_hi - search_lo <= 1e-9 or xb - xa <= 1e-9:
+            return []
+        step = 0.05
+        intervals = []
+        y = search_lo
+        while y < search_hi - 1e-12:
+            y1 = min(search_hi, y + step)
+            if rect_poly_positive_overlap(([xa, y], [xb, y1]), zone["footprint"]):
+                if intervals and y <= intervals[-1][1] + 1e-9:
+                    intervals[-1] = (intervals[-1][0], y1)
+                else:
+                    intervals.append((y, y1))
+            y = y1
+        return intervals
+
+    # 禁喷：足迹矩形与禁喷多边形必须有正面积交集；AABB 只作快筛。
     for zone in scene.get("no_spray_zones", []):
         bounds = polygon_bounds(zone["footprint"])
         zx_lo, zy_lo = bounds["min"]
         zx_hi, zy_hi = bounds["max"]
-        # 禁喷按正面积：条带足迹与多边形 AABB 有重叠才切；真正误喷判定在 safety/zones。
         if x_lo < zx_hi - 1e-9 and zx_lo < x_hi - 1e-9:
-            gap_lo = max(lane_lo, zy_lo - _ZONE_GAP)
-            gap_hi = min(lane_hi, zy_hi + _ZONE_GAP)
-            if gap_hi - gap_lo > 1e-9:
-                blocked.append((gap_lo, gap_hi, "transit"))
-    # 禁飞：只切断作业高度上真正挡住飞行的区（z 有效）
+            lo = max(lane_lo, zy_lo)
+            hi = min(lane_hi, zy_hi)
+            for gap_lo, gap_hi in overlap_y_intervals(zone, x_lo, x_hi, lo, hi):
+                gap_lo = max(lane_lo, gap_lo - _ZONE_GAP)
+                gap_hi = min(lane_hi, gap_hi + _ZONE_GAP)
+                if gap_hi - gap_lo > 1e-9:
+                    blocked.append((gap_lo, gap_hi, "transit"))
+
+    # 禁飞：按中心线 x ± clearance 走廊与禁飞多边形正面积相交切断；不用喷幅。
+    # 先在多边形 Y 范围求相交，再外扩 clearance，最后裁到本条带——避免邻接条带
+    # 因未与多边形 Y 重叠而漏掉净空外扩（否则端点会落在 route3d 禁飞盒边界上）。
     margin = c["clearance"] + _ZONE_GAP
     for zone in scene.get("no_fly_zones", []):
         if zone["z_max"] + c["clearance"] + 1e-9 < height:
@@ -128,11 +154,16 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
         bounds = polygon_bounds(zone["footprint"])
         zx_lo, zy_lo = bounds["min"]
         zx_hi, zy_hi = bounds["max"]
-        if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
-            gap_lo = max(lane_lo, zy_lo - margin)
-            gap_hi = min(lane_hi, zy_hi + margin)
+        if x + c["clearance"] <= zx_lo + 1e-9 or x - c["clearance"] >= zx_hi - 1e-9:
+            continue
+        for gap_lo, gap_hi in overlap_y_intervals(
+            zone, x - c["clearance"], x + c["clearance"], zy_lo, zy_hi
+        ):
+            gap_lo = max(lane_lo, gap_lo - margin)
+            gap_hi = min(lane_hi, gap_hi + margin)
             if gap_hi - gap_lo > 1e-9:
                 blocked.append((gap_lo, gap_hi, "detour"))
+
     blocked.sort()
     merged = []
     for a, b, kind in blocked:
