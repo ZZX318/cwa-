@@ -224,3 +224,58 @@ S3 − 参照（mean [min, max]，n=5）：
 
 - seed 0 与 70db42d（`results/a_trial_seed0_70db42d.csv`）共同行 24：plan_hash+指标完全一致 24，不一致 0 []
 
+
+## 2. 覆盖率异常（d=10 m coverage=0.9546，d=16 m coverage=1.0）
+
+**结论：不是 bug，是口径问题。没有改规划或评价代码，只在 `evaluation/__init__.py::at()` 的 docstring 里写明了口径。**
+
+复现脚本：`scripts/coverage_anomaly_repro.py`（`--plan`）。输出：`results/coverage_anomaly_425db81.json`、`results/coverage_anomaly_425db81.log`，运行时 HEAD=425db81，工作区只改了 docstring。原始数字来自 `results/buffer_fix_seed0_00a596b.json`（commit 9903568，`scripts/buffer_fix_seed0.py`）。复算出的 4 个 plan_hash 与原 JSON 完全一致，coverage 也逐位一致。
+
+### 2.1 数字出处与公式
+- 字段：`buffer_fix_seed0_00a596b.json` → `rows[].coverage`，由 `experiment._metrics()` 调 `evaluation.at()["coverage"]` 算出。
+- 公式：`coverage = covered_cells / total_cells`
+  - `total_cells`：`evaluation.build()` 按 0.5 m 网格、以 cell 中心采样，只统计**应喷目标**树冠圆盘内的单元。应喷目标指不在 `planning.zones.classify(scene, config)` 结果里的树。classify 用外扩后的禁喷几何判定：树冠整株落在外扩禁喷区内的记为 `no_spray` 豁免，这些树**整棵移出分母**。
+  - `covered_cells`：单元中心落在任一喷洒段矩形 `rectangle(seg, swath)` 内，就算覆盖。
+
+| 行（seed 0，ns-ablation x∈[-8,-1]） | 外扩区 x 上界 | 豁免树 | N_eligible | total_cells | covered_cells | coverage | target_coverage |
+|---|---|---|---|---|---|---|---|
+| U=2，buffer_expand=0，d=0 | -1 | 0 | 192 | 5582 | 5582 | 1.0 | 1.0 |
+| U=2，buffer_expand=1，d=10 | 9 | 15（第 1 列） | 177 | 5089 | 4858 | 0.9546079779917469 | 1.0 |
+| U=4，buffer_expand=0，d=0 | -1 | 0 | 192 | 5582 | 5582 | 1.0 | 1.0 |
+| U=4，buffer_expand=1，d=16 | 15 | 30（第 1、2 列） | 162 | 4605 | 4605 | 1.0 | 1.0 |
+
+来源：`results/coverage_anomaly_425db81.json` 的 `part_b`、`part_a`。
+
+### 2.2 三个假设的检验
+- **H1「d=16 时缓冲没生效」：否定。** `zone_expanded` = x∈[-8,15]、y∈[5,95]，比原区外扩 16.0 m。classify 豁免了 30 棵树，有 7 条航道被切（喷幅带 [0.88,14.88]，`part_a.lane_cut_strips_x`），误喷面积 0，独立评价器违规点 0。
+- **H2「分母被缩小」：成立，但这是设计口径，不是错误。** 分母从 5582 降到 4605 单元，因为第 2 列 16 棵树（x∈[8.852,13.086]）整株落在 x≤15 内，被豁免后移出了分母。它们的损失只反映在 N_eligible（192→162）和 exemption_rate 上，不计入 coverage。
+- **H3「被裁到场地外」：否定。** extent 为 [-8,108]²，外扩区 [-8,15]×[5,95] 完整落在 extent 内，没有被裁剪。
+- **0.9546 的真实来源（不规划也能精确复现）：** d=10 时边界 x=9 正好切在第 2 列树冠 [8.852,13.086] 上。喷幅带 [8.88,10.88] 与外扩区有 0.12 m 的正面积重叠，这条航道在 y∈[5,95] 整段关喷。第 2 列这 15 棵树没有整株落入缓冲区，仍算应喷，但它们在 x∈[9.25,10.75] 内的 231 个单元没人喷到（每棵 8–24 个单元，见 `part_b.per_tree_missed_cells`）。不调用规划器、只用 `fixed_y_lanes + lane_parts` 的喷洒子段预测，也得到 231 个单元，coverage=0.9546079779917469，与实际计划逐位一致（`part_a.predicted_*`）。
+- **d=16 为 1.0 的原因：** 边界 x=15 落在第 2 列和第 3 列之间的空隙 (13.086,16.939) 里，没有哪棵应喷树跨在边界上（`part_a.straddling_eligible_trees=[]`）。被切的航道最远到 14.88，碰不到第 3 列。所以 coverage 随 d 不单调，取决于缓冲边界落在树冠上还是落在行间。
+
+### 2.3 与独立评价器交叉核对
+用 `scripts/a_trial_eval.py::evaluate`（0.05 m 栅格，自算 F，不调用 planning 的缓冲函数），在同一计划上核对：
+
+| d | A_C (m²) | A_excluded=\|C∩F\| (m²) | A_extra τ=0 (m²) | 违规 | (A_C−A_ex−A_extra)/(A_C−A_ex) | (A_C−A_ex−A_extra)/A_C |
+|---|---|---|---|---|---|---|
+| 10 | 1389.49 | 123.6225 | 52.4975 | 0 | 0.9585 | 0.8732 |
+| 16 | 1389.49 | 242.8325 | 0.0 | 0 | 1.0 | 0.8252 |
+
+来源：`results/coverage_anomaly_425db81.json` 的 `part_b.eval_*`。
+
+- d=10 时 A_extra=52.4975 m²，与 A 小试 seed 0 U=2 0°/0 的 52.50 一致。
+- 独立评价器在「可喷树冠」口径下的覆盖率是 0.9585，与内部 0.9546 方向一致。差别来自两处：独立评价器的分母是「树冠减 F」，按面积计；内部分母则把豁免树整株去掉，按 0.5 m 单元计。
+- 如果按「全部树冠」口径算，d=16（0.8252）其实比 d=10（0.8732）损失更多，与 coverage 给出的顺序相反。
+
+### 2.4 口径说明与建议
+- `coverage` 衡量的是「应喷目标树冠里被喷到的比例」。整株落入缓冲区的树不算损失，只记作豁免。所以它**不能单独**拿来比较不同缓冲距离的面积损失。
+- 论文中涉及缓冲（表 4 等）时，建议同时报 N_eligible/豁免率，以及独立评价器的 A_excluded 和 A_extra，或者改报「全部树冠」口径的覆盖率。用哪种口径请技术负责人和用户决定。
+
+### 2.5 受影响的历史数字
+- 结论是口径问题，没有改代码，所以**没有需要重算的历史数字**。
+- 已检查：git 跟踪的 `results/*.csv` 里只有 `results/ablation_sort_vs_sort_drift_54aa1ad.csv` 带 coverage 列，它的 buffer_expand=0，不受缓冲口径影响。`RESULTS_overnight.md` 第 1 节用的是 A_extra/A_excluded，不用 coverage。
+- `/workspace/paper/draft_v1_full_formatted.md` 只读、未改。其中「覆盖率均为 1.0」出自 buffer_expand=0 的主消融，不受影响；表 4 的缓冲覆盖率还是「待填」，填写时要按 2.4 的口径。
+
+### 2.6 检查
+- `drift_checks.py`：通过 23，失败 0，exit 0（`results/drift_checks_item2.log`）
+- `main.py --check`：170 项「通过」，0 失败，exit 0（`results/check_item2.log`）

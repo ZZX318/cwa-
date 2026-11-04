@@ -61,6 +61,24 @@ def build(scene, plan, timeline, resolution=0.5):
 
 
 def at(evaluation, timeline, time):
+    """t 时刻的评价指标。
+
+    覆盖率口径（coverage，单元覆盖率；总览项 2 核实，不是 bug，见 RESULTS_overnight.md「2. 覆盖率口径」）：
+      coverage = covered_cells / total_cells
+      total_cells  = build() 中按 resolution（默认 0.5 m）cell 中心采样、且只取"应喷目标"树冠圆盘内的单元数；
+                     应喷目标 = 不在 planning.zones.classify(scene, config) 结果里的目标。classify 会按
+                     buffer_expand 外扩后的禁喷几何判定，树冠圆盘完全落在外扩禁喷区内的树记为 no_spray 豁免，
+                     不可达的记为 no_fly / no_spray_cut，这些树整棵移出分母。
+      covered_cells = 上述单元中，中心落在至少一个喷洒段矩形 rectangle(seg, swath)（闭区间）内的单元数。
+    因此：
+      * 整棵落入缓冲区的树不计入损失（只体现在 N_eligible / exemption_rate 中）；
+      * 与缓冲边界相邻、仍应喷的树，若其所在航道因喷幅与外扩禁喷区正面积相交而被整段切掉，损失计入 coverage；
+      * coverage 随缓冲距离 d 不单调：取决于缓冲边界落在树冠上还是落在行间空隙里
+        （seed 0：d=10 m 边界 x=9 切在第 2 列树冠 [8.852, 13.086] 上 -> 0.9546；
+         d=16 m 边界 x=15 落在第 2/3 列间空隙 (13.086, 16.939) 中 -> 1.0）。
+    要衡量缓冲造成的总面积损失，应同时报 N_eligible 或用独立评价器 scripts/a_trial_eval.py 的
+    A_excluded = |C∩F|、A_extra = |(C\\F)\\P|。
+    """
     if time < 0 or time > evaluation["duration"] or not math.isfinite(time):
         raise ValueError("评价时间越界")
     covered = {}
