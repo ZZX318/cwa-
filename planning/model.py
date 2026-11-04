@@ -6,7 +6,7 @@ import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
 
-DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0, buffer_expand=1.0, drift_mode="sort")
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0, buffer_expand=0.0, drift_mode="sort")
 
 PLAN_VERSIONS = ("1.0", "1.1", "1.2")
 OBJECTIVES = ("time", "energy")

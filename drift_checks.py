@@ -206,7 +206,7 @@ def run() -> int:
         )
 
     def plan_with_default_calm():
-        # 无风 + 默认 buffer_expand=1 → 有效缓冲 0，fixed-y 应成功
+        # 无风 + 默认 buffer_expand=0 → 有效缓冲 0，fixed-y 应成功
         scene = generate(dict(rows=2, trees_per_row=3))
         plan = generate_plan(scene, {})
         assert plan["status"] == "success", plan.get("reason")

@@ -11,7 +11,7 @@ DOI：10.11975/j.issn.1002-6819.202509207
 - buffer_expand: 0/1，是否启用外扩约束（消融可关）
 - drift_mode: "off"|"sort"|"sort_drift"（排序是否加漂移代理代价）
 - drift_buffer: 显式缓冲(m)；>0 时覆盖查表结果（仍受 buffer_expand / 风速门控）
-- wind_speed==0 时有效缓冲恒为 0，避免无风回归被默认开缓冲打断
+- wind_speed==0 时有效缓冲恒为 0；DEFAULT.buffer_expand 默认关，论文消融显式打开
 """
 
 from __future__ import annotations
@@ -44,11 +44,11 @@ def resolve_effective_buffer(config) -> float:
 
     门控顺序：
     1. buffer_expand 关（0/false）→ 0
-    2. wind_speed == 0 → 0（保护无风回归；即使 buffer_expand 默认开也不外扩）
+    2. wind_speed == 0 → 0（保护无风回归；即使显式打开 buffer_expand 也不外扩）
     3. 显式 drift_buffer > 0 → 用该值（覆盖查表）
     4. 否则查表；U>5 → ValueError，禁止静默外推
     """
-    expand = config.get("buffer_expand", 1.0)
+    expand = config.get("buffer_expand", 0.0)
     if expand in (0, 0.0, False):
         return 0.0
     wind = float(config.get("wind_speed", 0.0) or 0.0)
