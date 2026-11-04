@@ -216,6 +216,59 @@ def run() -> int:
     def plan_drift_clear_oblique():
         _plan_drift_clear(PLAN_OBLIQUE_VS, math.pi / 4, True)
 
+    def safety_drift_hard_check_matches_oracle():
+        """safety 内置独立漂移检查与 buffer_oracle (b) 结论一致（开：0 违规；关计划以开口径检：>0）。"""
+        from planning.safety import _drift_ray_violations
+
+        for vs, wd, expect_bad in (
+            (PLAN_DOWNWIND_VS, 0.0, True),
+            (PLAN_UPWIND_VS, 0.0, False),
+            (PLAN_OBLIQUE_VS, math.pi / 4, True),
+        ):
+            raw = {"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": wd, "swath": 2.0}
+            scene = _fixture(vs, big=True)
+            on = generate_plan(scene, raw)
+            assert on["status"] == "success", on.get("reason")
+            n_on, bad_on = _drift_ray_violations(scene, on["segments"], 10.0, wd, 2.0)
+            assert not bad_on, bad_on[:3]
+            off = generate_plan(scene, {**raw, "buffer_expand": 0.0})
+            _, bad_off = _drift_ray_violations(scene, off["segments"], 10.0, wd, 2.0)
+            _, oracle_off = oracle.check_plan_drift_clear(scene, off, 10.0, wd, 2.0)
+            assert bool(bad_off) == expect_bad == bool(oracle_off), (len(bad_off), len(oracle_off))
+            print("  指标 · safety(b) wd=%.3f 采样(开)=%d 违规 开/关=%d/%d oracle违规(关)=%d"
+                  % (wd, n_on, len(bad_on), len(bad_off), len(oracle_off)))
+
+    def safety_rejects_broken_expand():
+        """反例：把外扩函数换成「不扩」或「只向上风平移、丢弃原区域」后，safety 的独立硬检查必须拒绝计划。
+        （旧「下风平移」实现在此夹具会移出 extent、在场景校验即失败，见 e374f17，故用这两种错误实现。）"""
+        import planning.drift as drift_mod
+        import planning.planner as planner_mod
+
+        raw = {"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0, "swath": 2.0}
+        scene = _fixture(PLAN_DOWNWIND_VS, big=True)
+        real = drift_mod.expand_sensitive_inward
+
+        def identity(sc, cfg):
+            return sc
+
+        def legacy(sc, cfg):
+            out = copy.deepcopy(sc)
+            for z in out["no_spray_zones"]:
+                z["footprint"]["vertices"] = [[v[0] + 10.0, v[1]] for v in z["footprint"]["vertices"]]
+            return out
+
+        try:
+            for broken in (identity, legacy):
+                drift_mod.expand_sensitive_inward = broken
+                planner_mod.expand_sensitive_inward = broken
+                plan = generate_plan(scene, raw)
+                assert plan["status"] == "failed" and plan.get("stage") == "safety", (plan["status"], plan.get("reason"))
+                assert "漂移违规" in plan["reason"], plan["reason"]
+        finally:
+            drift_mod.expand_sensitive_inward = real
+            planner_mod.expand_sensitive_inward = real
+        assert generate_plan(scene, raw)["status"] == "success"
+
     def skip_interior_island():
         c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
         scene = generate(dict(rows=6, trees_per_row=8))
@@ -412,6 +465,8 @@ def run() -> int:
     check("独立检查(b)：下风侧计划无漂移违规且确有切带", plan_drift_clear_downwind)
     check("独立检查(b)：上风侧计划无漂移违规且不切带", plan_drift_clear_upwind)
     check("独立检查(b)：斜风计划无漂移违规且确有切带", plan_drift_clear_oblique)
+    check("safety独立漂移硬检查与oracle(b)一致", safety_drift_hard_check_matches_oracle)
+    check("外扩函数被破坏时safety独立硬检查拒绝计划", safety_rejects_broken_expand)
     check("园内岛状禁喷不扩", skip_interior_island)
     check("显式drift_buffer覆盖查表", explicit_override)
     check("drift_mode白名单", drift_mode_allowlist)

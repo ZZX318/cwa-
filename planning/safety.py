@@ -1,6 +1,6 @@
 import math
 from scene import validate_scene
-from scene.geometry import polygon_bounds
+from scene.geometry import in_polygon, polygon_bounds, segments_intersect
 from scene.launch import resolve
 from .model import (
     LEGACY_METHODS,
@@ -30,6 +30,74 @@ def intersects(a, b, lo, hi):
             if left > right:
                 return False
     return True
+
+
+def _drift_ray_violations(scene, segments, d, wind_direction, swath, step=0.1):
+    """独立漂移硬检查（对应 buffer_oracle (b)）：不调用 drift.expand_sensitive_inward。
+
+    只用原始场景的园外禁喷区（足迹有任一顶点不在地块内，含边界判定）。
+    对每条喷洒段沿程每 step 米取中心线与两侧喷幅边缘（各内缩 1e-6）三点，
+    从该点沿下风向（-u，u=(cos wd, sin wd) 为上风/来风方向）作长 d-1e-6 的线段，
+    与原始禁喷多边形做精确的闭集线段–多边形相交判定；相交即违规。
+    返回 (采样点数, 违规列表[(航段序号, 区域 id, 采样点)])。
+    """
+    eps = 1e-6
+    ux, uy = math.cos(wind_direction), math.sin(wind_direction)
+    dx, dy = -ux, -uy
+    reach = max(0.0, d - eps)
+    plot = scene["plot"]
+    zones = []
+    for z in scene.get("no_spray_zones") or []:
+        vs = z["footprint"]["vertices"]
+        if any(not in_polygon(v, plot) for v in vs):
+            xs = [v[0] for v in vs]
+            ys = [v[1] for v in vs]
+            edges = list(zip(vs, vs[1:] + vs[:1]))
+            zones.append((z, (min(xs), min(ys), max(xs), max(ys)), edges))
+    if not zones or reach <= 0:
+        return 0, []
+    half = swath / 2.0 - eps
+    samples = 0
+    bad = []
+    for i, seg in enumerate(segments):
+        if not seg.get("spray"):
+            continue
+        a, b = seg["start"], seg["end"]
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        if L <= 1e-12:
+            continue
+        tx, ty = (b[0] - a[0]) / L, (b[1] - a[1]) / L
+        px, py = -ty, tx
+        n = max(1, int(math.ceil(L / step)))
+        # 包围盒预筛：喷幅矩形 ⊕ [0, reach·下风] 与区域包围盒不相交则整段跳过。
+        cx = [a[0] + px * half, a[0] - px * half, b[0] + px * half, b[0] - px * half]
+        cy = [a[1] + py * half, a[1] - py * half, b[1] + py * half, b[1] - py * half]
+        sx0 = min(cx + [v + dx * reach for v in cx])
+        sx1 = max(cx + [v + dx * reach for v in cx])
+        sy0 = min(cy + [v + dy * reach for v in cy])
+        sy1 = max(cy + [v + dy * reach for v in cy])
+        near = [
+            (z, edges)
+            for z, (x0, y0, x1, y1), edges in zones
+            if not (sx1 < x0 or sx0 > x1 or sy1 < y0 or sy0 > y1)
+        ]
+        samples += 3 * (n + 1)
+        if not near:
+            continue
+        for k in range(n + 1):
+            s = L * k / n
+            for off in (-half, 0.0, half):
+                p = [a[0] + tx * s + px * off, a[1] + ty * s + py * off]
+                q = [p[0] + dx * reach, p[1] + dy * reach]
+                for z, edges in near:
+                    if (
+                        in_polygon(p, z["footprint"])
+                        or in_polygon(q, z["footprint"])
+                        or any(segments_intersect(p, q, e0, e1) for e0, e1 in edges)
+                    ):
+                        bad.append((i, z["id"], [round(p[0], 4), round(p[1], 4)]))
+                        break
+    return samples, bad
 
 
 def check(scene: dict, plan: dict) -> None:
@@ -202,6 +270,21 @@ def check(scene: dict, plan: dict) -> None:
         previous = b
     if math.dist(previous, end) > 1e-8:
         raise ValueError("未返回终点")
+    # 独立漂移硬检查：缓冲开（有效 d>0）时，以原始园外禁喷区沿下风射线重算，
+    # 不复用外扩几何；与上面基于 expand_sensitive_inward 的误喷判定互为校验。
+    from .drift import resolve_effective_buffer
+
+    drift_d = resolve_effective_buffer(c)
+    if drift_d > 0:
+        _, drift_bad = _drift_ray_violations(
+            scene, segs, drift_d, float(c.get("wind_direction", 0.0) or 0.0), c["swath"]
+        )
+        if drift_bad:
+            i, zid, p = drift_bad[0]
+            raise ValueError(
+                f"漂移违规：{len(drift_bad)} 个喷洒采样点下风 {drift_d:g} m 内进入原始禁喷区，"
+                f"例 航段 {i} 点 {p} → {zid}"
+            )
     if spray_count == 0:
         raise ValueError("任务结构不完整：没有喷洒航段")
     missing = ids - associated
