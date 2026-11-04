@@ -1,0 +1,4 @@
+translation_probe {"n": 407, "n_shifted": 407, "lane_x_shift_min": 0.5, "lane_x_shift_max": 0.5, "tree_shift": 0.5, "lanes_move_with_trees": true}
+{"variant": "rot180_aligned", "U": 2.0, "heading": 180, "offset": 1.75, "status": "success", "A_excluded": 123.62250000000003, "A_extra_tau0": 52.49750000000001, "total_time": 1425.5328530422964, "violations": 0, "solve_seconds": 70.2}
+{"variant": "rot180_aligned", "U": 4.0, "heading": 180, "offset": 1.75, "status": "success", "A_excluded": 242.83250000000004, "A_extra_tau0": 0.0, "total_time": 1530.3764678765215, "violations": 0, "solve_seconds": 145.1}
+wrote /workspace/cwa-bench/results/a_trial_seed0_0f3a583_rot180aligned.csv wall 145.3
