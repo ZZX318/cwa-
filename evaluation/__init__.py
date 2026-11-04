@@ -5,6 +5,7 @@ from execution import state_at
 from planning import fingerprint, check, configuration
 from planning.footprint import rectangle, boxes_touch
 from scene.geometry import polygon_bounds
+from planning.zones import summary, zone_box, overlap_area, boxes_touch as _touch
 
 
 def build(scene, plan, timeline, resolution=0.5):
@@ -48,6 +49,9 @@ def build(scene, plan, timeline, resolution=0.5):
         timeline_id=timeline["execution_id"],
         cells=cells,
         excluded_targets=excluded,
+        zone_summary=summary(scene, plan.get("excluded_targets") or []),
+        no_spray_boxes=[[z["id"], *zone_box(z)] for z in scene.get("no_spray_zones", [])],
+        zone_boxes=[zone_box(z) for z in scene.get("no_spray_zones", []) + scene.get("no_fly_zones", [])],
         duration=timeline["duration"],
         config=config,
     )
@@ -58,6 +62,8 @@ def at(evaluation, timeline, time):
         raise ValueError("评价时间越界")
     covered = {}
     spray_seconds = 0.0
+    misspray_area = 0.0
+    misspray_segments = 0
     illegal = []
     for seg in timeline["segments"]:
         if seg["spray"]:
@@ -74,6 +80,10 @@ def at(evaluation, timeline, time):
                         for a, b in zip(seg["start"], seg["end"])
                     ]
                 foot = rectangle(flown, evaluation["config"]["swath"])
+                hit_area = sum(overlap_area(foot, (lo, hi)) for _, lo, hi in evaluation.get("no_spray_boxes", []))
+                if hit_area > 0:
+                    misspray_area += hit_area
+                    misspray_segments += 1
                 for target in evaluation["cells"]:
                     tid, ix, iy = target
                     cx = (ix + 0.5) * evaluation["resolution"]
@@ -105,5 +115,31 @@ def at(evaluation, timeline, time):
         repeated_targets=[x['target_id'] for x in target_stats if x['repeated'] > 0],
         total_spray_amount=spray_seconds * evaluation['config']['flow_rate'],
         excluded_targets=evaluation.get('excluded_targets', []),
+        **_zone_metrics(evaluation, target_stats),
+        misspray=dict(area=misspray_area, segments=misspray_segments),
         grid_note='网格近似；目标级统计按目标投影采样单元汇总；excluded_targets（禁喷/禁飞区内）不计入覆盖率分母',
+    )
+
+
+def _zone_metrics(evaluation, target_stats):
+    """论文口径：目标覆盖率 = 至少一个采样单元被有效足迹覆盖的应喷目标数 / N_eligible。"""
+    zs = dict(evaluation.get("zone_summary") or {})
+    n = zs.get("N_eligible", len(target_stats))
+    covered = [x for x in target_stats if x["covered_cells"] > 0]
+    boxes = evaluation.get("zone_boxes", [])
+    centers = {}
+    for tid, ix, iy in evaluation["cells"]:
+        centers.setdefault(tid, []).append(((ix + 0.5) * evaluation["resolution"], (iy + 0.5) * evaluation["resolution"]))
+    partial = []
+    for x in target_stats:
+        if 0 < x["coverage"] < 1:
+            pts = centers[x["target_id"]]
+            box = ([min(p[0] for p in pts), min(p[1] for p in pts)], [max(p[0] for p in pts), max(p[1] for p in pts)])
+            if any(_touch(([box[0][0] - 1, box[0][1] - 1], [box[1][0] + 1, box[1][1] + 1]), b) for b in boxes):
+                partial.append(dict(target_id=x["target_id"], covered_fraction=x["coverage"]))
+    return dict(
+        **zs,
+        target_coverage=len(covered) / n if n else 0.0,
+        uncovered_targets=[x["target_id"] for x in target_stats if x["covered_cells"] == 0],
+        partial_targets=partial,
     )

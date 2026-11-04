@@ -193,7 +193,7 @@ def check(scene: dict, plan: dict) -> None:
             for zone in scene["no_spray_zones"]:
                 bounds = polygon_bounds(zone["footprint"])
                 if boxes_touch(footprint, (bounds["min"], bounds["max"])):
-                    raise ValueError("喷洒足迹触及禁喷区；不支持禁喷切割")
+                    raise ValueError(f"误喷：航段 {i} 喷洒足迹触及禁喷区 {zone['id']}")
         previous = b
     if math.dist(previous, end) > 1e-8:
         raise ValueError("未返回终点")
@@ -210,18 +210,15 @@ def check(scene: dict, plan: dict) -> None:
         raise ValueError(f"被排除的目标不得再有喷洒关联 {sorted(excluded_ids & associated)}")
     if excluded_ids - ids:
         raise ValueError("excluded_targets 引用了不存在的目标")
-    # 只有真正落在禁喷/禁飞区足迹上的目标才允许排除，排除理由由几何独立复核。
-    for e in excluded:
-        g = targets[e["target_id"]]
-        x, y = g["center"]
-        r = g["radius"]
-        box = ([x - r, y - r], [x + r, y + r])
-        key = {"no_spray": "no_spray_zones", "no_fly": "no_fly_zones"}.get(e.get("reason"))
-        if key is None or not any(
-            boxes_touch(box, (polygon_bounds(z["footprint"])["min"], polygon_bounds(z["footprint"])["max"]))
-            for z in scene[key]
-        ):
-            raise ValueError(f"目标 {e['target_id']} 的排除理由与区域几何不符")
+    # 排除必须与 planning.zones 的几何分类逐条一致（id、理由），不能多报也不能改理由。
+    from .zones import classify
+
+    if excluded:
+        truth = classify(scene, c)
+        for e in excluded:
+            t = truth.get(e["target_id"])
+            if t is None or t["reason"] != e.get("reason"):
+                raise ValueError(f"目标 {e['target_id']} 的排除理由与区域几何不符")
     missing -= excluded_ids
     if missing and not plan.get("allow_partial", False):
-        raise ValueError(f"任务结构不完整：目标缺少有效喷洒关联 {sorted(missing)}")
+        raise ValueError(f"任务结构不完整：目标缺少有效喷洒关联 {sorted(missing)}（不在任何禁喷/禁飞区排除范围内）")

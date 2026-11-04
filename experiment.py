@@ -41,6 +41,10 @@ def _metrics(scene, plan):
         amount=metrics["total_spray_amount"],
         total_time=timeline["duration"],
         path_length=sum(item["length"] for item in timeline["segments"]),
+        N_eligible=metrics.get("N_eligible"),
+        target_coverage=metrics.get("target_coverage"),
+        exemption_rate=metrics.get("exemption_rate"),
+        misspray_area=metrics["misspray"]["area"],
         safety="pass",
     )
 

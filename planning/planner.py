@@ -173,38 +173,19 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
         segments.append(
             make_segment(lo, hi, "spray" if ids else "transit", ids)
         )
+    if not forward:
+        # pieces 按 Y 升序生成；反向条带必须倒序飞，否则会来回折返并把喷洒段排进禁喷区。
+        segments.reverse()
     return segments
 
 
-def zone_exclusions(scene: dict, segments: list) -> list:
-    """Targets left unsprayed *because* they sit in a no-spray (or no-fly) zone.
+def zone_exclusions(scene: dict, segments: list, c=None) -> list:
+    """未被喷洒关联、且按 planning.zones 口径被豁免/不可达的目标（几何可复核）。"""
+    from .zones import classify
 
-    A target counts as excluded only when no spray segment is associated with
-    it and its XY bounding box touches at least one zone AABB (same
-    conservative contract as ``planning.safety``). Anything else that is
-    missing stays a hard failure.
-    """
-    from .footprint import boxes_touch
-
+    c = configuration(c or {}) if not isinstance(c, dict) or "swath" not in c else c
     associated = {tid for seg in segments if seg.get("spray") for tid in seg["target_ids"]}
-    out = []
-    for target in scene["targets"]:
-        if target["id"] in associated:
-            continue
-        g = target["geometry"]
-        x, y = g["center"]
-        r = g["radius"]
-        box = ([x - r, y - r], [x + r, y + r])
-        for key, reason in (("no_spray_zones", "no_spray"), ("no_fly_zones", "no_fly")):
-            zones = [
-                z["id"]
-                for z in scene[key]
-                if boxes_touch(box, (polygon_bounds(z["footprint"])["min"], polygon_bounds(z["footprint"])["max"]))
-            ]
-            if zones:
-                out.append(dict(target_id=target["id"], reason=reason, zone_ids=zones))
-                break
-    return out
+    return [e for tid, e in sorted(classify(scene, c).items()) if tid not in associated]
 
 
 def generate_plan(scene: dict, raw=None, uav=1) -> dict:
@@ -306,7 +287,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
             add(home_air, "transit")
         add(end_point, "landing")
         plan.update(status="success", strip_count=layout["strip_count"], work_height=height)
-        excluded = zone_exclusions(scene, plan["segments"])
+        excluded = zone_exclusions(scene, plan["segments"], c)
         if excluded:
             plan["excluded_targets"] = excluded
         if c["transition_mode"] == "search":

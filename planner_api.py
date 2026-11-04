@@ -421,7 +421,7 @@ class CawAStarPlanner(Planner):
                     start_point_id=resolved["start_id"],
                     end_point_id=resolved["end_id"],
                 )
-            excluded = zone_exclusions(scene, segments)
+            excluded = zone_exclusions(scene, segments, c)
             if excluded:
                 plan["excluded_targets"] = excluded
             try:
@@ -702,7 +702,7 @@ def _plan_subset(
     all_indices = list(range(len(layout["lanes"])))
     if sorted(indices) != all_indices:
         plan["allow_partial"] = True
-    excluded = zone_exclusions(scene, segments)
+    excluded = zone_exclusions(scene, segments, c)
     if excluded:
         plan["excluded_targets"] = excluded
     try:
