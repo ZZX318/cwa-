@@ -88,4 +88,4 @@ def drift_cost_buffer(config) -> float:
 307:    check("buffer_expand=0不外扩", expand_off)
 
 ## 补注（技术负责人 2026-11-04）
-13.53/73.53：P1 验收时在群里口头报的单场景 sort / sort_drift order_cost，未存档、已作废、不入稿（已被 N=15 主消融取代，且代理项为常数）。
+13.53/73.53：出自 drift_checks.py 的 sort_vs_sort_drift 夹具输出（13.5291/73.5291，buffer_expand=0），已作废，不入稿。（更正 969b21d 中「未存档」的说法。）
