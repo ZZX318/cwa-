@@ -1,0 +1,269 @@
+{
+ "rule": "min A_extra_tau0, tie-break min total_time; only safety-passed (status=success) main rows eligible",
+ "defs": {
+  "S1": "heading 0, offset 0",
+  "S2": "best of heading {0,90} at offset 0",
+  "S2'": "best offset {0,w/4,w/2,3w/4} at heading 0",
+  "S3": "best of heading {0,90} x 4 offsets"
+ },
+ "tiers": {
+  "U=2": {
+   "failed_rows": [],
+   "schemes": {
+    "S1": {
+     "heading": 0,
+     "offset": 0.0,
+     "n_candidates": 1,
+     "A_excluded": 123.62250000000003,
+     "A_extra_tau0": 52.49750000000001,
+     "A_extra_tau0.5": 53.89250000000001,
+     "A_extra_tau1": 55.69250000000001,
+     "total_time": 1491.0029266503243,
+     "cut_segments": 1,
+     "n_lanes": 407
+    },
+    "S2": {
+     "heading": 90,
+     "offset": 0.0,
+     "n_candidates": 2,
+     "A_excluded": 123.62250000000003,
+     "A_extra_tau0": 3.6225000000000005,
+     "A_extra_tau0.5": 13.665000000000003,
+     "A_extra_tau1": 27.557500000000005,
+     "total_time": 1434.526523774132,
+     "cut_segments": 9,
+     "n_lanes": 407
+    },
+    "S2'": {
+     "heading": 0,
+     "offset": 1.5,
+     "n_candidates": 4,
+     "A_excluded": 123.62250000000003,
+     "A_extra_tau0": 2.4600000000000004,
+     "A_extra_tau0.5": 3.607500000000001,
+     "A_extra_tau1": 5.152500000000001,
+     "total_time": 1540.6112265640536,
+     "cut_segments": 1,
+     "n_lanes": 448
+    },
+    "S3": {
+     "heading": 90,
+     "offset": 1.5,
+     "n_candidates": 8,
+     "A_excluded": 123.62250000000003,
+     "A_extra_tau0": 0.03250000000000001,
+     "A_extra_tau0.5": 5.187500000000001,
+     "A_extra_tau1": 11.950000000000003,
+     "total_time": 1428.634488264674,
+     "cut_segments": 4,
+     "n_lanes": 451
+    }
+   },
+   "diffs": {
+    "S3-S1": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": -52.46500000000001,
+     "A_extra_tau0.5": -48.70500000000001,
+     "A_extra_tau1": -43.74250000000001,
+     "total_time": -62.36843838565028,
+     "cut_segments": 3,
+     "n_lanes": 44
+    },
+    "S3-S2": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": -3.5900000000000003,
+     "A_extra_tau0.5": -8.477500000000003,
+     "A_extra_tau1": -15.607500000000002,
+     "total_time": -5.892035509458083,
+     "cut_segments": -5,
+     "n_lanes": 44
+    },
+    "S3-S2'": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": -2.4275,
+     "A_extra_tau0.5": 1.58,
+     "A_extra_tau1": 6.797500000000002,
+     "total_time": -111.97673829937958,
+     "cut_segments": 3,
+     "n_lanes": 3
+    }
+   },
+   "heading_best_by_tau": {
+    "A_extra_tau0": {
+     "per_heading": {
+      "0": {
+       "offset": 1.5,
+       "value": 2.4600000000000004,
+       "total_time": 1540.6112265640536
+      },
+      "90": {
+       "offset": 1.5,
+       "value": 0.03250000000000001,
+       "total_time": 1428.634488264674
+      }
+     },
+     "better": "90"
+    },
+    "A_extra_tau0.5": {
+     "per_heading": {
+      "0": {
+       "offset": 1.5,
+       "value": 3.607500000000001,
+       "total_time": 1540.6112265640536
+      },
+      "90": {
+       "offset": 1.5,
+       "value": 5.187500000000001,
+       "total_time": 1428.634488264674
+      }
+     },
+     "better": "0"
+    },
+    "A_extra_tau1": {
+     "per_heading": {
+      "0": {
+       "offset": 1.5,
+       "value": 5.152500000000001,
+       "total_time": 1540.6112265640536
+      },
+      "90": {
+       "offset": 1.0,
+       "value": 11.045000000000002,
+       "total_time": 1447.3035736989896
+      }
+     },
+     "better": "0"
+    }
+   }
+  },
+  "U=4": {
+   "failed_rows": [],
+   "schemes": {
+    "S1": {
+     "heading": 0,
+     "offset": 0.0,
+     "n_candidates": 1,
+     "A_excluded": 242.83250000000004,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 2.6375000000000006,
+     "A_extra_tau1": 6.137500000000001,
+     "total_time": 1611.179738931985,
+     "cut_segments": 2,
+     "n_lanes": 407
+    },
+    "S2": {
+     "heading": 0,
+     "offset": 0.0,
+     "n_candidates": 2,
+     "A_excluded": 242.83250000000004,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 2.6375000000000006,
+     "A_extra_tau1": 6.137500000000001,
+     "total_time": 1611.179738931985,
+     "cut_segments": 2,
+     "n_lanes": 407
+    },
+    "S2'": {
+     "heading": 0,
+     "offset": 0.0,
+     "n_candidates": 4,
+     "A_excluded": 242.83250000000004,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 2.6375000000000006,
+     "A_extra_tau1": 6.137500000000001,
+     "total_time": 1611.179738931985,
+     "cut_segments": 2,
+     "n_lanes": 407
+    },
+    "S3": {
+     "heading": 0,
+     "offset": 0.0,
+     "n_candidates": 8,
+     "A_excluded": 242.83250000000004,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 2.6375000000000006,
+     "A_extra_tau1": 6.137500000000001,
+     "total_time": 1611.179738931985,
+     "cut_segments": 2,
+     "n_lanes": 407
+    }
+   },
+   "diffs": {
+    "S3-S1": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 0.0,
+     "A_extra_tau1": 0.0,
+     "total_time": 0.0,
+     "cut_segments": 0,
+     "n_lanes": 0
+    },
+    "S3-S2": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 0.0,
+     "A_extra_tau1": 0.0,
+     "total_time": 0.0,
+     "cut_segments": 0,
+     "n_lanes": 0
+    },
+    "S3-S2'": {
+     "A_excluded": 0.0,
+     "A_extra_tau0": 0.0,
+     "A_extra_tau0.5": 0.0,
+     "A_extra_tau1": 0.0,
+     "total_time": 0.0,
+     "cut_segments": 0,
+     "n_lanes": 0
+    }
+   },
+   "heading_best_by_tau": {
+    "A_extra_tau0": {
+     "per_heading": {
+      "0": {
+       "offset": 0.0,
+       "value": 0.0,
+       "total_time": 1611.179738931985
+      },
+      "90": {
+       "offset": 1.5,
+       "value": 0.03250000000000001,
+       "total_time": 1653.0288728667376
+      }
+     },
+     "better": "0"
+    },
+    "A_extra_tau0.5": {
+     "per_heading": {
+      "0": {
+       "offset": 0.5,
+       "value": 0.38250000000000006,
+       "total_time": 1719.3993365583183
+      },
+      "90": {
+       "offset": 1.0,
+       "value": 1.4875000000000003,
+       "total_time": 1660.6515283619967
+      }
+     },
+     "better": "0"
+    },
+    "A_extra_tau1": {
+     "per_heading": {
+      "0": {
+       "offset": 0.5,
+       "value": 0.8825000000000002,
+       "total_time": 1719.3993365583183
+      },
+      "90": {
+       "offset": 1.0,
+       "value": 1.4875000000000003,
+       "total_time": 1660.6515283619967
+      }
+     },
+     "better": "0"
+    }
+   }
+  }
+ }
+}
