@@ -178,29 +178,22 @@ class NaivePlanner(Planner):
                 if list(current) != goal:
                     add(goal, "transit")
 
+            from planning.zones import _spray_candidates, active_no_fly
+
             add([home[0], home[1], height], "takeoff")
+            active_nf = active_no_fly(scene, c, height)
             for target in targets:
-                geometry = target["geometry"]
-                center = geometry["center"]
-                radius = geometry["radius"]
-                lane = dict(
-                    start=[center[0], center[1] - radius, height],
-                    end=[center[0], center[1] + radius, height],
-                    target_ids=[target["id"]],
-                )
-                parts = lane_parts(scene, lane, c)
-                if not parts:
-                    continue
-                transit_to(parts[0]["start"])
-                if list(current) != list(parts[0]["start"]):
-                    add(parts[0]["start"], "transit")
-                for part in parts:
-                    if part["type"] == "detour":
-                        transit_to(part["end"])
-                        if list(current) != list(part["end"]):
-                            add(part["end"], "transit")
-                    else:
-                        add(part["end"], part["type"], part["target_ids"])
+                # 与 classify 同一套可达喷带：优先树心短带，否则用 fixed-y 候选，保证 N 一致。
+                cands = _spray_candidates(scene, c, target, active_nf)
+                if not cands:
+                    raise ValueError(
+                        f"应喷目标 {target['id']} 无可行喷带（与 classify 不一致）"
+                    )
+                part = cands[0]
+                transit_to(part["start"])
+                if list(current) != list(part["start"]):
+                    add(part["start"], "transit")
+                add(part["end"], "spray", part["target_ids"] or [target["id"]])
             home_air = [home[0], home[1], height]
             transit_to(home_air)
             if list(current) != home_air:

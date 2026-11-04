@@ -6,7 +6,7 @@ import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
 
-DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed")
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0)
 
 PLAN_VERSIONS = ("1.0", "1.1", "1.2")
 OBJECTIVES = ("time", "energy")
@@ -87,7 +87,7 @@ def configuration(raw: dict) -> dict:
     if c["transition_mode"] not in ("fixed", "search"): raise ValueError("transition_mode 必须为 fixed 或 search")
     for k, v in c.items():
         if k in ("target_type", "transition_mode"): continue
-        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction') else v <= 0):
+        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction','drift_buffer') else v <= 0):
             raise ValueError(f"{k}={v!r}：需要有限正数")
     if c["height_offset"] <= c["clearance"]:
         raise ValueError("作业高度差必须大于安全净空")

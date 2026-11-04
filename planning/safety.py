@@ -190,10 +190,11 @@ def check(scene: dict, plan: dict) -> None:
                     )
                 associated.add(target_id)
             # Exact strip rectangle against conservative polygon AABB, ignoring zone Z.
+            from .zones import rect_poly_positive_overlap
+
             for zone in scene["no_spray_zones"]:
-                bounds = polygon_bounds(zone["footprint"])
-                if boxes_touch(footprint, (bounds["min"], bounds["max"])):
-                    raise ValueError(f"误喷：航段 {i} 喷洒足迹触及禁喷区 {zone['id']}")
+                if rect_poly_positive_overlap(footprint, zone["footprint"]):
+                    raise ValueError(f"误喷：航段 {i} 喷洒足迹正面积进入禁喷区 {zone['id']}")
         previous = b
     if math.dist(previous, end) > 1e-8:
         raise ValueError("未返回终点")

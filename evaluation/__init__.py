@@ -5,7 +5,8 @@ from execution import state_at
 from planning import fingerprint, check, configuration
 from planning.footprint import rectangle, boxes_touch
 from scene.geometry import polygon_bounds
-from planning.zones import summary, zone_box, overlap_area, boxes_touch as _touch
+from planning.zones import summary, misspray_area as zone_misspray_area, classify, rect_poly_positive_overlap
+from scene.geometry import polygon_bounds
 
 
 def build(scene, plan, timeline, resolution=0.5):
@@ -22,9 +23,11 @@ def build(scene, plan, timeline, resolution=0.5):
     ] != fingerprint(plan):
         raise ValueError("执行与场景/计划指纹不匹配")
     cells = []
-    excluded = sorted({e["target_id"] for e in plan.get("excluded_targets") or []})
+    classified = classify(scene, config)
+    excluded = sorted(classified)
+    # 分母只含应喷目标；与计划无关
     for target in scene["targets"]:
-        if target["id"] in excluded:
+        if target["id"] in classified:
             continue
         g = target["geometry"]
         x, y = g["center"]
@@ -49,9 +52,9 @@ def build(scene, plan, timeline, resolution=0.5):
         timeline_id=timeline["execution_id"],
         cells=cells,
         excluded_targets=excluded,
-        zone_summary=summary(scene, plan.get("excluded_targets") or []),
-        no_spray_boxes=[[z["id"], *zone_box(z)] for z in scene.get("no_spray_zones", [])],
-        zone_boxes=[zone_box(z) for z in scene.get("no_spray_zones", []) + scene.get("no_fly_zones", [])],
+        zone_summary=summary(scene, config),
+        no_spray_zones=list(scene.get("no_spray_zones", [])),
+        classified=classified,
         duration=timeline["duration"],
         config=config,
     )
@@ -80,7 +83,7 @@ def at(evaluation, timeline, time):
                         for a, b in zip(seg["start"], seg["end"])
                     ]
                 foot = rectangle(flown, evaluation["config"]["swath"])
-                hit_area = sum(overlap_area(foot, (lo, hi)) for _, lo, hi in evaluation.get("no_spray_boxes", []))
+                hit_area = zone_misspray_area(foot, evaluation.get("no_spray_zones", []))
                 if hit_area > 0:
                     misspray_area += hit_area
                     misspray_segments += 1
@@ -117,26 +120,45 @@ def at(evaluation, timeline, time):
         excluded_targets=evaluation.get('excluded_targets', []),
         **_zone_metrics(evaluation, target_stats),
         misspray=dict(area=misspray_area, segments=misspray_segments),
-        grid_note='网格近似；目标级统计按目标投影采样单元汇总；excluded_targets（禁喷/禁飞区内）不计入覆盖率分母',
+        grid_note='网格近似；目标级统计按目标投影采样单元汇总；N_eligible 由 classify 决定；豁免/不可达不计入覆盖率分母',
     )
 
 
 def _zone_metrics(evaluation, target_stats):
-    """论文口径：目标覆盖率 = 至少一个采样单元被有效足迹覆盖的应喷目标数 / N_eligible。"""
+    """论文口径：目标覆盖率 = 有正面积覆盖的应喷目标数 / N_eligible；N 来自 classify。"""
     zs = dict(evaluation.get("zone_summary") or {})
+    classified = evaluation.get("classified") or {}
     n = zs.get("N_eligible", len(target_stats))
+    eligible_ids = {c[0] for c in evaluation["cells"]}
     covered = [x for x in target_stats if x["covered_cells"] > 0]
-    boxes = evaluation.get("zone_boxes", [])
-    centers = {}
-    for tid, ix, iy in evaluation["cells"]:
-        centers.setdefault(tid, []).append(((ix + 0.5) * evaluation["resolution"], (iy + 0.5) * evaluation["resolution"]))
+    # partial：应喷且 0<coverage<1，且树冠与禁喷/有效禁飞正面积相交（因禁区损失覆盖）
     partial = []
+    zones = list(evaluation.get("no_spray_zones") or [])
     for x in target_stats:
-        if 0 < x["coverage"] < 1:
-            pts = centers[x["target_id"]]
-            box = ([min(p[0] for p in pts), min(p[1] for p in pts)], [max(p[0] for p in pts), max(p[1] for p in pts)])
-            if any(_touch(([box[0][0] - 1, box[0][1] - 1], [box[1][0] + 1, box[1][1] + 1]), b) for b in boxes):
-                partial.append(dict(target_id=x["target_id"], covered_fraction=x["coverage"]))
+        if not (0 < x["coverage"] < 1):
+            continue
+        # 取该目标采样包围盒
+        pts = [
+            ((ix + 0.5) * evaluation["resolution"], (iy + 0.5) * evaluation["resolution"])
+            for tid, ix, iy in evaluation["cells"]
+            if tid == x["target_id"]
+        ]
+        if not pts:
+            continue
+        box = (
+            [min(p[0] for p in pts), min(p[1] for p in pts)],
+            [max(p[0] for p in pts), max(p[1] for p in pts)],
+        )
+        caused = False
+        for z in zones:
+            if rect_poly_positive_overlap(box, z["footprint"]):
+                caused = True
+                break
+        entry = classified.get(x["target_id"])
+        if entry and entry.get("reason") in ("no_fly", "no_spray_cut"):
+            caused = True
+        if caused:
+            partial.append(dict(target_id=x["target_id"], covered_fraction=x["coverage"]))
     return dict(
         **zs,
         target_coverage=len(covered) / n if n else 0.0,

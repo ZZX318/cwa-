@@ -108,21 +108,31 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
     blocked = []
     # 禁喷：只关喷头，飞机照常沿条带飞越（gap 类型 transit）。
     # 禁飞：既不能喷也不能进入，条带在区外留出净空后断开，断口由规划器绕行（gap 类型 detour）。
-    for key, margin, gap_kind in (
-        ("no_spray_zones", _ZONE_GAP, "transit"),
-        ("no_fly_zones", c["clearance"] + _ZONE_GAP, "detour"),
-    ):
-        for zone in scene.get(key, []):
-            bounds = polygon_bounds(zone["footprint"])
-            zx_lo, zy_lo = bounds["min"]
-            zx_hi, zy_hi = bounds["max"]
-            # Closed-set contact with the same 1e-9 rule as boxes_touch: tangency
-            # also cuts, since safety rejects touching footprints.
-            if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
-                gap_lo = max(lane_lo, zy_lo - margin)
-                gap_hi = min(lane_hi, zy_hi + margin)
-                if gap_hi - gap_lo > 1e-9:
-                    blocked.append((gap_lo, gap_hi, gap_kind))
+    for zone in scene.get("no_spray_zones", []):
+        bounds = polygon_bounds(zone["footprint"])
+        zx_lo, zy_lo = bounds["min"]
+        zx_hi, zy_hi = bounds["max"]
+        # 禁喷按正面积：条带足迹与多边形 AABB 有重叠才切；真正误喷判定在 safety/zones。
+        if x_lo < zx_hi - 1e-9 and zx_lo < x_hi - 1e-9:
+            gap_lo = max(lane_lo, zy_lo - _ZONE_GAP)
+            gap_hi = min(lane_hi, zy_hi + _ZONE_GAP)
+            if gap_hi - gap_lo > 1e-9:
+                blocked.append((gap_lo, gap_hi, "transit"))
+    # 禁飞：只切断作业高度上真正挡住飞行的区（z 有效）
+    margin = c["clearance"] + _ZONE_GAP
+    for zone in scene.get("no_fly_zones", []):
+        if zone["z_max"] + c["clearance"] + 1e-9 < height:
+            continue
+        if zone["z_min"] - c["clearance"] > height + 1e-9:
+            continue
+        bounds = polygon_bounds(zone["footprint"])
+        zx_lo, zy_lo = bounds["min"]
+        zx_hi, zy_hi = bounds["max"]
+        if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
+            gap_lo = max(lane_lo, zy_lo - margin)
+            gap_hi = min(lane_hi, zy_hi + margin)
+            if gap_hi - gap_lo > 1e-9:
+                blocked.append((gap_lo, gap_hi, "detour"))
     blocked.sort()
     merged = []
     for a, b, kind in blocked:
@@ -180,12 +190,13 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
 
 
 def zone_exclusions(scene: dict, segments: list, c=None) -> list:
-    """未被喷洒关联、且按 planning.zones 口径被豁免/不可达的目标（几何可复核）。"""
+    """计划未喷到、且 classify 认定为豁免/不可达的目标。"""
     from .zones import classify
 
     c = configuration(c or {}) if not isinstance(c, dict) or "swath" not in c else c
     associated = {tid for seg in segments if seg.get("spray") for tid in seg["target_ids"]}
     return [e for tid, e in sorted(classify(scene, c).items()) if tid not in associated]
+
 
 
 def generate_plan(scene: dict, raw=None, uav=1) -> dict:

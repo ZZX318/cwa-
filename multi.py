@@ -144,8 +144,10 @@ def run(scene, config, uavs=2):
         if unit["status"] == "success" and not unit.get("idle") and unit.get("duration")
     ]
     coverages = [unit["coverage"] for unit in active if unit.get("coverage") is not None]
+    failed = [unit for unit in out if unit.get("status") == "failed"]
     return {
-        "status": "success",
+        "status": "failed" if failed else "success",
+        "reason": failed[0]["reason"] if failed else "",
         "uavs": out,
         "uav_count": uavs,
         "makespan": max((unit["duration"] for unit in active), default=0.0),
