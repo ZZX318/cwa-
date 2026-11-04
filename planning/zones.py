@@ -207,14 +207,22 @@ def _spray_candidates(scene, c, target, active_nf):
 
 
 def classify(scene, c, buffer=None):
-    """返回 {target_id: entry}；未列出的即应喷目标。N 只由此决定。"""
+    """返回 {target_id: entry}；未列出的即应喷目标。N 只由此决定。
+
+    入参 scene 仍是原场景（与 scene_hash 一致）；若 config.buffer_expand 开启，
+    禁喷/切割几何按孔令标外扩副本判定，与 generate_plan 切带口径对齐。
+    """
+    from .drift import expand_sensitive_inward
+
     if buffer is None:
         buffer = float(c.get("drift_buffer", 0.0) or 0.0)
-    height = work_height(scene, c)
-    active_nf = active_no_fly(scene, c, height)
-    no_spray = list(scene.get("no_spray_zones", []))
+    # 外扩仅影响禁喷多边形与切带；指纹仍由调用方对原场景计算。
+    geo = expand_sensitive_inward(scene, c)
+    height = work_height(geo, c)
+    active_nf = active_no_fly(geo, c, height)
+    no_spray = list(geo.get("no_spray_zones", []))
     out = {}
-    for t in scene["targets"]:
+    for t in geo["targets"]:
         center, radius = crown_disk(t, buffer)
         holders = [
             z["id"]
@@ -224,7 +232,7 @@ def classify(scene, c, buffer=None):
         if holders:
             out[t["id"]] = dict(target_id=t["id"], reason="no_spray", zone_ids=holders)
             continue
-        cands = _spray_candidates(scene, c, t, active_nf)
+        cands = _spray_candidates(geo, c, t, active_nf)
         if cands:
             continue
         # 不可达：区分禁飞还是禁喷切割

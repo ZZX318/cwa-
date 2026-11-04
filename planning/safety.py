@@ -112,6 +112,10 @@ def check(scene: dict, plan: dict) -> None:
     associated = set()
     spray_count = 0
     height = max(t["canopy"]["z_max"] for t in scene["trees"]) + c["height_offset"]
+    # 误喷判定与 classify/切带共用外扩禁喷几何；scene_hash 仍对入参原场景。
+    from .drift import expand_sensitive_inward
+
+    spray_geo = expand_sensitive_inward(scene, c)
     if version == "1.2":
         if (
             type(plan.get("work_height")) not in (int, float)
@@ -192,7 +196,7 @@ def check(scene: dict, plan: dict) -> None:
             # Exact strip rectangle against conservative polygon AABB, ignoring zone Z.
             from .zones import rect_poly_positive_overlap
 
-            for zone in scene["no_spray_zones"]:
+            for zone in spray_geo["no_spray_zones"]:
                 if rect_poly_positive_overlap(footprint, zone["footprint"]):
                     raise ValueError(f"误喷：航段 {i} 喷洒足迹正面积进入禁喷区 {zone['id']}")
         previous = b

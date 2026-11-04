@@ -211,6 +211,66 @@ def run() -> int:
         plan = generate_plan(scene, {})
         assert plan["status"] == "success", plan.get("reason")
 
+    def expand_covers_crowns_no_missing_assoc():
+        """开缓冲且外扩盖住树冠时：不得再报「缺少有效喷洒关联」；豁免与外扩禁喷一致。"""
+        from planning.model import fingerprint
+        from planning.zones import classify, summary
+
+        scene = generate(dict(rows=2, trees_per_row=3))
+        scene = copy.deepcopy(scene)
+        # 园外 +x 侧禁喷；风向 0 下风 -x，外扩 10 m 后盖住左侧树列
+        scene["no_spray_zones"] = [
+            dict(
+                id="ns-out",
+                kind="polygon_prism",
+                footprint=dict(
+                    kind="polygon",
+                    vertices=[
+                        [12.0, -2.0],
+                        [16.5, -2.0],
+                        [16.5, 15.0],
+                        [12.0, 15.0],
+                    ],
+                ),
+                z_min=0.0,
+                z_max=10.0,
+            )
+        ]
+        c = {
+            "buffer_expand": 1.0,
+            "wind_speed": 2.0,
+            "wind_direction": 0.0,
+            "swath": 4.0,
+        }
+        truth = classify(scene, configuration(c))
+        assert truth, "外扩后应有豁免/不可达目标"
+        assert all(e["reason"] in ("no_spray", "no_spray_cut", "no_fly") for e in truth.values())
+        plan = generate_plan(scene, c)
+        assert plan["status"] == "success", plan.get("reason")
+        assert "缺少有效喷洒关联" not in (plan.get("reason") or "")
+        assert plan["scene_hash"] == fingerprint(scene)
+        excluded = plan.get("excluded_targets") or []
+        excluded_ids = {e["target_id"] for e in excluded}
+        assert excluded_ids == set(truth.keys()), (excluded_ids, set(truth.keys()))
+        for e in excluded:
+            assert e["reason"] == truth[e["target_id"]]["reason"]
+        assoc = {
+            tid
+            for seg in plan["segments"]
+            if seg.get("spray")
+            for tid in seg["target_ids"]
+        }
+        assert not (assoc & excluded_ids)
+        s = summary(scene, configuration(c), excluded)
+        assert s["N_eligible"] == len(scene["targets"]) - len(truth)
+        assert set(s["unreachable_no_spray"]) | set(s["exempt_no_spray"]) | set(
+            s["unreachable_no_fly"]
+        ) == excluded_ids
+        # 至少保留部分可喷目标（本场景盖住左列、右列仍可喷）
+        assert assoc, "外扩盖冠后仍应有可喷目标"
+        all_ids = {t["id"] for t in scene["targets"]}
+        assert assoc | excluded_ids == all_ids
+
     def ha_scene_plan():
         scene, report = build("ha_orchard", 7, {"plot_width": 100.0, "plot_height": 100.0})
         area = report["info"]["plot_area_ha"]
@@ -251,6 +311,7 @@ def run() -> int:
     check("drift_mode白名单", drift_mode_allowlist)
     check("sort vs sort_drift可跑通", sort_vs_sort_drift)
     check("无风默认配置规划成功", plan_with_default_calm)
+    check("外扩盖冠不缺喷洒关联", expand_covers_crowns_no_missing_assoc)
     check("1ha场景规划", ha_scene_plan)
 
     print(f"漂移P1检查：通过 {passed}，失败 {failed}")

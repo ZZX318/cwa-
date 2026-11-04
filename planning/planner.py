@@ -245,7 +245,8 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
     phase = "plan"
     try:
         c0 = configuration(raw or {})
-        # 几何切割用外扩副本；scene_hash / safety 仍对原场景（更严的误喷口径）
+        # 几何切割用外扩副本；scene_hash 指纹原场景。
+        # classify / zone_exclusions / safety 误喷对入参原场景调用，内部按 buffer_expand 外扩几何。
         scene = expand_sensitive_inward(original_scene, c0)
         layout = fixed_y_lanes(scene, raw or {})
         c = layout["config"]

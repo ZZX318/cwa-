@@ -141,7 +141,8 @@ def expand_sensitive_inward(scene: dict, config) -> dict:
 
     wind_direction = 风的来向；下风向 = wind_direction + π。
     不从园内障碍往外扩；不改 no_fly / obstacles。
-    调用方应以原场景做 scene_hash / safety.check，以本返回值做几何切割与排序。
+    调用方应以原场景做 scene_hash；以本返回值做几何切割与排序。
+    classify / safety 误喷在内部自行外扩，仍对原场景入参调用即可。
     """
     d = resolve_effective_buffer(config)
     if d <= 0:
