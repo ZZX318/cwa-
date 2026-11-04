@@ -16,6 +16,7 @@ order-related objective.  Gaps are therefore "distance to a lower bound", never
 import math
 
 from .model import configuration
+from .drift import drift_cost_buffer, lane_drift_proxy
 from .routing3d import route3d
 from .wind import horizon_heuristic, max_effective_speed, segment_time
 
@@ -79,6 +80,9 @@ def cost_matrix(scene, config, lanes, home=None, objective="time", matrix_mode=N
     failures = []
     routes = 0
     failures_total = 0
+    drift_mode = config.get("drift_mode", "sort")
+    # 与 buffer_expand 解耦：关外扩仍可跑 sort_drift 消融
+    drift_buffer_m = drift_cost_buffer(config) if drift_mode == "sort_drift" else 0.0
     for i in range(size):
         for j in range(size):
             if i == j:
@@ -103,6 +107,9 @@ def cost_matrix(scene, config, lanes, home=None, objective="time", matrix_mode=N
                         )
                     )
                 continue
+            # sort_drift：进入该喷带时叠加侧风–漂移代理（与转场代价相加）
+            if drift_mode == "sort_drift" and j >= 1 and drift_buffer_m > 0:
+                cost = cost + lane_drift_proxy(lanes[j - 1], scene, config, drift_buffer_m)
             matrix[i][j] = cost
     return dict(
         matrix=matrix,

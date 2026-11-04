@@ -6,6 +6,7 @@ from scene.launch import resolve
 from .footprint import overlaps_target
 from .zones import rect_poly_positive_overlap
 from .model import configuration, config_fingerprint, fingerprint, options_fingerprint
+from .drift import expand_sensitive_inward
 from .safety import check
 
 # 切割边界与禁喷区 AABB 之间的留隙；须大于 safety.boxes_touch 的 1e-9 接触容差。
@@ -232,9 +233,10 @@ def zone_exclusions(scene: dict, segments: list, c=None) -> list:
 
 def generate_plan(scene: dict, raw=None, uav=1) -> dict:
     """Fixed Y strips: each strip covers target slices across its full swath width."""
+    original_scene = scene
     plan = dict(
         version="1.1",
-        scene_hash=fingerprint(scene),
+        scene_hash=fingerprint(original_scene),
         method="fixed-y-boustrophedon",
         status="failed",
         reason="",
@@ -242,6 +244,9 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
     )
     phase = "plan"
     try:
+        c0 = configuration(raw or {})
+        # 几何切割用外扩副本；scene_hash / safety 仍对原场景（更严的误喷口径）
+        scene = expand_sensitive_inward(original_scene, c0)
         layout = fixed_y_lanes(scene, raw or {})
         c = layout["config"]
         lanes = layout["lanes"]
@@ -329,7 +334,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
             add(home_air, "transit")
         add(end_point, "landing")
         plan.update(status="success", strip_count=layout["strip_count"], work_height=height)
-        excluded = zone_exclusions(scene, plan["segments"], c)
+        excluded = zone_exclusions(original_scene, plan["segments"], c)
         if excluded:
             plan["excluded_targets"] = excluded
         if c["transition_mode"] == "search":
@@ -392,7 +397,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
                 nodes=nodes,
             )
         phase = "safety"
-        check(scene, plan)
+        check(original_scene, plan)
     except (ValueError, KeyError, TypeError) as e:
         plan.update(status="failed", reason=str(e), segments=[], stage=phase)
     return plan

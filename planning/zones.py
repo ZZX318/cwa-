@@ -97,9 +97,9 @@ def rect_poly_positive_overlap(rect, polygon) -> bool:
                     [mx, my], polygon
                 ):
                     return True
-    # 密集网格：任一开集内点即可
-    nx = max(3, int((x1 - x0) / 0.25))
-    ny = max(3, int((y1 - y0) / 0.25))
+    # 密集网格（~0.1 m）：捕捉薄重叠；任一开集内点即可
+    nx = max(3, int((x1 - x0) / 0.1))
+    ny = max(3, int((y1 - y0) / 0.1))
     for i in range(1, nx):
         for j in range(1, ny):
             p = [x0 + (x1 - x0) * i / nx, y0 + (y1 - y0) * j / ny]

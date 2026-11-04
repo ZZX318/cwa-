@@ -202,8 +202,9 @@ def main() -> int:
         from regression_cli_checks import run_checks as regression_cli_checks
         from no_spray_cut_checks import run as no_spray_cut_checks
         from zone_metric_checks import run as zone_metric_checks
+        from drift_checks import run as drift_checks
 
-        return max(run(), plan_checks(), execution_checks(), evaluation_checks(), comparison_checks(), multi_checks(), env_checks(), rl_checks(), plant_checks(), experiment_checks(), wind_checks(), routing_checks(), joint_checks(), coordination_checks(), surrogate_checks(), web_checks(), transition_checks(), transition_experiment_checks(), joint_transit_checks(), coordination_plan_checks(), playback_checks(), evaluation_swath_checks(), routing3d_checks(), wind_planning_checks(), planner_checks(), order_checks(), comparison_real_checks(), experiment_semantics_checks(), caw_checks(), random_map_checks(), scene_editor_checks(), depot_checks(), launch_checks(), sortie_checks(), multi_caw_checks(), regression_cli_checks(), no_spray_cut_checks(), zone_metric_checks())
+        return max(run(), plan_checks(), execution_checks(), evaluation_checks(), comparison_checks(), multi_checks(), env_checks(), rl_checks(), plant_checks(), experiment_checks(), wind_checks(), routing_checks(), joint_checks(), coordination_checks(), surrogate_checks(), web_checks(), transition_checks(), transition_experiment_checks(), joint_transit_checks(), coordination_plan_checks(), playback_checks(), evaluation_swath_checks(), routing3d_checks(), wind_planning_checks(), planner_checks(), order_checks(), comparison_real_checks(), experiment_semantics_checks(), caw_checks(), random_map_checks(), scene_editor_checks(), depot_checks(), launch_checks(), sortie_checks(), multi_caw_checks(), regression_cli_checks(), no_spray_cut_checks(), zone_metric_checks(), drift_checks())
     if a.random_scene:
         try:
             from random_scene import generate_with_report

@@ -6,7 +6,7 @@ import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
 
-DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0)
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0, buffer_expand=1.0, drift_mode="sort")
 
 PLAN_VERSIONS = ("1.0", "1.1", "1.2")
 OBJECTIVES = ("time", "energy")
@@ -79,16 +79,30 @@ def with_transition_mode(raw: dict, mode) -> dict:
 
 
 def configuration(raw: dict) -> dict:
+    """合并 DEFAULT。开关默认集中在 DEFAULT：buffer_expand / drift_mode 改一处即可。"""
     c = dict(DEFAULT)
     if set(raw) - set(c):
         raise ValueError("未知作业配置字段")
     c.update(raw)
-    if not isinstance(c["target_type"], str) or not c["target_type"]: raise ValueError("target_type 必须为非空字符串")
-    if c["transition_mode"] not in ("fixed", "search"): raise ValueError("transition_mode 必须为 fixed 或 search")
+    if not isinstance(c["target_type"], str) or not c["target_type"]:
+        raise ValueError("target_type 必须为非空字符串")
+    if c["transition_mode"] not in ("fixed", "search"):
+        raise ValueError("transition_mode 必须为 fixed 或 search")
+    if not isinstance(c["drift_mode"], str) or c["drift_mode"] not in ("off", "sort", "sort_drift"):
+        raise ValueError('drift_mode 必须为 "off" / "sort" / "sort_drift"')
+    # buffer_expand：仅允许 0/1（浮点亦可）
+    be = c["buffer_expand"]
+    if type(be) not in (int, float) or not math.isfinite(be) or be not in (0, 0.0, 1, 1.0):
+        raise ValueError("buffer_expand 必须为 0 或 1")
+    c["buffer_expand"] = float(be)
+    allow_zero = ("wind_speed", "wind_direction", "drift_buffer", "buffer_expand")
     for k, v in c.items():
-        if k in ("target_type", "transition_mode"): continue
-        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction','drift_buffer') else v <= 0):
-            raise ValueError(f"{k}={v!r}：需要有限正数")
+        if k in ("target_type", "transition_mode", "drift_mode"):
+            continue
+        if type(v) not in (int, float) or not math.isfinite(v) or (
+            v < 0 if k in allow_zero else v <= 0
+        ):
+            raise ValueError(f"{k}={v!r}：需要有限正数" if k not in allow_zero else f"{k}={v!r}：需要非负有限数")
     if c["height_offset"] <= c["clearance"]:
         raise ValueError("作业高度差必须大于安全净空")
     return c

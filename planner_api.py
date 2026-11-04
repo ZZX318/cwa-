@@ -18,6 +18,7 @@ from planning import (
 )
 from planning.order import solve_order
 from planning.planner import fixed_y_lanes, lane_parts, zone_exclusions
+from planning.drift import expand_sensitive_inward
 from planning.routing3d import route3d
 from scene import validate_scene
 from scene.launch import resolve
@@ -124,8 +125,10 @@ class NaivePlanner(Planner):
                 scene, config or {}, self.name, str(error), "plan", version="1.1"
             )
         try:
-            validate_scene(scene)
+            original_scene = scene
+            validate_scene(original_scene)
             c = configuration(config or {})
+            scene = expand_sensitive_inward(original_scene, c)
             if not scene["targets"] or not scene["trees"]:
                 raise ValueError("不支持空目标场景")
             height = max(t["canopy"]["z_max"] for t in scene["trees"]) + c["height_offset"]
@@ -133,7 +136,7 @@ class NaivePlanner(Planner):
             from planning.zones import classify
             from planning.routing3d import route3d
 
-            excluded_map = classify(scene, c)
+            excluded_map = classify(original_scene, c)
             targets = sorted(
                 (t for t in scene["targets"] if t["id"] not in excluded_map),
                 key=lambda t: t["id"],
@@ -204,7 +207,7 @@ class NaivePlanner(Planner):
                 planner=self.name,
                 method=self.name,
                 objective="time",
-                scene_hash=fingerprint(scene),
+                scene_hash=fingerprint(original_scene),
                 status="success",
                 reason="",
                 segments=segments,
@@ -217,18 +220,23 @@ class NaivePlanner(Planner):
             )
             if plan["version"] == "1.2":
                 plan.setdefault("planner_options", normalized)
-            excluded = zone_exclusions(scene, segments, c)
+            excluded = zone_exclusions(original_scene, segments, c)
             if excluded:
                 plan["excluded_targets"] = excluded
         except (ValueError, KeyError, TypeError) as error:
             return _failed(
-                scene, config or {}, self.name, str(error), "plan", version="1.1"
+                locals().get("original_scene", scene),
+                config or {},
+                self.name,
+                str(error),
+                "plan",
+                version="1.1",
             )
         try:
-            check(scene, plan)
+            check(original_scene, plan)
         except (ValueError, KeyError, TypeError) as error:
             return _failed(
-                scene, config or {}, self.name, str(error), "safety", version="1.1"
+                original_scene, config or {}, self.name, str(error), "safety", version="1.1"
             )
         return plan
 
@@ -296,9 +304,10 @@ class CawAStarPlanner(Planner):
         except (ValueError, TypeError) as error:
             return _failed(scene, config or {}, self.name, str(error), "plan")
         try:
-            scene = scene
-            validate_scene(scene)
+            original_scene = scene
+            validate_scene(original_scene)
             c = configuration(config or {})
+            scene = expand_sensitive_inward(original_scene, c)
             layout = fixed_y_lanes(scene, c)
             lanes = layout["lanes"]
             height = layout["work_height"]
@@ -414,7 +423,7 @@ class CawAStarPlanner(Planner):
                 planner=self.name,
                 method=self.name,
                 objective=normalized["objective"],
-                scene_hash=fingerprint(scene),
+                scene_hash=fingerprint(original_scene),
                 status="success",
                 reason="",
                 stage="plan",
@@ -464,17 +473,17 @@ class CawAStarPlanner(Planner):
                     start_point_id=resolved["start_id"],
                     end_point_id=resolved["end_id"],
                 )
-            excluded = zone_exclusions(scene, segments, c)
+            excluded = zone_exclusions(original_scene, segments, c)
             if excluded:
                 plan["excluded_targets"] = excluded
             try:
-                check(scene, plan)
+                check(original_scene, plan)
             except (ValueError, KeyError, TypeError) as error:
                 raise CawFailure("safety", str(error))
             from execution import build as build_execution
 
             try:
-                timeline = build_execution(scene, plan)
+                timeline = build_execution(original_scene, plan)
                 if normalized["objective"] == "energy":
                     from planning.energy import timeline_energy
 

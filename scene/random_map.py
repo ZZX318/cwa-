@@ -89,6 +89,20 @@ def _defaults() -> Dict[str, Dict[str, Any]]:
             reserve=6.0,
             ground_z=0.0,
         ),
+        "ha_orchard": dict(
+            plot_width=100.0,
+            plot_height=100.0,
+            row_spacing=8.0,
+            plant_spacing=6.0,
+            jitter_xy=0.4,
+            canopy_radius_range=[1.2, 1.8],
+            canopy_height_range=[2.0, 3.2],
+            trunk_radius=0.15,
+            trunk_height=1.8,
+            plot_margin=3.0,
+            reserve=8.0,
+            ground_z=0.0,
+        ),
         "random_obstacles_zones": dict(
             base_style="jitter_rows",
             base_params={},
@@ -132,6 +146,11 @@ STYLES = {
         label="冠层尺寸混合",
         description="规则位置 + 多尺寸类概率采样",
         defaults=_defaults()["size_mix"],
+    ),
+    "ha_orchard": dict(
+        label="公顷级果园",
+        description="按地块宽高生成可复现抖动行列；默认约 1 ha（100×100），可调至约 3 ha",
+        defaults=_defaults()["ha_orchard"],
     ),
     "random_obstacles_zones": dict(
         label="随机障碍与区域",
@@ -282,6 +301,56 @@ def _normalize(style: str, raw: Optional[Dict[str, Any]]) -> Dict[str, Any]:
             raise SceneError("plot_margin：必须至少为最大树冠半径 + 0.1 米", field="plot_margin")
         if p["reserve"] < 2:
             raise SceneError("reserve：起降预留空间至少 2 米", field="reserve")
+
+    elif style == "ha_orchard":
+        for key in (
+            "plot_width",
+            "plot_height",
+            "row_spacing",
+            "plant_spacing",
+            "trunk_radius",
+            "trunk_height",
+            "plot_margin",
+            "reserve",
+        ):
+            _num(p[key], key, positive=True)
+        _num(p["ground_z"], "ground_z")
+        p["jitter_xy"] = _num(p["jitter_xy"], "jitter_xy")
+        if not 0 <= p["jitter_xy"] <= 2.0:
+            raise SceneError("jitter_xy = %r：需要在 0 至 2 米" % p["jitter_xy"], field="jitter_xy")
+        p["canopy_radius_range"] = _range(p["canopy_radius_range"], "canopy_radius_range")
+        p["canopy_height_range"] = _range(p["canopy_height_range"], "canopy_height_range")
+        if p["plot_width"] < 20 or p["plot_height"] < 20:
+            raise SceneError("地块边长至少 20 m", field="plot_width")
+        if p["plot_width"] * p["plot_height"] > 5.0e4:
+            raise SceneError("地块面积过大（上限约 5 ha）", field="plot_width")
+        if p["trunk_radius"] > p["canopy_radius_range"][0]:
+            raise SceneError("trunk_radius：不能超过最小树冠半径", field="trunk_radius")
+        if p["plot_margin"] + 1e-9 < p["canopy_radius_range"][1] + p["jitter_xy"] + 0.1:
+            raise SceneError(
+                "plot_margin：必须至少为最大树冠半径 + jitter_xy + 0.1 米",
+                field="plot_margin",
+            )
+        if p["reserve"] < 2:
+            raise SceneError("reserve：起降预留空间至少 2 米", field="reserve")
+        inner_w = p["plot_width"] - 2 * p["plot_margin"]
+        inner_h = p["plot_height"] - 2 * p["plot_margin"]
+        if inner_w <= 0 or inner_h <= 0:
+            raise SceneError("plot_margin 过大，有效种植区为空", field="plot_margin")
+        rows = max(1, int(inner_w / p["row_spacing"]) + 1)
+        cols = max(1, int(inner_h / p["plant_spacing"]) + 1)
+        # 贴边：若 (n-1)*spacing 超出 inner，收回一格
+        while rows > 1 and (rows - 1) * p["row_spacing"] > inner_w + 1e-9:
+            rows -= 1
+        while cols > 1 and (cols - 1) * p["plant_spacing"] > inner_h + 1e-9:
+            cols -= 1
+        if rows * cols > 2500:
+            raise SceneError(
+                "tree_count = %d：交互版本最多 2500 棵；请增大株行距" % (rows * cols),
+                field="tree_count",
+            )
+        p["rows"] = rows
+        p["trees_per_row"] = cols
 
     elif style == "random_obstacles_zones":
         if "zone_z_offset_range" in p:
@@ -730,11 +799,61 @@ def _layout_random_obstacles(
     return scene, info
 
 
+def _layout_ha_orchard(
+    rng: random.Random, p: Dict[str, Any]
+) -> Tuple[Scene, Dict[str, Any]]:
+    """公顷级：固定地块宽高，行列由株行距推算；抖动使不同 seed 布局不同。"""
+    # 复用 jitter 布局，但外壳尺寸锁到 plot_width × plot_height
+    rows, cols = p["rows"], p["trees_per_row"]
+    margin, reserve = p["plot_margin"], p["reserve"]
+    width, height = p["plot_width"], p["plot_height"]
+    top = p["trunk_height"] + p["canopy_height_range"][1] + 3.0
+    scene = _shell(width, height, p["ground_z"], reserve, top)
+    used = set()
+    for i in range(rows):
+        for j in range(cols):
+            base_x = margin + i * p["row_spacing"]
+            base_y = margin + j * p["plant_spacing"]
+            x = y = None
+            for _ in range(40):
+                x = quantize(base_x + rng.uniform(-p["jitter_xy"], p["jitter_xy"]))
+                y = quantize(base_y + rng.uniform(-p["jitter_xy"], p["jitter_xy"]))
+                if (x, y) not in used:
+                    break
+            else:
+                raise SceneError(
+                    f"公顷级布局在 40 次尝试后仍产生重复位置 ({base_x:.3f}, {base_y:.3f})",
+                    field="jitter_xy",
+                )
+            used.add((x, y))
+            radius = quantize(rng.uniform(*p["canopy_radius_range"]))
+            canopy_h = quantize(rng.uniform(*p["canopy_height_range"]))
+            _add_tree(
+                scene,
+                f"tree-{i + 1:02}-{j + 1:02}",
+                x,
+                y,
+                p["ground_z"],
+                p["trunk_radius"],
+                p["trunk_height"],
+                radius,
+                canopy_h,
+            )
+    return scene, dict(
+        deterministic=False,
+        rows=rows,
+        trees_per_row=cols,
+        plot_area_m2=width * height,
+        plot_area_ha=width * height / 10000.0,
+    )
+
+
 _LAYOUTS = {
     "regular": _layout_regular,
     "jitter_rows": _layout_jitter,
     "clusters_gaps": _layout_clusters,
     "size_mix": _layout_size_mix,
+    "ha_orchard": _layout_ha_orchard,
     "random_obstacles_zones": _layout_random_obstacles,
 }
 
