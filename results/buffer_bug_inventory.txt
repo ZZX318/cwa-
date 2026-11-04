@@ -1,0 +1,88 @@
+# 缓冲 bug 影响面盘点 (HEAD e374f17) Wed Nov  4 06:19:11 PST 2026
+## /tmp/inv/inv.py
+import sys, json, copy
+sys.path.insert(0,'.'); sys.path.insert(0,'scripts')
+from ablation_sort_vs_sort_drift import _inject_downwind_no_spray
+from random_scene import generate_with_report
+from planning.model import configuration
+from planning.drift import expand_sensitive_inward, resolve_effective_buffer, drift_cost_buffer
+job=json.load(open('configs/job.ablation.crosswind.json'))
+same_all=True
+for seed in range(15):
+    sc,_=generate_with_report("ha_orchard",seed,{"plot_width":100.0,"plot_height":100.0})
+    sc=_inject_downwind_no_spray(sc)
+    for mode in ("sort","sort_drift"):
+        c=configuration({**job,"drift_mode":mode,"buffer_expand":0.0})
+        geo=expand_sensitive_inward(copy.deepcopy(sc),c)
+        same = geo["no_spray_zones"]==sc["no_spray_zones"] and geo["no_fly_zones"]==sc["no_fly_zones"]
+        same_all &= same
+        if seed in (0,14): print(seed,mode,"resolve_effective_buffer=",resolve_effective_buffer(c),"drift_cost_buffer=",drift_cost_buffer(c),"zones_unchanged=",same)
+print("ALL 15 seeds x 2 modes zones unchanged:",same_all)
+## output
+0 sort resolve_effective_buffer= 0.0 drift_cost_buffer= 10.0 zones_unchanged= True
+0 sort_drift resolve_effective_buffer= 0.0 drift_cost_buffer= 10.0 zones_unchanged= True
+14 sort resolve_effective_buffer= 0.0 drift_cost_buffer= 10.0 zones_unchanged= True
+14 sort_drift resolve_effective_buffer= 0.0 drift_cost_buffer= 10.0 zones_unchanged= True
+ALL 15 seeds x 2 modes zones unchanged: True
+## drift.py drift_cost_buffer vs resolve_effective_buffer
+def resolve_effective_buffer(config) -> float:
+    """有效缓冲距离 (m)。
+
+    门控顺序：
+    1. buffer_expand 关（0/false）→ 0
+    2. wind_speed == 0 → 0（保护无风回归；即使显式打开 buffer_expand 也不外扩）
+    3. 显式 drift_buffer > 0 → 用该值（覆盖查表）
+    4. 否则查表；U>5 → ValueError，禁止静默外推
+    """
+    expand = config.get("buffer_expand", 0.0)
+    if expand in (0, 0.0, False):
+        return 0.0
+    wind = float(config.get("wind_speed", 0.0) or 0.0)
+    if wind == 0.0:
+        return 0.0
+    explicit = float(config.get("drift_buffer", 0.0) or 0.0)
+    if explicit > 0.0:
+        return explicit
+    looked = buffer_distance_m(wind)
+    if looked is None:
+        raise ValueError(
+            f"风速 {wind} m/s 超出孔令标 2026 推荐范围（≤5 m/s），"
+            "禁止静默外推；请关闭 buffer_expand 或给出显式 drift_buffer"
+        )
+    return float(looked)
+
+
+def drift_cost_buffer(config) -> float:
+    """排序漂移代理用的缓冲尺度：不受 buffer_expand 门控。
+
+    这样消融可独立开关：
+    - buffer_expand 0/1：是否做园外→园内几何外扩
+    - drift_mode sort / sort_drift：是否在条带排序里加侧风代理
+    wind_speed==0 → 0；显式 drift_buffer>0 覆盖查表；U>5 → ValueError。
+    """
+    wind = float(config.get("wind_speed", 0.0) or 0.0)
+    if wind == 0.0:
+        return 0.0
+    explicit = float(config.get("drift_buffer", 0.0) or 0.0)
+    if explicit > 0.0:
+        return explicit
+    looked = buffer_distance_m(wind)
+    if looked is None:
+        raise ValueError(
+            f"风速 {wind} m/s 超出孔令标 2026 推荐范围（≤5 m/s），"
+            "禁止静默外推；请降低风速或给出显式 drift_buffer"
+        )
+    return float(looked)
+
+## buffer_expand=1 usages
+43:        c = configuration({"buffer_expand": 1.0, "wind_speed": 0.0})
+47:        c = configuration({"buffer_expand": 1.0, "wind_speed": 4.0})
+51:        c = configuration({"buffer_expand": 1.0, "wind_speed": 6.0})
+60:        c = configuration({"buffer_expand": 0.0, "wind_speed": 4.0})
+89:            {"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0}
+122:        c = configuration({"buffer_expand": 1.0, "wind_speed": 2.0, "wind_direction": 0.0})
+144:            {"buffer_expand": 1.0, "wind_speed": 4.0, "drift_buffer": 12.5}
+184:            "buffer_expand": 0.0,  # 消融：关外扩，只比排序代价
+209:        # 无风 + 默认 buffer_expand=0 → 有效缓冲 0，fixed-y 应成功
+240:            "buffer_expand": 1.0,
+307:    check("buffer_expand=0不外扩", expand_off)
