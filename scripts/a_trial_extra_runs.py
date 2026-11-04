@@ -13,8 +13,15 @@ o_h(h) 的算法（不搜索）：
   h=90 时 F' 的 x' 端点对应原坐标里禁喷区的 y 边界（扫掠沿 +x，不改变 y 范围），两条边都在目标范围内；
   因 95−5=90=45·w，二者给出同一 o_h，且与 d（风速档）无关。
 
-扩展（下一项 1b 的 B-online / B-boundary）：在 VARIANTS 里注册新条目即可。每个条目提供
-  jobs(seed, U) -> [dict(heading=..., offset_fn=..., ...)]，offset_fn(scene, pscene, d, wd_plan, w) -> (offset, info)
+新增简化代理基线（NOT reproductions）：
+  b_online：固定 h=0，c∈{0.25,0.5}，offset=c*U_perp；纯横风 U_perp=U、U_parallel=0。
+    不修改喷洒窗口，不做阀门延迟补偿，输出 b_online_c0.25 / b_online_c0.5。
+  b_boundary：h∈{0,90}，条带边缘对齐原始禁喷区固定边界，而非外扩 F。
+    保留所有请求航向行（--headings 0,90），配对选择由报告完成。
+
+扩展：在 VARIANTS 里注册新条目即可。每个条目提供
+  jobs(seed, U, headings) -> [dict(heading=..., variant=..., ...)]，
+  offset_fn(scene, heading, d, w, job) -> (offset, info)
   若方案需要不同的规划调用，可提供 run_fn(job) -> (row, geom) 覆盖默认的 a_trial_heading.run。
 
 用法：/home/box/.venvs/mpl/bin/python scripts/a_trial_extra_runs.py --variants oh_rot --headings 90 --seeds 0-4 --workers 7
@@ -78,19 +85,72 @@ def _oh_jobs(seed, U, headings):
     return [dict(seed=seed, U=U, heading=h, variant="oh_rot") for h in headings]
 
 
+def _online_jobs(seed, U, headings):
+    return [dict(seed=seed, U=U, heading=0, variant="b_online", c=c) for c in (0.25, 0.5)]
+
+
+def _boundary_jobs(seed, U, headings):
+    if any(h not in (0, 90) for h in headings):
+        raise ValueError("b_boundary supports headings 0 and 90 only")
+    return [dict(seed=seed, U=U, heading=h, variant="b_boundary") for h in headings]
+
+
+def _online_offset(scene, heading, d, w, job):
+    if heading != 0:
+        raise ValueError("b_online requires heading 0")
+    c = job["c"]
+    U_perp, U_parallel = job["U"], 0.0
+    delta = c * U_perp
+    return delta, dict(
+        c=c, U_perp=U_perp, U_parallel=U_parallel, delta=delta, delta_mod_w=delta % w,
+        assumption="c is an uncalibrated assumption (not from Scagnellato); simplified geometric proxy, NOT a reproduction",
+        note="U_parallel=0 under A-trial pure crosswind (wd=0, lanes along y) so longitudinal on/off shift c*U_parallel=0; no valve-delay compensation",
+    )
+
+
+def _boundary_offset(scene, heading, d, w, job):
+    if heading not in (0, 90):
+        raise ValueError("b_boundary supports headings 0 and 90 only")
+    ps = H.rotate_scene(scene, heading // 90, H.plot_center(scene))
+    xs = [v[0] for z in ps.get("no_spray_zones", []) for v in z["footprint"]["vertices"]]
+    if not xs:
+        raise ValueError("b_boundary requires an unbuffered no-spray zone")
+    xmin = min(t["geometry"]["center"][0] - t["geometry"]["radius"] for t in ps["targets"])
+    edges = [max(xs)] if heading == 0 else sorted({min(xs), max(xs)})
+    offsets = [(xmin - e) % w for e in edges]
+    if any(min(abs(o - offsets[0]), w - abs(o - offsets[0])) > 1e-9 for o in offsets):
+        raise ValueError(f"heading {heading}: boundary edges give different offsets {offsets}")
+    o = offsets[0]
+    reference = (H.heuristic_offset(scene, d, 0.0, w)[0] if heading == 0
+                 else oh_rot(scene, heading, d, w)[0])
+    agrees = abs(o - reference) < 1e-12
+    return o, dict(aligned_to="field_boundary_not_buffer", edges=edges, frame_heading=heading,
+                   matches_oh_rot_or_heuristic=agrees,
+                   note=("abs(o - oh_rot_or_heuristic) < 1e-12" if agrees
+                         else "abs(o - oh_rot_or_heuristic) >= 1e-12"))
+
+
 VARIANTS = {
-    "oh_rot": dict(jobs=_oh_jobs, label="S_h 推广：航向 h 下的几何偏移 o_h(h)，作为 S3 的第 5 个偏移候选"),
+    "oh_rot": dict(jobs=_oh_jobs, offset_fn=lambda scene, heading, d, w, job: oh_rot(scene, heading, d, w), label="S_h 推广：航向 h 下的几何偏移 o_h(h)，作为 S3 的第 5 个偏移候选"),
+    "b_online": dict(jobs=_online_jobs, offset_fn=_online_offset,
+                     row_variant=lambda job: f"b_online_c{job['c']}",
+                     label="Simplified online proxy (not a reproduction): offset=c*U_perp, no valve-delay compensation"),
+    "b_boundary": dict(jobs=_boundary_jobs, offset_fn=_boundary_offset,
+                       label="Simplified boundary proxy (not a reproduction): swath edge aligned to fixed field boundary"),
 }
 
 
 def run_job(job):
     """默认：算出 offset 后按 variant='main' 走 a_trial_heading.run 的同一管线。"""
+    variant = VARIANTS[job["variant"]]
+    if "run_fn" in variant:
+        return variant["run_fn"](job)
     scene = H.scene0(job["seed"])
     d = H.TIERS[job["U"]]
     w = float(H.JOB["swath"])
-    o, info = oh_rot(scene, job["heading"], d, w)
+    o, info = variant["offset_fn"](scene, job["heading"], d, w, job)
     row, geom = H.run(dict(seed=job["seed"], U=job["U"], heading=job["heading"], offset=o, variant="main"))
-    row["variant"] = job["variant"]
+    row["variant"] = variant["row_variant"](job) if "row_variant" in variant else job["variant"]
     row["extra_info"] = info
     return row, geom
 
