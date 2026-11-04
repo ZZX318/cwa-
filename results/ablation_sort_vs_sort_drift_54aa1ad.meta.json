@@ -1,0 +1,23 @@
+{
+  "git_sha": "54aa1addba95e201e3fd09795640ccfc4b0c866d",
+  "out": "/workspace/cwa-bench/results/ablation_sort_vs_sort_drift_54aa1ad.csv",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "modes": [
+    "sort",
+    "sort_drift"
+  ],
+  "buffer_expand": 0.0,
+  "scene": "ha_orchard 100x100 + ns-ablation exterior downwind no_spray",
+  "planner": "caw",
+  "planner_options": {
+    "step_xy": 2.0,
+    "max_grid_nodes": 5000000,
+    "max_expansions": 500000
+  },
+  "job": "/workspace/cwa-bench/configs/job.ablation.crosswind.json",
+  "note": "失败行保留；均值分母含失败（对应指标跳过空值）。未改 DEFAULT。"
+}
