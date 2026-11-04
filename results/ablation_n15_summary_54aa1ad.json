@@ -1,0 +1,126 @@
+{
+  "N": 15,
+  "seeds": "0-14",
+  "git_sha": "54aa1addba95e201e3fd09795640ccfc4b0c866d",
+  "buffer_expand": 0.0,
+  "all_success": true,
+  "same_order": 0,
+  "csv": "/workspace/cwa-bench/results/ablation_sort_vs_sort_drift_54aa1ad.csv",
+  "modes": {
+    "sort": {
+      "order_cost": {
+        "mean": 1258.154760540944,
+        "sd": 17.033235396568465
+      },
+      "path_length": {
+        "mean": 2867.1527027280513,
+        "sd": 41.45532655579031
+      },
+      "total_time": {
+        "mean": 1462.4952814558005,
+        "sd": 22.4488624936042
+      },
+      "spray_seconds": {
+        "mean": 584.442263909408,
+        "sd": 6.150592572342164
+      },
+      "exemption_rate": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "misspray_area": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "coverage": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "target_coverage": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "N_eligible": {
+        "mean": 192.0,
+        "sd": 0.0
+      }
+    },
+    "sort_drift": {
+      "order_cost": {
+        "mean": 1900.3325525624637,
+        "sd": 33.410371663468986
+      },
+      "path_length": {
+        "mean": 2875.9305161151847,
+        "sd": 41.06708823652947
+      },
+      "total_time": {
+        "mean": 1465.5973813143055,
+        "sd": 22.211734910760423
+      },
+      "spray_seconds": {
+        "mean": 584.4422639094073,
+        "sd": 6.150592572342036
+      },
+      "exemption_rate": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "misspray_area": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "coverage": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "target_coverage": {
+        "mean": 1.0,
+        "sd": 0.0
+      },
+      "N_eligible": {
+        "mean": 192.0,
+        "sd": 0.0
+      }
+    }
+  },
+  "paired_tests": {
+    "order_cost": {
+      "delta_mean": 642.1777920215197,
+      "delta_sd": 26.483956244154786,
+      "delta_median": 648.0426942396748,
+      "ttest_t": 93.91134280976348,
+      "ttest_rel_p": 5.265628390309706e-21,
+      "wilcoxon_p": 0.0007265138800579529,
+      "wilcoxon_W": 120.0
+    },
+    "path_length": {
+      "delta_mean": 8.777813387133392,
+      "delta_sd": 19.57486668268443,
+      "delta_median": 10.869178935788113,
+      "ttest_t": 1.736733415127505,
+      "ttest_rel_p": 0.10437550590378471,
+      "wilcoxon_p": 0.1055137152897013,
+      "wilcoxon_W": 89.0
+    },
+    "total_time": {
+      "delta_mean": 3.1020998585049258,
+      "delta_sd": 9.973745995624052,
+      "delta_median": 5.405420280345197,
+      "ttest_t": 1.2046006681474777,
+      "ttest_rel_p": 0.2483271147716749,
+      "wilcoxon_p": 0.22204136672625766,
+      "wilcoxon_W": 82.0
+    },
+    "spray_seconds": {
+      "delta_mean": -5.911715561524034e-13,
+      "delta_sd": 1.2462661476955793e-12,
+      "delta_median": -1.1368683772161603e-13,
+      "ttest_t": -1.8371658381023863,
+      "ttest_rel_p": 0.08750238098939792,
+      "wilcoxon_p": null,
+      "note": "identical"
+    }
+  },
+  "note": "User locked paper N=15. order_cost includes drift proxy; do not read as longer flight."
+}
