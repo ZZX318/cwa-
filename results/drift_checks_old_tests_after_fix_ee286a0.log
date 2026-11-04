@@ -1,0 +1,16 @@
+通过 · 漂移P1 · 查表分档
+通过 · 漂移P1 · 无风有效缓冲为0
+通过 · 漂移P1 · U=4→16
+通过 · 漂移P1 · U=6报错
+通过 · 漂移P1 · buffer_expand=0不外扩
+失败 · 漂移P1 · 园外禁喷沿下风外扩：
+通过 · 漂移P1 · 园内岛状禁喷不扩
+通过 · 漂移P1 · 显式drift_buffer覆盖查表
+通过 · 漂移P1 · drift_mode白名单
+  指标 · sort-only order_cost=13.5291 order=[0, 1, 2] | sort_drift order_cost=73.5291 order=[0, 1, 2]
+通过 · 漂移P1 · sort vs sort_drift可跑通
+通过 · 漂移P1 · 无风默认配置规划成功
+失败 · 漂移P1 · 外扩盖冠不缺喷洒关联：外扩后应有豁免/不可达目标
+  指标 · ha=1.00 trees=192 status=success elapsed=1.479s strips=22
+通过 · 漂移P1 · 1ha场景规划
+漂移P1检查：通过 11，失败 2
