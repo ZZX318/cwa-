@@ -4,8 +4,21 @@
   "seeds": [
     0,
     1,
-    2
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14
   ],
+  "n": 15,
   "modes": [
     "sort",
     "sort_drift"
@@ -19,5 +32,7 @@
     "max_expansions": 500000
   },
   "job": "/workspace/cwa-bench/configs/job.ablation.crosswind.json",
-  "note": "失败行保留；均值分母含失败（对应指标跳过空值）。未改 DEFAULT。"
+  "note": "用户确认论文样本量 N=15；批跑在 seeds 0–14 齐后停止，未跑 15–29。失败行保留；均值分母含失败（对应指标跳过空值）。未改 DEFAULT。label: sort=无侧风代理排序；sort_drift=lane_drift_proxy 排序。",
+  "stopped_at": "2026-11-04T05:28-08:00",
+  "status": "frozen_n15_user_request"
 }
