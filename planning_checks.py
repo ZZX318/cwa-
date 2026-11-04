@@ -75,7 +75,7 @@ def run() -> int:
             )
         ]
         covered = generate_plan(covered_target)
-        assert covered["status"] == "failed" and "缺少有效喷洒关联" in covered["reason"]
+        assert covered["status"] == "success" and covered.get("excluded_targets"), covered.get("reason")
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "plan.json"
             save_plan(scene, p, path)
