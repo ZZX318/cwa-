@@ -1,0 +1,15 @@
+seed=0 n_lanes=407 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=33 sum_proxy=660.0000 oc_sort=1280.1342 oc_drift=1943.1557 oc_drift-sum_proxy=1283.1557 delta=663.0215
+seed=1 n_lanes=410 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=32 sum_proxy=640.0000 oc_sort=1277.3476 oc_drift=1914.9058 oc_drift-sum_proxy=1274.9058 delta=637.5581
+seed=2 n_lanes=409 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=33 sum_proxy=660.0000 oc_sort=1253.1085 oc_drift=1930.5512 oc_drift-sum_proxy=1270.5512 delta=677.4427
+seed=3 n_lanes=399 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=32 sum_proxy=640.0000 oc_sort=1255.5568 oc_drift=1904.1023 oc_drift-sum_proxy=1264.1023 delta=648.5455
+seed=4 n_lanes=409 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=33 sum_proxy=660.0000 oc_sort=1280.4987 oc_drift=1929.5620 oc_drift-sum_proxy=1269.5620 delta=649.0633
+seed=5 n_lanes=398 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=31 sum_proxy=620.0000 oc_sort=1264.0332 oc_drift=1875.8842 oc_drift-sum_proxy=1255.8842 delta=611.8510
+seed=6 n_lanes=404 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=30 sum_proxy=600.0000 oc_sort=1221.6335 oc_drift=1818.7606 oc_drift-sum_proxy=1218.7606 delta=597.1271
+seed=7 n_lanes=406 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=32 sum_proxy=640.0000 oc_sort=1280.0124 oc_drift=1924.3600 oc_drift-sum_proxy=1284.3600 delta=644.3477
+seed=8 n_lanes=408 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=30 sum_proxy=600.0000 oc_sort=1255.0877 oc_drift=1866.8846 oc_drift-sum_proxy=1266.8846 delta=611.7969
+seed=9 n_lanes=405 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=30 sum_proxy=600.0000 oc_sort=1252.7218 oc_drift=1862.8887 oc_drift-sum_proxy=1262.8887 delta=610.1669
+seed=10 n_lanes=405 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=33 sum_proxy=660.0000 oc_sort=1235.8674 oc_drift=1904.0054 oc_drift-sum_proxy=1244.0054 delta=668.1381
+seed=11 n_lanes=412 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=34 sum_proxy=680.0000 oc_sort=1251.0109 oc_drift=1936.7466 oc_drift-sum_proxy=1256.7466 delta=685.7357
+seed=12 n_lanes=410 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=31 sum_proxy=620.0000 oc_sort=1266.1185 oc_drift=1889.9915 oc_drift-sum_proxy=1269.9915 delta=623.8730
+seed=13 n_lanes=402 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=33 sum_proxy=660.0000 oc_sort=1245.3435 oc_drift=1901.3001 oc_drift-sum_proxy=1241.3001 delta=655.9567
+seed=14 n_lanes=403 same_lanes=True headings=[-90, 90] buffer=10.0 lanes_hit=32 sum_proxy=640.0000 oc_sort=1253.8469 oc_drift=1901.8896 oc_drift-sum_proxy=1261.8896 delta=648.0427
