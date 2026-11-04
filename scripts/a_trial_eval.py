@@ -268,7 +268,7 @@ def spray_samples(segments, half, step=0.1):
     return np.concatenate(xs), np.concatenate(ys)
 
 
-def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0), resolutions=(0.1, 0.05)):
+def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0), resolutions=(0.2, 0.1, 0.05)):
     half = swath / 2.0
     F = buffer_set(scene, d, wd)
     cut_idx, bounds = cut_analysis(segments, half, F)
@@ -303,12 +303,19 @@ def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0),
             row[f"A_extra_tau{tau:g}"] = float((C & ~Fm & ~P).sum() * R.cell)
         per_res[res] = row
     out["by_resolution"] = {f"{k:g}": v for k, v in per_res.items()}
-    fine, coarse = per_res[min(resolutions)], per_res[max(resolutions)]
-    conv = {}
-    for k in fine:
-        a, b = coarse[k], fine[k]
-        conv[k] = dict(coarse=a, fine=b, abs_diff=abs(a - b), rel_diff=(abs(a - b) / abs(b)) if b else (0.0 if a == 0 else math.inf))
-    out["convergence"] = conv
+    pairs = {}
+    for coarse_res, fine_res in ((0.2, 0.05), (0.1, 0.05), (0.2, 0.1)):
+        if coarse_res not in per_res or fine_res not in per_res:
+            continue
+        conv = {}
+        for key, b in per_res[fine_res].items():
+            a = per_res[coarse_res][key]
+            conv[key] = dict(coarse=a, fine=b, abs_diff=abs(a - b),
+                             rel_diff=abs(a - b) / abs(b) if b else (0.0 if a == 0 else math.inf))
+        pairs[f"{coarse_res:g}_vs_{fine_res:g}"] = conv
+    out["convergence_pairs"] = pairs
+    out["convergence"] = pairs.get("0.1_vs_0.05", {})
+    fine = per_res[min(resolutions)]
     out.update({k: v for k, v in fine.items()})
     # 违规
     px, py = spray_samples(segments, half)
