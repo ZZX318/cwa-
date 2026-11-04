@@ -222,8 +222,49 @@ def jobs_for(seed, w):
         out.append(dict(seed=seed, U=U, heading=0, offset=0.0, variant="no_zone"))
         out.append(dict(seed=seed, U=U, heading=0, offset=0.0, variant="wind_away"))
         out.append(dict(seed=seed, U=U, heading=180, offset=0.0, variant="rot180"))
+        out.append(dict(seed=seed, U=U, heading=180, offset=0.0, variant="rot180_aligned"))
     # 慢的（U=4）先跑
     return sorted(out, key=lambda j: -j["U"])
+
+
+SCHEME_KEY = "min A_extra_tau0, tie-break min total_time; only safety-passed (status=success) main rows eligible"
+SCHEME_DEFS = {
+    "S1": "heading 0, offset 0",
+    "S2": "best of heading {0,90} at offset 0",
+    "S2'": "best offset {0,w/4,w/2,3w/4} at heading 0",
+    "S3": "best of heading {0,90} x 4 offsets",
+}
+
+
+def schemes_summary(rows):
+    """S1/S2/S2'/S3 选择（只在 safety 通过的 main 行里选）及差值。"""
+    metrics = ("A_excluded", "A_extra_tau0", "A_extra_tau0.5", "total_time", "cut_segments", "n_lanes")
+    out = dict(rule=SCHEME_KEY, defs=SCHEME_DEFS, tiers={})
+    for U in sorted({r["U"] for r in rows}):
+        main_rows = [r for r in rows if r["variant"] == "main" and r["U"] == U]
+        ok = [r for r in main_rows if r.get("status") == "success"]
+        pools = {
+            "S1": [r for r in ok if r["heading"] == 0 and r["offset"] == 0.0],
+            "S2": [r for r in ok if r["offset"] == 0.0],
+            "S2'": [r for r in ok if r["heading"] == 0],
+            "S3": list(ok),
+        }
+        tier = dict(failed_rows=[dict(heading=r["heading"], offset=r["offset"], stage=r.get("stage"), reason=r.get("reason"))
+                                 for r in main_rows if r.get("status") != "success"], schemes={}, diffs={})
+        for name, pool in pools.items():
+            if not pool:
+                tier["schemes"][name] = None
+                continue
+            b = min(pool, key=lambda r: (r["A_extra_tau0"], r["total_time"]))
+            tier["schemes"][name] = dict(heading=b["heading"], offset=b["offset"], n_candidates=len(pool),
+                                         **{m: b.get(m) for m in metrics})
+        s3 = tier["schemes"].get("S3")
+        for ref in ("S1", "S2", "S2'"):
+            r = tier["schemes"].get(ref)
+            tier["diffs"][f"S3-{ref}"] = None if (s3 is None or r is None) else {
+                m: s3[m] - r[m] for m in ("A_excluded", "A_extra_tau0", "A_extra_tau0.5", "total_time", "cut_segments", "n_lanes")}
+        out["tiers"][f"U={U:g}"] = tier
+    return out
 
 
 def main():
@@ -277,6 +318,9 @@ def main():
                 rows_full=rows)
     Path(str(out) + ".meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1))
     Path(str(out) + ".geom.json").write_text(json.dumps(geoms))
+    summ = schemes_summary(rows)
+    Path(str(out) + ".summary.json").write_text(json.dumps(summ, ensure_ascii=False, indent=1))
+    print("schemes", json.dumps(summ, ensure_ascii=False), flush=True)
     print("wrote", str(out) + ".csv", "wall", round(wall, 1))
 
 
