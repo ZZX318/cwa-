@@ -452,6 +452,118 @@ def run() -> int:
 
         assert fingerprint(scene) != fingerprint(s2)
 
+    def rect_poly_exact_area():
+        import planning.zones as zones
+        from planning.zones import _EPS, _on_poly_boundary
+        from scene.geometry import in_polygon, segments_intersect
+
+        def _old_grid_overlap(rect, polygon) -> bool:
+            """矩形足迹与多边形是否正面积相交；纯相切 / 边界接触返回 False。"""
+            (x0, y0), (x1, y1) = rect
+            if x1 - x0 <= _EPS or y1 - y0 <= _EPS:
+                return False
+            vs = polygon["vertices"]
+            # 矩形内部采样点（避开边界）
+            samples = [
+                [(x0 + x1) / 2, (y0 + y1) / 2],
+                [x0 + (x1 - x0) * 0.25, y0 + (y1 - y0) * 0.25],
+                [x0 + (x1 - x0) * 0.75, y0 + (y1 - y0) * 0.25],
+                [x0 + (x1 - x0) * 0.25, y0 + (y1 - y0) * 0.75],
+                [x0 + (x1 - x0) * 0.75, y0 + (y1 - y0) * 0.75],
+            ]
+            if any(in_polygon(p, polygon) and not _on_poly_boundary(p, polygon) for p in samples):
+                # 还需确认不是只碰到边界：用面积代理——内部点即可
+                if any(
+                    in_polygon(p, polygon)
+                    and min(p[0] - x0, x1 - p[0], p[1] - y0, y1 - p[1]) > _EPS
+                    for p in samples
+                    if in_polygon(p, polygon)
+                ):
+                    return True
+            # 多边形顶点落入矩形开集
+            for v in vs:
+                if x0 + _EPS < v[0] < x1 - _EPS and y0 + _EPS < v[1] < y1 - _EPS:
+                    return True
+            # 边严格相交（非仅端点相触）→ 通常意味着正面积，再验中点
+            corners = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]
+            redges = list(zip(corners, corners[1:] + corners[:1]))
+            pedges = list(zip(vs, vs[1:] + vs[:1]))
+            for a, b in redges:
+                for c, d in pedges:
+                    if segments_intersect(a, b, c, d):
+                        mx, my = (a[0] + b[0] + c[0] + d[0]) / 4, (a[1] + b[1] + c[1] + d[1]) / 4
+                        if x0 + _EPS < mx < x1 - _EPS and y0 + _EPS < my < y1 - _EPS and in_polygon(
+                            [mx, my], polygon
+                        ):
+                            return True
+            # 密集网格（~0.1 m）：捕捉薄重叠；任一开集内点即可
+            nx = max(3, int((x1 - x0) / 0.1))
+            ny = max(3, int((y1 - y0) / 0.1))
+            for i in range(1, nx):
+                for j in range(1, ny):
+                    p = [x0 + (x1 - x0) * i / nx, y0 + (y1 - y0) * j / ny]
+                    if in_polygon(p, polygon):
+                        return True
+            return False
+
+
+        rect = ([0.0, 0.0], [2.0, 10.0])
+        results = []
+        for w in (0.01, 0.097, 0.099, 0.101):
+            poly = {"vertices": [[2.0 - w, 3.0], [5.0, 3.0],
+                                 [5.0, 7.0], [2.0 - w, 7.0]]}
+            new_result = zones.rect_poly_positive_overlap(rect, poly)
+            old_result = _old_grid_overlap(rect, poly)
+            assert new_result is True, w
+            area = zones._shoelace_area(zones._clip_polygon_to_rect(
+                poly["vertices"], 0.0, 0.0, 2.0, 10.0))
+            assert abs(area - w * 4.0) < 1e-9, (w, area)
+            # Original vertices lie inside the rect, so the old vertex test succeeds.
+            # Extend y beyond both ends to isolate its grid miss: no vertices inside,
+            # edge-test proxy midpoints outside the zone, and nx=20's last interior
+            # column x=1.9 misses [1.903, 2] when w=0.097.
+            grid_poly = {"vertices": [[2.0 - w, -1.0], [5.0, -1.0],
+                                      [5.0, 11.0], [2.0 - w, 11.0]]}
+            grid_new = zones.rect_poly_positive_overlap(rect, grid_poly)
+            grid_old = _old_grid_overlap(rect, grid_poly)
+            assert grid_new is True, w
+            area = zones._shoelace_area(zones._clip_polygon_to_rect(
+                grid_poly["vertices"], 0.0, 0.0, 2.0, 10.0))
+            assert abs(area - w * 10.0) < 1e-9, (w, area)
+            if w == 0.097:
+                assert grid_old is False, "旧网格反例未触发"
+            results.append("w=%.3f 原夹具新/旧=%s/%s 网格反例新/旧=%s/%s"
+                           % (w, new_result, old_result, grid_new, grid_old))
+
+        for vertices in (
+            [[2, 3], [5, 3], [5, 7], [2, 7]],
+            [[2, 5], [4, 3], [4, 7]],
+            [[2, 10], [3, 11], [4, 10], [3, 9]],
+            # U opens left: arms lie below/above the rect, spine to its right.
+            # Its convex hull contains the rect, but the polygon is disjoint.
+            [[-1, -2], [4, -2], [4, 12], [-1, 12],
+             [-1, 11], [3, 11], [3, -1], [-1, -1]],
+        ):
+            assert zones.rect_poly_positive_overlap(rect, {"vertices": vertices}) is False, vertices
+
+        # L: only its lower arm intersects, in a 0.05 x 1 rectangle.
+        l_shape = [[1.95, 3], [5, 3], [5, 7], [4, 7], [4, 4], [1.95, 4]]
+        # Also exercise clockwise winding and vertices carrying an unused z.
+        for vertices in (l_shape, list(reversed(l_shape)), [v + [8] for v in l_shape]):
+            assert zones.rect_poly_positive_overlap(rect, {"vertices": vertices}) is True
+            area = zones._shoelace_area(zones._clip_polygon_to_rect(
+                vertices, 0.0, 0.0, 2.0, 10.0))
+            assert abs(area - 0.05) < 1e-9, area
+
+        # Clipping a concave U can leave disconnected pieces joined by zero-width bridges.
+        split_u = [[1, 1], [4, 1], [4, 9], [1, 9],
+                   [1, 8], [3, 8], [3, 2], [1, 2]]
+        area = zones._shoelace_area(zones._clip_polygon_to_rect(
+            split_u, 0.0, 0.0, 2.0, 10.0))
+        assert abs(area - 2.0) < 1e-9, area  # Two 1 x 1 arms.
+        assert zones.rect_poly_positive_overlap(rect, {"vertices": split_u}) is True
+        print("  指标 · " + " | ".join(results))
+
     check("查表分档", table)
     check("无风有效缓冲为0", wind0_zero)
     check("U=4→16", u4_is_16)
@@ -474,6 +586,8 @@ def run() -> int:
     check("无风默认配置规划成功", plan_with_default_calm)
     check("外扩盖冠不缺喷洒关联", expand_covers_crowns_no_missing_assoc)
     check("1ha场景规划", ha_scene_plan)
+
+    check("rect_poly_positive_overlap精确面积（窄重叠/相切/擦顶点/非凸/旧网格反例）", rect_poly_exact_area)
 
     print(f"漂移P1检查：通过 {passed}，失败 {failed}")
     return 0 if failed == 0 else 1

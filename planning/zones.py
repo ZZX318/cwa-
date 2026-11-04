@@ -19,6 +19,7 @@ from scene.geometry import disk_in_polygon, in_polygon, polygon_bounds, segments
 from .footprint import overlaps_target, rectangle
 
 _EPS = 1e-9
+_OVERLAP_AREA_EPS = 1e-9
 
 
 def work_height(scene, c):
@@ -58,54 +59,49 @@ def _edge_crosses_disk(a, b, center, radius):
     return math.hypot(ax + t * dx, ay + t * dy) < radius - _EPS
 
 
+def _clip_polygon_to_rect(vertices, x0, y0, x1, y1):
+    """Sutherland–Hodgman clipping; retain zero-width bridges for concave inputs."""
+    points = [(v[0], v[1]) for v in vertices]
+    for axis, bound, lower in ((0, x0, True), (0, x1, False),
+                               (1, y0, True), (1, y1, False)):
+        if not points:
+            break
+        clipped = []
+        previous = points[-1]
+        previous_inside = previous[axis] >= bound if lower else previous[axis] <= bound
+        for current in points:
+            current_inside = current[axis] >= bound if lower else current[axis] <= bound
+            if current_inside != previous_inside:
+                t = (bound - previous[axis]) / (current[axis] - previous[axis])
+                other = 1 - axis
+                coordinate = previous[other] + t * (current[other] - previous[other])
+                clipped.append((bound, coordinate) if axis == 0 else (coordinate, bound))
+            if current_inside:
+                clipped.append(current)
+            previous, previous_inside = current, current_inside
+        points = clipped
+    return points
+
+
+def _shoelace_area(points):
+    """Return unsigned polygon area, including degenerate clipped polygons."""
+    if len(points) < 3:
+        return 0.0
+    # Translate to a local origin to reduce cancellation for offset coordinates.
+    ox, oy = points[0]
+    return abs(math.fsum(
+        (a[0] - ox) * (b[1] - oy) - (b[0] - ox) * (a[1] - oy)
+        for a, b in zip(points, points[1:] + points[:1])
+    )) / 2.0
+
+
 def rect_poly_positive_overlap(rect, polygon) -> bool:
     """矩形足迹与多边形是否正面积相交；纯相切 / 边界接触返回 False。"""
     (x0, y0), (x1, y1) = rect
     if x1 - x0 <= _EPS or y1 - y0 <= _EPS:
         return False
-    vs = polygon["vertices"]
-    # 矩形内部采样点（避开边界）
-    samples = [
-        [(x0 + x1) / 2, (y0 + y1) / 2],
-        [x0 + (x1 - x0) * 0.25, y0 + (y1 - y0) * 0.25],
-        [x0 + (x1 - x0) * 0.75, y0 + (y1 - y0) * 0.25],
-        [x0 + (x1 - x0) * 0.25, y0 + (y1 - y0) * 0.75],
-        [x0 + (x1 - x0) * 0.75, y0 + (y1 - y0) * 0.75],
-    ]
-    if any(in_polygon(p, polygon) and not _on_poly_boundary(p, polygon) for p in samples):
-        # 还需确认不是只碰到边界：用面积代理——内部点即可
-        if any(
-            in_polygon(p, polygon)
-            and min(p[0] - x0, x1 - p[0], p[1] - y0, y1 - p[1]) > _EPS
-            for p in samples
-            if in_polygon(p, polygon)
-        ):
-            return True
-    # 多边形顶点落入矩形开集
-    for v in vs:
-        if x0 + _EPS < v[0] < x1 - _EPS and y0 + _EPS < v[1] < y1 - _EPS:
-            return True
-    # 边严格相交（非仅端点相触）→ 通常意味着正面积，再验中点
-    corners = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]
-    redges = list(zip(corners, corners[1:] + corners[:1]))
-    pedges = list(zip(vs, vs[1:] + vs[:1]))
-    for a, b in redges:
-        for c, d in pedges:
-            if segments_intersect(a, b, c, d):
-                mx, my = (a[0] + b[0] + c[0] + d[0]) / 4, (a[1] + b[1] + c[1] + d[1]) / 4
-                if x0 + _EPS < mx < x1 - _EPS and y0 + _EPS < my < y1 - _EPS and in_polygon(
-                    [mx, my], polygon
-                ):
-                    return True
-    # 密集网格（~0.1 m）：捕捉薄重叠；任一开集内点即可
-    nx = max(3, int((x1 - x0) / 0.1))
-    ny = max(3, int((y1 - y0) / 0.1))
-    for i in range(1, nx):
-        for j in range(1, ny):
-            p = [x0 + (x1 - x0) * i / nx, y0 + (y1 - y0) * j / ny]
-            if in_polygon(p, polygon):
-                return True
-    return False
+    points = _clip_polygon_to_rect(polygon["vertices"], x0, y0, x1, y1)
+    return _shoelace_area(points) > _OVERLAP_AREA_EPS
 
 
 def _on_poly_boundary(point, polygon) -> bool:
