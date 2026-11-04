@@ -157,10 +157,16 @@ def run(job):
     from planning.drift import resolve_effective_buffer
     from planner_api import make_planner
 
+    scene = scene0(seed)
+    if variant == "rot180_aligned":
+        # 180° 后条带锚在旋转系 xmin' = 2cx − xmax；取 o ≡ xmin − xmax (mod w) 使条带网格回映后与原网格重合
+        g = [t["geometry"] for t in scene["targets"]]
+        xmin = min(t["center"][0] - t["radius"] for t in g)
+        xmax = max(t["center"][0] + t["radius"] for t in g)
+        offset = (xmin - xmax) % float(JOB["swath"])
     install_lane_offset(offset)
     import planning.planner as pp
 
-    scene = scene0(seed)
     wd0 = 0.0
     if variant == "no_zone":
         scene["no_spray_zones"] = []
@@ -179,7 +185,7 @@ def run(job):
     t0 = time.perf_counter()
     plan = make_planner("caw").plan(pscene, praw, options=OPTIONS)
     solve = time.perf_counter() - t0
-    row = dict(seed=seed, variant=variant, U=U, d=d, heading=heading, offset=offset, wind_direction=wd0,
+    row = dict(lane_offset_used=offset, seed=seed, variant=variant, U=U, d=d, heading=heading, offset=offset, wind_direction=wd0,
                plan_wind_direction=praw["wind_direction"], n_lanes=n_lanes, strip_count=layout["strip_count"],
                status=plan.get("status"), stage=plan.get("stage"), reason=(plan.get("reason") or "")[:300],
                solve_seconds=round(solve, 1))
@@ -224,6 +230,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--only-rot180-aligned", action="store_true",
+                    help="只跑 180° 且条带网格对齐的一致性对照（结果写 *_rot180aligned.*）")
     a = ap.parse_args()
     sha = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "--short=7", "HEAD"], text=True).strip()
     dirty = subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no"], text=True).strip()
@@ -231,6 +239,8 @@ def main():
     probe = translation_probe(a.seed)
     print("translation_probe", json.dumps(probe), flush=True)
     jobs = jobs_for(a.seed, w)
+    if a.only_rot180_aligned:
+        jobs = [dict(seed=a.seed, U=U, heading=180, offset=0.0, variant="rot180_aligned") for U in TIERS]
     t0 = time.time()
     rows, geoms = [], {}
     with ProcessPoolExecutor(max_workers=a.workers) as ex:
@@ -240,8 +250,8 @@ def main():
             if g:
                 geoms[f'{row["variant"]}_U{row["U"]:g}_h{row["heading"]}_o{row["offset"]:g}'] = g
     wall = time.time() - t0
-    out = ROOT / f"results/a_trial_seed{a.seed}_{sha}"
-    cols = ["seed", "variant", "U", "d", "heading", "offset", "wind_direction", "status", "stage", "A_excluded",
+    out = ROOT / f"results/a_trial_seed{a.seed}_{sha}" if not a.only_rot180_aligned else ROOT / f"results/a_trial_seed{a.seed}_{sha}_rot180aligned"
+    cols = ["seed", "variant", "lane_offset_used", "U", "d", "heading", "offset", "wind_direction", "status", "stage", "A_excluded",
             "A_extra_tau0", "A_extra_tau0.5", "total_time", "path_length", "path_spray", "path_cut_off",
             "path_transit_other", "cut_segments", "cut_boundaries", "violations", "spray_samples", "excluded_targets",
             "n_lanes", "strip_count", "matrix_mode", "order_strategy", "plan_frame_duration",
