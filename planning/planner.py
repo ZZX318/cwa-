@@ -291,7 +291,18 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
         if excluded:
             plan["excluded_targets"] = excluded
         if c["transition_mode"] == "search":
-            from routing import route
+            # 有禁飞区时必须走 3D 净空搜索；2D 网格会无视禁飞/树高，把已绕行的路径冲掉。
+            use_3d = bool(scene.get("no_fly_zones"))
+            if use_3d:
+                from .routing3d import route3d as _search_route
+
+                def _run(start, end):
+                    return _search_route(scene, list(start), list(end), c)
+            else:
+                from routing import route as _grid_route
+
+                def _run(start, end):
+                    return _grid_route(scene, start, end, 1.0, c["clearance"])
 
             phase = "search"
             rebuilt = []
@@ -301,7 +312,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
                 if seg["type"] != "transit":
                     rebuilt.append(seg)
                     continue
-                result = route(scene, seg["start"], seg["end"], 1.0, c["clearance"])
+                result = _run(seg["start"], seg["end"])
                 if result["status"] != "success":
                     raise ValueError(
                         f"转场搜索失败: {result.get('reason', '未知原因')}"
@@ -311,8 +322,8 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
                 for a, b in zip(result["path"], result["path"][1:]):
                     rebuilt.append(
                         dict(
-                            start=a,
-                            end=b,
+                            start=list(a),
+                            end=list(b),
                             type="transit",
                             spray=False,
                             speed=c["speed"],
@@ -321,10 +332,18 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
                     )
             plan["segments"] = rebuilt
             plan["method"] = "fixed-y-boustrophedon+clearance-search"
-            if plan["version"] == "1.2":
+            if use_3d and plan["version"] != "1.2":
+                plan.update(
+                    version="1.2",
+                    planner=plan["method"],
+                    objective="time",
+                    planner_options={},
+                    planner_options_hash=options_fingerprint({}),
+                )
+            elif plan["version"] == "1.2":
                 plan["planner"] = plan["method"]
             plan["search"] = dict(
-                model="clearance-grid-a-star",
+                model="layered-3d-clearance-a-star" if use_3d else "clearance-grid-a-star",
                 step=1.0,
                 clearance=c["clearance"],
                 routes=routes,

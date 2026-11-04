@@ -303,6 +303,18 @@ def validate_scene(
                 else in_polygon(v, o["footprint"]) and o["z_min"] <= v[2] <= o["z_max"]
             )
             require(not collision, p["id"], v, f'落入 {o["id"]} 实体或禁飞体积')
+        # 起降点与障碍的水平净空（默认 0.5 m）。禁飞区仍只禁止落入体积/足迹，
+        # 以便场景编辑器测试能构造「紧挨禁飞」的提醒用例。
+        clearance = 0.5
+        for o in s["obstacles"]:
+            dx = max(o["min"][0] - v[0], 0.0, v[0] - o["max"][0])
+            dy = max(o["min"][1] - v[1], 0.0, v[1] - o["max"][1])
+            require(
+                math.hypot(dx, dy) + 1e-9 >= clearance,
+                p["id"],
+                v,
+                f'距障碍 {o["id"]} 不足净空 {clearance} m',
+            )
 
     _validate_launch_assignments(s)
     explicit_config = bool(s.get("launch_assignments")) or any(

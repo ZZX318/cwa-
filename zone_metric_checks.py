@@ -7,7 +7,7 @@ from planner_api import make_planner
 from planning import check, generate_plan
 from scene import generate
 
-PLANNERS = ("fixed-y-boustrophedon", "caw-a*-3d-wind", "caw-a*-nn")
+PLANNERS = ("fixed-y-boustrophedon", "naive-target-order", "caw-a*-3d-wind", "caw-a*-nn")
 
 
 def _zone(zone_id, x0, y0, x1, y1, z_max=10.0):
@@ -104,8 +104,39 @@ def run():
                 == ["target-tree-01-05", "target-tree-01-06", "target-tree-02-05", "target-tree-02-06"],
                 f"{name} 截图场景豁免错误",
             )
-        _assert(ns == {20}, f"三规划器 N 不一致：{ns}")
-        print("通过 · 禁区口径：整株豁免/部分重叠仍喷且误喷 0/禁飞边缘部分覆盖/禁飞不可达/伪造拒绝/截图场景同 N")
+        _assert(ns == {20}, f"规划器 N 不一致：{ns}")
+
+        # 6. search 转场 + sortie：禁飞场景能生成；禁喷场景误喷为 0。
+        from planning import generate_plan as _gp
+        from sortie import plan_sorties
+
+        s = copy.deepcopy(base)
+        s["no_spray_zones"] = [_zone("ns-1", 0.5, 16.5, 10.5, 24.5)]
+        searched = _gp(s, {"transition_mode": "search"})
+        _assert(searched["status"] == "success", searched.get("reason"))
+        _, m = metrics(s, "naive-target-order")
+        _assert(m["misspray"]["area"] == 0, "naive 误喷非 0")
+        sorties = plan_sorties(s, {}, dict(payload_capacity_kg=100, flow_rate_kg_per_s=0.05))
+        _assert(sorties["status"] == "success", sorties.get("reason"))
+        s_nf = copy.deepcopy(base)
+        s_nf["no_fly_zones"] = [_zone("nf-1", 0.5, 16.5, 10.5, 24.5, 12.0)]
+        searched_nf = _gp(s_nf, {"transition_mode": "search"})
+        _assert(searched_nf["status"] == "success", searched_nf.get("reason"))
+        sorties_nf = plan_sorties(s_nf, {}, dict(payload_capacity_kg=100, flow_rate_kg_per_s=0.05))
+        _assert(sorties_nf["status"] == "success", sorties_nf.get("reason"))
+
+        # 7. seed 0–19：fixed-y 与 CAW-NN 在 random_obstacles_zones 上 0 失败。
+        import random_scene
+        from planner_api import make_planner as _mp
+
+        for seed in range(20):
+            sc, _ = random_scene.generate_with_report("random_obstacles_zones", seed, None, False)
+            p1 = _gp(sc)
+            _assert(p1["status"] == "success", f"seed {seed} fixed-y: {p1.get('reason')}")
+            p2 = _mp("caw-a*-nn").plan(sc, {})
+            _assert(p2["status"] == "success", f"seed {seed} caw-nn: {p2.get('reason')}")
+
+        print("通过 · 禁区口径：整株豁免/部分重叠仍喷且误喷 0/禁飞边缘部分覆盖/禁飞不可达/伪造拒绝/截图场景同 N/naive·search·sortie/seed0-19")
         return 0
     except Exception as e:
         print("失败 · 禁区口径：", repr(e))

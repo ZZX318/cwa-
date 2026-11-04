@@ -130,9 +130,18 @@ class NaivePlanner(Planner):
                 raise ValueError("不支持空目标场景")
             height = max(t["canopy"]["z_max"] for t in scene["trees"]) + c["height_offset"]
             home = _home(scene)
-            targets = sorted(scene["targets"], key=lambda t: t["id"])
+            from planning.zones import classify
+            from planning.routing3d import route3d
+
+            excluded_map = classify(scene, c)
+            targets = sorted(
+                (t for t in scene["targets"] if t["id"] not in excluded_map),
+                key=lambda t: t["id"],
+            )
             segments = []
             current = list(home)
+            detours = 0
+            has_no_fly = bool(scene.get("no_fly_zones"))
 
             def add(end, kind, ids=None):
                 nonlocal current
@@ -150,19 +159,55 @@ class NaivePlanner(Planner):
                 )
                 current = list(end)
 
+            def transit_to(goal):
+                nonlocal detours
+                goal = list(goal)
+                if list(current) == goal:
+                    return
+                if not has_no_fly:
+                    add(goal, "transit")
+                    return
+                result = route3d(scene, list(current), goal, c)
+                if result["status"] != "success":
+                    raise ValueError(
+                        f"转场 {current} → {goal} 搜索失败：{result.get('reason', '未知原因')}"
+                    )
+                detours += 1
+                for point in result["path"][1:]:
+                    add(list(point), "transit")
+                if list(current) != goal:
+                    add(goal, "transit")
+
             add([home[0], home[1], height], "takeoff")
             for target in targets:
                 geometry = target["geometry"]
                 center = geometry["center"]
                 radius = geometry["radius"]
-                start = [center[0], center[1] - radius, height]
-                end = [center[0], center[1] + radius, height]
-                add(start, "transit")
-                add(end, "spray", [target["id"]])
-            add([home[0], home[1], height], "transit")
+                lane = dict(
+                    start=[center[0], center[1] - radius, height],
+                    end=[center[0], center[1] + radius, height],
+                    target_ids=[target["id"]],
+                )
+                parts = lane_parts(scene, lane, c)
+                if not parts:
+                    continue
+                transit_to(parts[0]["start"])
+                if list(current) != list(parts[0]["start"]):
+                    add(parts[0]["start"], "transit")
+                for part in parts:
+                    if part["type"] == "detour":
+                        transit_to(part["end"])
+                        if list(current) != list(part["end"]):
+                            add(part["end"], "transit")
+                    else:
+                        add(part["end"], part["type"], part["target_ids"])
+            home_air = [home[0], home[1], height]
+            transit_to(home_air)
+            if list(current) != home_air:
+                add(home_air, "transit")
             add(home, "landing")
             plan = dict(
-                version="1.1",
+                version="1.2" if detours or has_no_fly else "1.1",
                 planner=self.name,
                 method=self.name,
                 objective="time",
@@ -177,6 +222,11 @@ class NaivePlanner(Planner):
                 config=c,
                 config_hash=config_fingerprint(c),
             )
+            if plan["version"] == "1.2":
+                plan.setdefault("planner_options", normalized)
+            excluded = zone_exclusions(scene, segments, c)
+            if excluded:
+                plan["excluded_targets"] = excluded
         except (ValueError, KeyError, TypeError) as error:
             return _failed(
                 scene, config or {}, self.name, str(error), "plan", version="1.1"

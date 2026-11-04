@@ -62,11 +62,18 @@ def generate_with_report(
     """
     if type(require_reachable) is not bool:
         raise SceneError("require_reachable 必须是布尔值", field="require_reachable")
-    attempts = max_attempts if require_reachable else 1
+    # 随机装饰物可能贴住起降点；净空校验失败时换派生种子重试。
+    attempts = max_attempts if (require_reachable or style == "random_obstacles_zones") else 1
     last_reason = ""
     for attempt in range(attempts):
         used_seed = derive_seed(seed, attempt)
-        scene, report = build(style, used_seed, params)
+        try:
+            scene, report = build(style, used_seed, params)
+        except SceneError as error:
+            last_reason = str(error)
+            if attempt + 1 >= attempts:
+                raise
+            continue
         report["attempts"] = attempt + 1
         report["seed_requested"] = seed
         report["seed_used"] = used_seed

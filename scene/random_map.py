@@ -573,16 +573,26 @@ def _zone_box(zone: Dict[str, Any]) -> Dict[str, Any]:
     )
 
 
+# 起降点净空：与 planning 默认 clearance 对齐，生成阶段就拒绝贴障碍的起降。
+_LAUNCH_CLEARANCE = 0.5
+
+
 def _launch_xy_hits(scene: Scene, low: List[float], high: List[float]) -> bool:
+    pad = _LAUNCH_CLEARANCE
     return any(
-        low[0] <= p["position"][0] <= high[0]
-        and low[1] <= p["position"][1] <= high[1]
+        low[0] - pad <= p["position"][0] <= high[0] + pad
+        and low[1] - pad <= p["position"][1] <= high[1] + pad
         for p in scene["launch_points"]
     )
 
 
 def _launch_box_hits(scene: Scene, box: Dict[str, Any]) -> bool:
-    return any(point_in_box(p["position"], box) for p in scene["launch_points"])
+    pad = _LAUNCH_CLEARANCE
+    inflated = dict(
+        min=[box["min"][0] - pad, box["min"][1] - pad, box["min"][2] - pad],
+        max=[box["max"][0] + pad, box["max"][1] + pad, box["max"][2] + pad],
+    )
+    return any(point_in_box(p["position"], inflated) for p in scene["launch_points"])
 
 
 def _decorate(

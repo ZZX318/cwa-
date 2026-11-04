@@ -65,13 +65,53 @@ def _sortie_plan(scene, config, assignment, lanes, indices, height):
         )
         current = list(end)
 
+    from planning.planner import lane_parts, zone_exclusions
+    from planning.routing3d import route3d
+
+    has_no_fly = bool(scene.get("no_fly_zones"))
+
+    def transit_to(goal):
+        nonlocal current
+        goal = list(goal)
+        if math.dist(current, goal) <= 1e-8:
+            return
+        if not has_no_fly:
+            add(goal, "transit")
+            return
+        result = route3d(scene, list(current), goal, config)
+        if result["status"] != "success":
+            raise ValueError(
+                f"架次转场 {current} → {goal} 搜索失败：{result.get('reason', '未知原因')}"
+            )
+        for point in result["path"][1:]:
+            add(list(point), "transit")
+        if math.dist(current, goal) > 1e-8:
+            add(goal, "transit")
+
     add([start[0], start[1], height], "takeoff")
     for index in indices:
         lane = lanes[index]
-        add(lane["start"], "transit")
-        add(lane["end"], "spray", lane["target_ids"])
-    add([end_point[0], end_point[1], height], "transit")
+        parts = lane_parts(scene, lane, config)
+        if not parts:
+            continue
+        transit_to(parts[0]["start"])
+        if math.dist(current, parts[0]["start"]) > 1e-8:
+            add(parts[0]["start"], "transit")
+        for part in parts:
+            if part["type"] == "detour":
+                transit_to(part["end"])
+                if math.dist(current, part["end"]) > 1e-8:
+                    add(part["end"], "transit")
+            else:
+                add(part["end"], part["type"], part["target_ids"])
+    home_air = [end_point[0], end_point[1], height]
+    transit_to(home_air)
+    if math.dist(current, home_air) > 1e-8:
+        add(home_air, "transit")
     add(end_point, "landing")
+    excluded = zone_exclusions(scene, plan["segments"], config)
+    if excluded:
+        plan["excluded_targets"] = excluded
     return plan
 
 
