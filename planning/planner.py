@@ -1,9 +1,14 @@
 import copy
 import math
 from scene import validate_scene
+from scene.geometry import polygon_bounds
 from scene.launch import resolve
+from .footprint import overlaps_target
 from .model import configuration, config_fingerprint, fingerprint, options_fingerprint
 from .safety import check
+
+# 切割边界与禁喷区 AABB 之间的留隙；须大于 safety.boxes_touch 的 1e-9 接触容差。
+_ZONE_GAP = 1e-6
 
 
 def fixed_y_lanes(scene: dict, raw=None) -> dict:
@@ -67,6 +72,85 @@ def fixed_y_lanes(scene: dict, raw=None) -> dict:
     return dict(lanes=lanes, strip_count=active, work_height=height, config=c)
 
 
+def _split_lane(scene: dict, lane: dict, c: dict) -> list:
+    """Cut one fixed-Y spray lane where its footprint meets no-spray zones.
+
+    Returns ordered full segments covering the lane exactly: spray sub-lanes
+    on clear footprint intervals and same-height transit segments (sprayer
+    off) across the blocked intervals. Geometry uses the same conservative
+    XY AABB contract as ``planning.safety.check``; zone Z is ignored and the
+    aircraft may overfly a no-spray zone (禁喷 != 禁飞). With no intersecting
+    zone the output is the single original spray segment, byte-identical.
+    """
+    swath, speed = c["swath"], c["speed"]
+    height = lane["start"][2]
+    x = lane["start"][0]
+    lane_lo = min(lane["start"][1], lane["end"][1])
+    lane_hi = max(lane["start"][1], lane["end"][1])
+    forward = lane["start"][1] < lane["end"][1]
+    x_lo, x_hi = x - swath / 2, x + swath / 2
+
+    blocked = []
+    for zone in scene["no_spray_zones"]:
+        bounds = polygon_bounds(zone["footprint"])
+        zx_lo, zy_lo = bounds["min"]
+        zx_hi, zy_hi = bounds["max"]
+        # Closed-set contact with the same 1e-9 rule as boxes_touch: tangency
+        # also cuts, since safety rejects touching footprints.
+        if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
+            gap_lo = max(lane_lo, zy_lo - _ZONE_GAP)
+            gap_hi = min(lane_hi, zy_hi + _ZONE_GAP)
+            if gap_hi - gap_lo > 1e-9:
+                blocked.append((gap_lo, gap_hi))
+    blocked.sort()
+    merged = []
+    for a, b in blocked:
+        if merged and a <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], b))
+        else:
+            merged.append((a, b))
+
+    pieces = []
+    cursor = lane_lo
+    for a, b in merged:
+        if a - cursor > 1e-9:
+            pieces.append((cursor, a, True))
+        pieces.append((a, b, False))
+        cursor = b
+    if lane_hi - cursor > 1e-9:
+        pieces.append((cursor, lane_hi, True))
+
+    target_geometry = {t["id"]: t["geometry"] for t in scene["targets"]}
+
+    def make_segment(y0, y1, kind, ids):
+        if forward:
+            start, end = [x, y0, height], [x, y1, height]
+        else:
+            start, end = [x, y1, height], [x, y0, height]
+        return dict(
+            start=start,
+            end=end,
+            type=kind,
+            spray=kind == "spray",
+            speed=speed,
+            target_ids=sorted(ids),
+        )
+
+    segments = []
+    for lo, hi, sprayable in pieces:
+        ids = []
+        if sprayable:
+            ids = [
+                tid
+                for tid in lane["target_ids"]
+                if overlaps_target(([x_lo, lo], [x_hi, hi]), target_geometry[tid])
+            ]
+        segments.append(
+            make_segment(lo, hi, "spray" if ids else "transit", ids)
+        )
+    return segments
+
+
 def generate_plan(scene: dict, raw=None, uav=1) -> dict:
     """Fixed Y strips: each strip covers target slices across its full swath width."""
     plan = dict(
@@ -119,7 +203,8 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
         add([start[0], start[1], height], "takeoff")
         for lane in lanes:
             add(lane["start"], "transit")
-            add(lane["end"], "spray", lane["target_ids"])
+            for part in _split_lane(scene, lane, c):
+                add(part["end"], part["type"], part["target_ids"])
         add([end_point[0], end_point[1], height], "transit")
         add(end_point, "landing")
         plan.update(status="success", strip_count=layout["strip_count"], work_height=height)

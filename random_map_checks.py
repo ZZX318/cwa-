@@ -181,7 +181,8 @@ def run() -> int:
             )
         except SceneError as error:
             assert "已尝试 2 次" in str(error)
-            assert "禁喷" in str(error)
+            # 全地块禁喷时所有航带转为关喷头转场，任务结构以"没有喷洒航段"失败。
+            assert "没有喷洒航段" in str(error)
             return
         raise AssertionError("阻塞配置未失败")
 

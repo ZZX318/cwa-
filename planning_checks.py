@@ -4,7 +4,9 @@ import copy
 import tempfile
 from pathlib import Path
 from scene import generate
+from scene.geometry import polygon_bounds
 from planning import generate_plan, check, save_plan, load_plan
+from planning.footprint import rectangle as strip_rectangle, boxes_touch
 
 
 def run() -> int:
@@ -50,7 +52,30 @@ def run() -> int:
                 z_max=1,
             )
         ]
-        assert generate_plan(forbidden)["status"] == "failed"
+        cut_plan = generate_plan(forbidden)
+        assert cut_plan["status"] == "success", cut_plan["reason"]
+        check(forbidden, cut_plan)
+        for seg in cut_plan["segments"]:
+            if seg["spray"]:
+                strip = strip_rectangle(seg, 2.0)
+                for zone in forbidden["no_spray_zones"]:
+                    b = polygon_bounds(zone["footprint"])
+                    assert not boxes_touch(strip, (b["min"], b["max"]))
+        covered_target = copy.deepcopy(scene)
+        covered_target["no_spray_zones"] = [
+            dict(
+                id="cover",
+                kind="polygon_prism",
+                footprint=dict(
+                    kind="polygon",
+                    vertices=[[0.5, 0.5], [4.5, 0.5], [4.5, 4.5], [0.5, 4.5]],
+                ),
+                z_min=0,
+                z_max=10,
+            )
+        ]
+        covered = generate_plan(covered_target)
+        assert covered["status"] == "failed" and "缺少有效喷洒关联" in covered["reason"]
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "plan.json"
             save_plan(scene, p, path)
@@ -99,9 +124,9 @@ def run() -> int:
         first_spray["target_ids"].append(scene["targets"][-1]["id"])
         rejected(false_association, "正面积相交")
 
-        from planning.footprint import rectangle, overlaps_target, boxes_touch
+        from planning.footprint import overlaps_target
 
-        footprint = rectangle(dict(start=[0, 0, 5], end=[0, 10, 5]), 2)
+        footprint = strip_rectangle(dict(start=[0, 0, 5], end=[0, 10, 5]), 2)
         assert footprint == ([-1.0, 0], [1.0, 10])
         assert overlaps_target(footprint, dict(center=[1.5, 5], radius=1))
         assert not overlaps_target(footprint, dict(center=[2, 5], radius=1))
