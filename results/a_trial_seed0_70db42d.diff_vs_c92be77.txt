@@ -1,0 +1,25 @@
+main_U2_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h0_o0.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h0_o1: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h0_o1.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h90_o0: status:failed→success, stage:safety→plan, A_excluded:→123.62250000000003, A_extra_tau0:→3.6225000000000005, A_extra_tau0.5:→13.665000000000003, total_time:→1434.526523774132, cut_segments:→9, cut_boundaries:→9, excluded_targets:→15, violations:→0, spray_samples:→33978, path_spray:→1076.0397390737814 | old-plan missed=None area=0.000000 | hash_changed=True
+main_U2_h90_o0.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h90_o1: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U2_h90_o1.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h0_o0.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h0_o1: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h0_o1.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h90_o0: status:failed→success, stage:safety→plan, A_excluded:→242.83250000000004, A_extra_tau0:→6.977500000000001, A_extra_tau0.5:→12.055000000000001, total_time:→1654.2669250578438, cut_segments:→5, cut_boundaries:→5, excluded_targets:→30, violations:→0, spray_samples:→30846, path_spray:→976.5637248806509 | old-plan missed=None area=0.000000 | hash_changed=True
+main_U4_h90_o0.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h90_o1: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+main_U4_h90_o1.5: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+no_zone_U2_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+no_zone_U4_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+rot180_U2_h180_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+rot180_U4_h180_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+rot180_aligned_U2_h180_o1.75: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+rot180_aligned_U4_h180_o1.75: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+wind_away_U2_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+wind_away_U4_h0_o0: UNCHANGED | old-plan missed=0 area=0.000000 | hash_changed=False
+wrote /workspace/cwa-bench/results/a_trial_seed0_70db42d.diff_vs_c92be77.json

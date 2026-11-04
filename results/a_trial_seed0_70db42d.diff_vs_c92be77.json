@@ -1,0 +1,662 @@
+[
+ {
+  "row": "main_U2_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 359,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 359,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h0_o0.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 457,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 457,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h0_o1",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 492,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 492,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h0_o1.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 405,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 405,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h90_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {
+   "status": {
+    "old": "failed",
+    "new": "success"
+   },
+   "stage": {
+    "old": "safety",
+    "new": "plan"
+   },
+   "A_excluded": {
+    "old": "",
+    "new": "123.62250000000003"
+   },
+   "A_extra_tau0": {
+    "old": "",
+    "new": "3.6225000000000005"
+   },
+   "A_extra_tau0.5": {
+    "old": "",
+    "new": "13.665000000000003"
+   },
+   "total_time": {
+    "old": "",
+    "new": "1434.526523774132"
+   },
+   "cut_segments": {
+    "old": "",
+    "new": "9"
+   },
+   "cut_boundaries": {
+    "old": "",
+    "new": "9"
+   },
+   "excluded_targets": {
+    "old": "",
+    "new": "15"
+   },
+   "violations": {
+    "old": "",
+    "new": "0"
+   },
+   "spray_samples": {
+    "old": "",
+    "new": "33978"
+   },
+   "path_spray": {
+    "old": "",
+    "new": "1076.0397390737814"
+   },
+   "plan_hash": {
+    "old": "",
+    "new": "1414df31f9636c99aafb44587b4da35bd31faf547c6545e439f4972c3d30fbda"
+   }
+  },
+  "new_plan_vs_F": {
+   "n_spray": 376,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "漂移违规：31 个喷洒采样点下风 10 m 内进入原始禁喷区，例 航段 806 点 [94.903, 1.824] → ns-ablation",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h90_o0.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 471,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 471,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h90_o1",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 509,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 509,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U2_h90_o1.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 408,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 408,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 342,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 342,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h0_o0.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 429,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 429,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h0_o1",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 462,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 462,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h0_o1.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 375,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 375,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h90_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {
+   "status": {
+    "old": "failed",
+    "new": "success"
+   },
+   "stage": {
+    "old": "safety",
+    "new": "plan"
+   },
+   "A_excluded": {
+    "old": "",
+    "new": "242.83250000000004"
+   },
+   "A_extra_tau0": {
+    "old": "",
+    "new": "6.977500000000001"
+   },
+   "A_extra_tau0.5": {
+    "old": "",
+    "new": "12.055000000000001"
+   },
+   "total_time": {
+    "old": "",
+    "new": "1654.2669250578438"
+   },
+   "cut_segments": {
+    "old": "",
+    "new": "5"
+   },
+   "cut_boundaries": {
+    "old": "",
+    "new": "5"
+   },
+   "excluded_targets": {
+    "old": "",
+    "new": "30"
+   },
+   "violations": {
+    "old": "",
+    "new": "0"
+   },
+   "spray_samples": {
+    "old": "",
+    "new": "30846"
+   },
+   "path_spray": {
+    "old": "",
+    "new": "976.5637248806509"
+   },
+   "plan_hash": {
+    "old": "",
+    "new": "f2b84baa626c50a8f918a16c1663129170ce567ce4b57720b7583bb4e9c2efa7"
+   }
+  },
+  "new_plan_vs_F": {
+   "n_spray": 343,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "漂移违规：64 个喷洒采样点下风 16 m 内进入原始禁喷区，例 航段 796 点 [94.903, 9.5184] → ns-ablation",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h90_o0.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 428,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 428,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h90_o1",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 464,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 464,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "main_U4_h90_o1.5",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 371,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 371,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "no_zone_U2_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 407,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 407,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "no_zone_U4_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 407,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 407,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "rot180_U2_h180_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 370,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 370,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "rot180_U4_h180_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 340,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 340,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "rot180_aligned_U2_h180_o1.75",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 359,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 359,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "rot180_aligned_U4_h180_o1.75",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 342,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 342,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "wind_away_U2_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 407,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 407,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ },
+ {
+  "row": "wind_away_U4_h0_o0",
+  "in_old": true,
+  "in_new": true,
+  "changes": {},
+  "old_plan_vs_F": {
+   "n_spray": 407,
+   "old_true": 0,
+   "new_true": 0,
+   "missed": 0,
+   "missed_area": 0.0,
+   "missed_max_area": 0.0,
+   "false_pos": 0,
+   "missed_examples": []
+  },
+  "F_identical": true,
+  "new_plan_vs_F": {
+   "n_spray": 407,
+   "new_true": 0,
+   "old_true": 0
+  },
+  "reason_old": "",
+  "reason_new": ""
+ }
+]
