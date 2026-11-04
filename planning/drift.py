@@ -136,10 +136,89 @@ def _zone_is_exterior_sensitive(zone, plot, buffer_m) -> bool:
     return _min_dist_to_plot_boundary(c, plot) <= buffer_m + 1e-9
 
 
-def expand_sensitive_inward(scene: dict, config) -> dict:
-    """深拷贝场景；仅当有效缓冲 >0 时，把园外/贴边禁喷区沿下风向外扩。
+def _turn(a, b, c):
+    """带相对容差的转向符号，忽略近共线边。"""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    ex, ey = c[0] - b[0], c[1] - b[1]
+    cross = dx * ey - dy * ex
+    scale = math.hypot(dx, dy) * math.hypot(ex, ey)
+    if abs(cross) <= 1e-12 * scale:
+        return 0
+    return 1 if cross > 0 else -1
 
-    wind_direction = 风的来向；下风向 = wind_direction + π。
+
+def _is_convex(vertices):
+    """检查循环边转向是否一致；近共线转向不参与判断。"""
+    sign = 0
+    for i in range(len(vertices)):
+        turn = _turn(vertices[i - 2], vertices[i - 1], vertices[i])
+        if turn:
+            if sign and turn != sign:
+                return False
+            sign = turn
+    return True
+
+
+def _convex_hull(points):
+    """Andrew 单调链凸包；返回无重复、无共线中间点的二维顶点。"""
+    points = sorted(set((float(p[0]), float(p[1])) for p in points))
+    if len(points) <= 1:
+        return [list(p) for p in points]
+    lower, upper = [], []
+    for chain, ordered in ((lower, points), (upper, reversed(points))):
+        for p in ordered:
+            while len(chain) >= 2 and _turn(chain[-2], chain[-1], p) <= 0:
+                chain.pop()
+            chain.append(p)
+    return [list(p) for p in lower[:-1] + upper[:-1]]
+
+
+def _clip_to_box(poly, xmin, ymin, xmax, ymax):
+    """用 Sutherland–Hodgman 将凸多边形裁到 XY 矩形。"""
+    poly = [[float(p[0]), float(p[1])] for p in poly]
+    for axis, bound, direction in (
+        (0, xmin, 1), (0, xmax, -1), (1, ymin, 1), (1, ymax, -1)
+    ):
+        if not poly:
+            break
+        clipped = []
+        previous = poly[-1]
+        previous_inside = direction * (previous[axis] - bound) >= 0
+        for current in poly:
+            current_inside = direction * (current[axis] - bound) >= 0
+            if current_inside != previous_inside:
+                t = (bound - previous[axis]) / (current[axis] - previous[axis])
+                intersection = [
+                    previous[k] + t * (current[k] - previous[k]) for k in range(2)
+                ]
+                intersection[axis] = float(bound)
+                other = 1 - axis
+                intersection[other] = min(
+                    max(intersection[other], min(previous[other], current[other])),
+                    max(previous[other], current[other]),
+                )
+                clipped.append(intersection)
+            if current_inside:
+                clipped.append(current)
+            previous, previous_inside = current, current_inside
+        poly = clipped
+    return _convex_hull(poly)
+
+
+def _sweep_upwind(vertices, d, ux, uy):
+    """凸多边形与上风向线段的 Minkowski 和。"""
+    points = [[float(v[0]), float(v[1])] for v in vertices]
+    return _convex_hull(points + [[x + d * ux, y + d * uy] for x, y in points])
+
+
+def expand_sensitive_inward(scene: dict, config) -> dict:
+    """深拷贝场景；仅当有效缓冲 >0 时，把园外/贴边禁喷区沿上风向扩展。
+
+    wind_direction = 风的来向；上风单位向量 = (cos(wd), sin(wd))。
+    物理含义：药液随风向下风漂移，所以在敏感区上风 d 米以内不得喷洒。
+    禁喷几何 = 原区域 ⊕ 线段[0, d·上风单位向量]（Minkowski 和），
+    凸多边形取凸包精确；非凸 raise ValueError。
+    超出 extent 的部分裁掉（场景外不可作业，裁剪不影响园内切带）。
     不从园内障碍往外扩；不改 no_fly / obstacles。
     调用方应以原场景做 scene_hash；以本返回值做几何切割与排序。
     classify / safety 误喷在内部自行外扩，仍对原场景入参调用即可。
@@ -150,18 +229,25 @@ def expand_sensitive_inward(scene: dict, config) -> dict:
     out = copy.deepcopy(scene)
     plot = out["plot"]
     wind_dir = float(config.get("wind_direction", 0.0) or 0.0)
-    # 下风向单位向量
-    dx = math.cos(wind_dir + math.pi)
-    dy = math.sin(wind_dir + math.pi)
+    # 上风向单位向量
+    ux = math.cos(wind_dir)
+    uy = math.sin(wind_dir)
     zones = out.get("no_spray_zones") or []
     for zone in zones:
         if not _zone_is_exterior_sensitive(zone, plot, d):
             continue
         fp = zone["footprint"]
-        fp["vertices"] = [
-            [v[0] + d * dx, v[1] + d * dy] + (list(v[2:]) if len(v) > 2 else [])
-            for v in fp["vertices"]
-        ]
+        if not _is_convex(fp["vertices"]):
+            raise ValueError(f"禁喷区 {zone['id']} 为非凸多边形，不能沿上风向扩展")
+        extent = out["extent"]
+        vertices = _clip_to_box(
+            _sweep_upwind(fp["vertices"], d, ux, uy),
+            extent["min"][0], extent["min"][1],
+            extent["max"][0], extent["max"][1],
+        )
+        if len(vertices) < 3:
+            raise ValueError(f"禁喷区 {zone['id']} 扩展裁剪后面积为零")
+        fp["vertices"] = vertices
     return out
 
 
