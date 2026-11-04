@@ -268,7 +268,7 @@ def spray_samples(segments, half, step=0.1):
     return np.concatenate(xs), np.concatenate(ys)
 
 
-def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5), resolutions=(0.1, 0.05)):
+def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0), resolutions=(0.1, 0.05)):
     half = swath / 2.0
     F = buffer_set(scene, d, wd)
     cut_idx, bounds = cut_analysis(segments, half, F)

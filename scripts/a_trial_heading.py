@@ -204,7 +204,7 @@ def run(job):
         back.append(b)
     res = ev.evaluate(scene, back, d, wd0, float(c0["swath"]), float(c0["speed"]), dict(c0))
     row["time_reeval_minus_plan_frame"] = res["total_time"] - row["plan_frame_duration"]
-    for key in ("A_C", "A_excluded", "A_extra_tau0", "A_extra_tau0.5", "violations", "spray_samples",
+    for key in ("A_C", "A_excluded", "A_extra_tau0", "A_extra_tau0.5", "A_extra_tau1", "violations", "spray_samples",
                 "cut_segments", "cut_boundaries", "total_time", "path_length", "path_spray", "path_cut_off",
                 "path_transit_other"):
         row[key] = res[key]
@@ -238,7 +238,7 @@ SCHEME_DEFS = {
 
 def schemes_summary(rows):
     """S1/S2/S2'/S3 选择（只在 safety 通过的 main 行里选）及差值。"""
-    metrics = ("A_excluded", "A_extra_tau0", "A_extra_tau0.5", "total_time", "cut_segments", "n_lanes")
+    metrics = ("A_excluded", "A_extra_tau0", "A_extra_tau0.5", "A_extra_tau1", "total_time", "cut_segments", "n_lanes")
     out = dict(rule=SCHEME_KEY, defs=SCHEME_DEFS, tiers={})
     for U in sorted({r["U"] for r in rows}):
         main_rows = [r for r in rows if r["variant"] == "main" and r["U"] == U]
@@ -262,7 +262,18 @@ def schemes_summary(rows):
         for ref in ("S1", "S2", "S2'"):
             r = tier["schemes"].get(ref)
             tier["diffs"][f"S3-{ref}"] = None if (s3 is None or r is None) else {
-                m: s3[m] - r[m] for m in ("A_excluded", "A_extra_tau0", "A_extra_tau0.5", "total_time", "cut_segments", "n_lanes")}
+                m: s3[m] - r[m] for m in metrics}
+        # 0° vs 90° 在各 τ 下的最好行（同一 τ 下最小 A_extra，平局取时间）
+        tier["heading_best_by_tau"] = {}
+        for tk in ("A_extra_tau0", "A_extra_tau0.5", "A_extra_tau1"):
+            per_h = {}
+            for h in HEADINGS:
+                pool = [r for r in ok if r["heading"] == h]
+                if pool:
+                    b = min(pool, key=lambda r: (r[tk], r["total_time"]))
+                    per_h[str(h)] = dict(offset=b["offset"], value=b[tk], total_time=b["total_time"])
+            vals = {h: v["value"] for h, v in per_h.items()}
+            tier["heading_best_by_tau"][tk] = dict(per_heading=per_h, better=(min(vals, key=vals.get) if vals and len(set(vals.values())) > 1 else "tie"))
         out["tiers"][f"U={U:g}"] = tier
     return out
 
@@ -293,7 +304,7 @@ def main():
     wall = time.time() - t0
     out = ROOT / f"results/a_trial_seed{a.seed}_{sha}" if not a.only_rot180_aligned else ROOT / f"results/a_trial_seed{a.seed}_{sha}_rot180aligned"
     cols = ["seed", "variant", "lane_offset_used", "U", "d", "heading", "offset", "wind_direction", "status", "stage", "A_excluded",
-            "A_extra_tau0", "A_extra_tau0.5", "total_time", "path_length", "path_spray", "path_cut_off",
+            "A_extra_tau0", "A_extra_tau0.5", "A_extra_tau1", "total_time", "path_length", "path_spray", "path_cut_off",
             "path_transit_other", "cut_segments", "cut_boundaries", "violations", "spray_samples", "excluded_targets",
             "n_lanes", "strip_count", "matrix_mode", "order_strategy", "plan_frame_duration",
             "time_reeval_minus_plan_frame", "A_C", "solve_seconds", "plan_hash", "reason"]
@@ -311,7 +322,8 @@ def main():
                 python=platform.python_version(), workers=a.workers, wall_seconds=round(wall, 1), job=JOB,
                 tiers={f"U={k:g}": f"d={v:g}" for k, v in TIERS.items()}, planner="caw", options=OPTIONS,
                 drift_mode="sort", buffer_expand=1.0, scene="ha_orchard 100x100 + _inject_downwind_no_spray",
-                resolutions=[0.1, 0.05], tau_s=[0.0, 0.5], tau_label="假设值（无设备数据）",
+                resolutions=[0.1, 0.05], tau_s=[0.0, 0.5, 1.0], tau_label="假设值（无设备数据）",
+                tau_note="τ=1.0 s 为假设值，由 Wang 2023 (JAE) 实测滞后 3.5–4.3 m @4–6 m/s 换算",
                 offset_impl="in-process fixed_y_lanes anchor xmin-offset (planning/ source unchanged)",
                 translation_probe=probe,
                 convergence={f'{r["variant"]}_U{r["U"]:g}_h{r["heading"]}_o{r["offset"]:g}': dict(rel=r.get("conv_rel"), abs=r.get("conv_abs")) for r in rows},
