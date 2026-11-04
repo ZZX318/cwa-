@@ -6,7 +6,7 @@ from pathlib import Path
 from scene import decode, encode, generate, load, save
 from scene.random_map import GENERATOR_VERSION, build
 from scene.schema import SceneError
-from scene.shapes import rectangle_overlaps_polygon
+from scene.shapes import in_polygon, rectangle_overlaps_polygon
 from scene.validation import report
 from random_scene import generate_with_report
 
@@ -132,7 +132,9 @@ def run() -> int:
             scene, result = build("random_obstacles_zones", 3, params)
             extent = scene["extent"]
             plot = scene["plot"]
-            assert scene["obstacles"] and scene["no_fly_zones"] and scene["no_spray_zones"]
+            assert scene["no_fly_zones"] and scene["no_spray_zones"]
+            if not params.get("allow_inside_plot"):
+                assert scene["obstacles"]
             for obstacle in scene["obstacles"]:
                 assert all(
                     extent["min"][i] <= obstacle["min"][i] and obstacle["max"][i] <= extent["max"][i]
@@ -159,6 +161,29 @@ def run() -> int:
                     )
 
     check("随机障碍/区域在范围内且不覆盖起降点", decorations)
+
+    def inside_plot_zone_centroids():
+        params = {
+            "allow_inside_plot": True,
+            "obstacle_count": 0,
+            "no_fly_count": 1,
+            "no_spray_count": 1,
+        }
+        scene, _ = build("random_obstacles_zones", 11, params)
+        plot = scene["plot"]
+        zones = scene["no_fly_zones"] + scene["no_spray_zones"]
+        assert zones
+        for zone in zones:
+            xs = [v[0] for v in zone["footprint"]["vertices"]]
+            ys = [v[1] for v in zone["footprint"]["vertices"]]
+            cx = (min(xs) + max(xs)) / 2.0
+            cy = (min(ys) + max(ys)) / 2.0
+            assert in_polygon([cx, cy], plot), (zone["id"], cx, cy, plot)
+        # 同 seed 可复现：质心坐标字节级稳定
+        again, _ = build("random_obstacles_zones", 11, params)
+        assert encode(again) == encode(scene)
+
+    check("allow_inside_plot=True 时禁飞/禁喷质心在地块内且可复现", inside_plot_zone_centroids)
 
     def reachability_failure():
         params = dict(

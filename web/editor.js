@@ -1310,6 +1310,38 @@
   }
 
   // --------------------------------------------------------------- random panel
+  function defaultRandomParams(style) {
+    if (style === 'random_obstacles_zones') {
+      return {
+        allow_inside_plot: true,
+        obstacle_count: 0,
+        no_fly_count: 1,
+        no_spray_count: 1
+      };
+    }
+    return {};
+  }
+
+  function syncInsideCheckboxFromParams(params) {
+    const box = $('editor-random-inside');
+    if (!box) return;
+    box.checked = !!(params && params.allow_inside_plot);
+  }
+
+  function applyInsideCheckboxToParams(params) {
+    const box = $('editor-random-inside');
+    if (!box) return params;
+    params = Object.assign({}, params);
+    params.allow_inside_plot = !!box.checked;
+    return params;
+  }
+
+  function writeRandomParams(params) {
+    const paramsInput = $('editor-random-params');
+    if (paramsInput) paramsInput.value = JSON.stringify(params, null, 2);
+    syncInsideCheckboxFromParams(params);
+  }
+
   function randomParams() {
     const text = ($('editor-random-params').value || '{}').trim() || '{}';
     const params = JSON.parse(text);
@@ -1358,9 +1390,8 @@
       setStatus('同 seed 重生成需要填写 seed', 'error');
       return;
     }
-    if (kind === 'new') {
-      seed = Math.floor(Math.random() * 900000000) + 1;
-    } else if (seedInput.value.trim() === '' && kind === 'generate') {
+    // 生成 / 只换 seed：总是新 seed；同 seed 重生成：复用输入框（可复现）。
+    if (kind === 'new' || kind === 'generate') {
       seed = Math.floor(Math.random() * 900000000) + 1;
     } else {
       seed = Number(seedInput.value);
@@ -1371,7 +1402,9 @@
     }
     let params;
     try {
-      params = randomParams();
+      params = applyInsideCheckboxToParams(randomParams());
+      // 把勾选结果写回 JSON，避免面板与请求不一致
+      writeRandomParams(params);
     } catch (error) {
       setStatus('随机参数无效：' + error.message, 'error');
       return;
@@ -1577,6 +1610,7 @@
       </select></label>
       <label class="field">seed<input id="editor-random-seed" type="number" step="1" value="1"></label>
       <label><input id="editor-random-reachable" type="checkbox">要求固定条带规划可达</label>
+      <label><input id="editor-random-inside" type="checkbox">禁飞/禁喷允许进地块</label>
       <label>参数 JSON<textarea id="editor-random-params">{}</textarea></label>
       <div class="files">
         <button type="button" id="editor-random-generate">生成随机场景</button>
@@ -1584,7 +1618,7 @@
         <button type="button" id="editor-random-new">只换 seed</button>
       </div>
       <label><input id="editor-random-lock" type="checkbox">锁定随机结果</label>
-      <p id="editor-random-info">同 seed + 同版本 + 同参数可复现；升级生成器版本后不保证一致。</p>
+      <p id="editor-random-info">生成=新 seed；同 seed 重生成=可复现；随机障碍与区域默认允许地块内禁飞/禁喷（默认无随机障碍）。</p>
       <details id="editor-json">
         <summary>JSON 双向同步</summary>
         <p>障碍/禁飞/禁喷文本框在 01 面板。画布提交后会同步；修改后点击“应用附加对象”。</p>
@@ -1600,10 +1634,27 @@
       host().redraw();
     };
     $('editor-random-style').onchange = () => {
-      $('editor-random-params').value = '{}';
-      $('editor-random-info').textContent =
-        '样式已切换：参数重置为 {}。需要该样式参数时填写 JSON，例如 {"rows":4,"trees_per_row":6}。';
+      const style = $('editor-random-style').value;
+      const defaults = defaultRandomParams(style);
+      writeRandomParams(defaults);
+      if (style === 'random_obstacles_zones') {
+        $('editor-random-info').textContent =
+          '样式已切换：随机障碍与区域。生成=新 seed；同 seed 重生成=可复现；默认允许地块内禁飞/禁喷，obstacle_count=0。';
+      } else {
+        $('editor-random-info').textContent =
+          '样式已切换：参数已重置。生成=新 seed；同 seed 重生成=可复现。需要该样式参数时填写 JSON，例如 {"rows":4,"trees_per_row":6}。';
+      }
     };
+    const insideBox = $('editor-random-inside');
+    if (insideBox) {
+      insideBox.onchange = () => {
+        try {
+          writeRandomParams(applyInsideCheckboxToParams(randomParams()));
+        } catch (error) {
+          setStatus('随机参数无效：' + error.message, 'error');
+        }
+      };
+    }
     $('editor-random-generate').onclick = () => runRandom('generate');
     $('editor-random-same').onclick = () => runRandom('same');
     $('editor-random-new').onclick = () => runRandom('new');

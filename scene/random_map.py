@@ -19,7 +19,9 @@ from .presets import PRESETS, preset_names
 from .schema import DEFAULT, VERSION, Scene, SceneError
 from .shapes import (
     boxes_overlap,
+    in_polygon,
     point_in_box,
+    polygon_bounds,
     quantize,
     rectangle_footprint,
     rectangle_overlaps_polygon,
@@ -691,6 +693,35 @@ def _decorate(
         return uid
 
     def sample_center(size_x: float, size_y: float):
+        # allow_inside_plot=True：中心优先/要求采在地块内（边可贴边）。
+        # False：仍在整幅 extent 外环采样，由调用方拒绝与地块重叠的足迹。
+        if allow_inside:
+            bounds = polygon_bounds(plot)
+            span_x = bounds["max"][0] - bounds["min"][0]
+            span_y = bounds["max"][1] - bounds["min"][1]
+            if span_x <= 0 or span_y <= 0:
+                raise SceneError("地块范围无效，无法在地块内放置装饰对象", field="allow_inside_plot")
+            # 半尺寸内缩，尽量让足迹留在地块内/附近；空间不够则退回整块 AABB。
+            margin_x = min(size_x / 2.0, span_x * 0.25)
+            margin_y = min(size_y / 2.0, span_y * 0.25)
+            x_low = bounds["min"][0] + margin_x
+            x_high = bounds["max"][0] - margin_x
+            y_low = bounds["min"][1] + margin_y
+            y_high = bounds["max"][1] - margin_y
+            if x_low >= x_high:
+                x_low, x_high = bounds["min"][0], bounds["max"][0]
+            if y_low >= y_high:
+                y_low, y_high = bounds["min"][1], bounds["max"][1]
+            for _ in range(40):
+                cx = rng.uniform(x_low, x_high)
+                cy = rng.uniform(y_low, y_high)
+                if in_polygon([cx, cy], plot):
+                    return cx, cy
+            vs = plot["vertices"]
+            return (
+                sum(v[0] for v in vs) / len(vs),
+                sum(v[1] for v in vs) / len(vs),
+            )
         x_low = extent["min"][0] + size_x / 2.0
         x_high = extent["max"][0] - size_x / 2.0
         y_low = extent["min"][1] + size_y / 2.0
@@ -702,51 +733,85 @@ def _decorate(
     def footprint_overlaps_plot(low, high) -> bool:
         return rectangle_overlaps_polygon(low, high, plot)
 
-    # Obstacles from the preset library.
-    presets = preset_names()
-    for _ in range(p["obstacle_count"]):
-        preset = presets[rng.randrange(len(presets))]
-        base_x, base_y, _base_z = PRESETS[preset]["size"]
-        target_long = rng.uniform(*p["obstacle_size_range"])
-        scale = target_long / max(base_x, base_y)
-        size_x = quantize(base_x * scale)
-        size_y = quantize(base_y * scale)
-        size_z = quantize(rng.uniform(*p["obstacle_height_range"]))
-        placed = False
-        for _ in range(200):
-            attempts += 1
-            cx, cy = sample_center(size_x, size_y)
-            low = [quantize(cx - size_x / 2.0), quantize(cy - size_y / 2.0)]
-            high = [quantize(cx + size_x / 2.0), quantize(cy + size_y / 2.0)]
-            box = dict(
-                id=next_id("obstacle"),
-                kind="box",
-                min=[low[0], low[1], ground],
-                max=[high[0], high[1], quantize(ground + size_z)],
-                preset=preset,
-            )
-            used_ids.discard(box["id"])
-            if not allow_inside and footprint_overlaps_plot(low, high):
-                continue
-            if _launch_box_hits(scene, box):
-                continue
-            if any(boxes_overlap(box, other) for other in occupied_boxes):
-                continue
-            if allow_inside and footprint_overlaps_plot(low, high):
-                inside_plot += 1
-            box["id"] = next_id("obstacle")
-            scene["obstacles"].append(box)
-            occupied_boxes.append(box)
-            placed = True
-            break
-        if not placed:
-            raise SceneError(
-                f"第 {len(scene['obstacles']) + 1} 个随机障碍在 200 次采样内无法放置；请减少数量、增大 reserve 或允许地块内放置",
-                field="obstacle_count",
-            )
+    def place_obstacles() -> None:
+        nonlocal attempts, inside_plot
+        presets = preset_names()
+        for _ in range(p["obstacle_count"]):
+            preset = presets[rng.randrange(len(presets))]
+            base_x, base_y, _base_z = PRESETS[preset]["size"]
+            target_long = rng.uniform(*p["obstacle_size_range"])
+            scale = target_long / max(base_x, base_y)
+            size_x = quantize(base_x * scale)
+            size_y = quantize(base_y * scale)
+            size_z = quantize(rng.uniform(*p["obstacle_height_range"]))
+            placed = False
+            for _ in range(200):
+                attempts += 1
+                cx, cy = sample_center(size_x, size_y)
+                low = [quantize(cx - size_x / 2.0), quantize(cy - size_y / 2.0)]
+                high = [quantize(cx + size_x / 2.0), quantize(cy + size_y / 2.0)]
+                box = dict(
+                    id=next_id("obstacle"),
+                    kind="box",
+                    min=[low[0], low[1], ground],
+                    max=[high[0], high[1], quantize(ground + size_z)],
+                    preset=preset,
+                )
+                used_ids.discard(box["id"])
+                if not allow_inside and footprint_overlaps_plot(low, high):
+                    continue
+                if _launch_box_hits(scene, box):
+                    continue
+                if any(boxes_overlap(box, other) for other in occupied_boxes):
+                    continue
+                if allow_inside and footprint_overlaps_plot(low, high):
+                    inside_plot += 1
+                box["id"] = next_id("obstacle")
+                scene["obstacles"].append(box)
+                occupied_boxes.append(box)
+                placed = True
+                break
+            if not placed and allow_inside:
+                # 内地放不下时退到外环（与 allow_inside=False 相同的拒绝进地块规则）
+                for _ in range(200):
+                    attempts += 1
+                    x_low = extent["min"][0] + size_x / 2.0
+                    x_high = extent["max"][0] - size_x / 2.0
+                    y_low = extent["min"][1] + size_y / 2.0
+                    y_high = extent["max"][1] - size_y / 2.0
+                    if x_low >= x_high or y_low >= y_high:
+                        break
+                    cx, cy = rng.uniform(x_low, x_high), rng.uniform(y_low, y_high)
+                    low = [quantize(cx - size_x / 2.0), quantize(cy - size_y / 2.0)]
+                    high = [quantize(cx + size_x / 2.0), quantize(cy + size_y / 2.0)]
+                    box = dict(
+                        id=next_id("obstacle"),
+                        kind="box",
+                        min=[low[0], low[1], ground],
+                        max=[high[0], high[1], quantize(ground + size_z)],
+                        preset=preset,
+                    )
+                    used_ids.discard(box["id"])
+                    if footprint_overlaps_plot(low, high):
+                        continue
+                    if _launch_box_hits(scene, box):
+                        continue
+                    if any(boxes_overlap(box, other) for other in occupied_boxes):
+                        continue
+                    box["id"] = next_id("obstacle")
+                    scene["obstacles"].append(box)
+                    occupied_boxes.append(box)
+                    placed = True
+                    break
+            if not placed:
+                raise SceneError(
+                    f"第 {len(scene['obstacles']) + 1} 个随机障碍在 200 次采样内无法放置；请减少数量、增大 reserve 或允许地块内放置",
+                    field="obstacle_count",
+                )
 
     def place_zone(key: str, count: int, prefix: str, offsets: List[float]) -> None:
         nonlocal attempts, inside_plot
+        target_ids = {id(t) for t in target_boxes}
         for _ in range(count):
             size_x = quantize(rng.uniform(*p["zone_size_range"]))
             size_y = quantize(rng.uniform(*p["zone_size_range"]))
@@ -766,10 +831,17 @@ def _decorate(
                 used_ids.discard(zone["id"])
                 if not allow_inside and footprint_overlaps_plot(low, high):
                     continue
+                if allow_inside and not in_polygon([cx, cy], plot):
+                    continue
                 if _launch_xy_hits(scene, low, high):
                     continue
                 zone_box = _zone_box(zone)
-                if any(boxes_overlap(zone_box, other) for other in occupied_boxes):
+                blockers = (
+                    [b for b in occupied_boxes if id(b) not in target_ids]
+                    if allow_inside
+                    else occupied_boxes
+                )
+                if any(boxes_overlap(zone_box, other) for other in blockers):
                     continue
                 if allow_inside and footprint_overlaps_plot(low, high):
                     inside_plot += 1
@@ -784,8 +856,17 @@ def _decorate(
                     field="no_fly_count" if key == "no_fly_zones" else "no_spray_count",
                 )
 
-    place_zone("no_fly_zones", p["no_fly_count"], "no-fly", p["no_fly_z_offset_range"])
-    place_zone("no_spray_zones", p["no_spray_count"], "no-spray", p["no_spray_z_offset_range"])
+    # False：先障碍后禁区，外环采样路径与改前一致。
+    # True：先禁飞/禁喷占内地（不与树冠互斥），障碍可退外环。
+    if allow_inside:
+        place_zone("no_fly_zones", p["no_fly_count"], "no-fly", p["no_fly_z_offset_range"])
+        place_zone("no_spray_zones", p["no_spray_count"], "no-spray", p["no_spray_z_offset_range"])
+        place_obstacles()
+    else:
+        place_obstacles()
+        place_zone("no_fly_zones", p["no_fly_count"], "no-fly", p["no_fly_z_offset_range"])
+        place_zone("no_spray_zones", p["no_spray_count"], "no-spray", p["no_spray_z_offset_range"])
+
     return dict(placement_attempts=attempts, inside_plot=inside_plot)
 
 
