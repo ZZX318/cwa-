@@ -86,3 +86,6 @@ def drift_cost_buffer(config) -> float:
 209:        # 无风 + 默认 buffer_expand=0 → 有效缓冲 0，fixed-y 应成功
 240:            "buffer_expand": 1.0,
 307:    check("buffer_expand=0不外扩", expand_off)
+
+## 补注（技术负责人 2026-11-04）
+13.53/73.53：P1 验收时在群里口头报的单场景 sort / sort_drift order_cost，未存档、已作废、不入稿（已被 N=15 主消融取代，且代理项为常数）。
