@@ -17,7 +17,7 @@ from planning import (
     options_fingerprint,
 )
 from planning.order import solve_order
-from planning.planner import fixed_y_lanes
+from planning.planner import fixed_y_lanes, lane_parts, zone_exclusions
 from planning.routing3d import route3d
 from scene import validate_scene
 from scene.launch import resolve
@@ -351,9 +351,17 @@ class CawAStarPlanner(Planner):
             add([home[0], home[1], height], "takeoff")
             for index in order:
                 lane = lanes[index]
-                transit_leg(current, lane["start"])
-                add(lane["start"], "transit")
-                add(lane["end"], "spray", lane["target_ids"])
+                parts = lane_parts(scene, lane, c)
+                if not parts:
+                    continue
+                transit_leg(current, parts[0]["start"])
+                if list(current) != list(parts[0]["start"]):
+                    add(parts[0]["start"], "transit")
+                for part in parts:
+                    if part["type"] == "detour":
+                        transit_leg(current, part["end"])
+                    else:
+                        add(part["end"], part["type"], part["target_ids"])
             transit_leg(current, [end_point[0], end_point[1], height])
             add([end_point[0], end_point[1], height], "transit")
             add(end_point, "landing")
@@ -413,6 +421,9 @@ class CawAStarPlanner(Planner):
                     start_point_id=resolved["start_id"],
                     end_point_id=resolved["end_id"],
                 )
+            excluded = zone_exclusions(scene, segments)
+            if excluded:
+                plan["excluded_targets"] = excluded
             try:
                 check(scene, plan)
             except (ValueError, KeyError, TypeError) as error:
@@ -628,9 +639,17 @@ def _plan_subset(
     add([start[0], start[1], height], "takeoff")
     for index in order_result["order"]:
         lane = lanes[index]
-        leg(current, lane["start"])
-        add(lane["start"], "transit")
-        add(lane["end"], "spray", lane["target_ids"])
+        parts = lane_parts(scene, lane, c)
+        if not parts:
+            continue
+        leg(current, parts[0]["start"])
+        if list(current) != list(parts[0]["start"]):
+            add(parts[0]["start"], "transit")
+        for part in parts:
+            if part["type"] == "detour":
+                leg(current, part["end"])
+            else:
+                add(part["end"], part["type"], part["target_ids"])
     leg(current, [end[0], end[1], height])
     add([end[0], end[1], height], "transit")
     add(end, "landing")
@@ -683,6 +702,9 @@ def _plan_subset(
     all_indices = list(range(len(layout["lanes"])))
     if sorted(indices) != all_indices:
         plan["allow_partial"] = True
+    excluded = zone_exclusions(scene, segments)
+    if excluded:
+        plan["excluded_targets"] = excluded
     try:
         check(scene, plan)
     except (ValueError, KeyError, TypeError) as error:

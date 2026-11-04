@@ -93,6 +93,7 @@ def main() -> int:
     p.add_argument("--evaluate-policy", type=Path)
     p.add_argument("--experiment", action="store_true")
     p.add_argument("--seeds", default="0")
+    p.add_argument("--scene-style", help="--experiment 时每个 seed 用该随机样式生成独立场景")
     p.add_argument("--methods", default="fixed-y,naive,multi,rl")
     p.add_argument("--save-results", type=Path)
     p.add_argument("--transition-experiment", action="store_true")
@@ -248,7 +249,9 @@ def main() -> int:
             return 2
         job = job_config(a.job, a.transition_mode) if a.job else {}
         try:
-            result=run_experiment(tuple(int(x) for x in a.seeds.split(',')),tuple(x for x in a.methods.split(',') if x), (a.uavs,), config=job)
+            seeds = tuple(range(int(a.seeds.split('-')[0]), int(a.seeds.split('-')[1]) + 1)) if '-' in a.seeds else tuple(int(x) for x in a.seeds.split(','))
+            params = json.loads(a.random_params.read_text(encoding="utf8")) if a.random_params else None
+            result=run_experiment(seeds,tuple(x for x in a.methods.split(',') if x), (a.uavs,), config=job, scene_style=a.scene_style, scene_params=params, require_reachable=a.require_reachable)
         except (ValueError, TypeError, KeyError, OSError) as error:
             print(f"失败：{error}")
             return 2

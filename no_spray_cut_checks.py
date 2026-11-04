@@ -94,16 +94,47 @@ def run() -> int:
     _assert(merged_plan["status"] == "success", merged_plan["reason"])
     check(merged_scene, merged_plan)
 
-    # 4. 禁喷区完全罩住目标：规划失败且原因指向任务完整性。
+    # 4. 禁喷区完全罩住目标：规划成功，该目标记为「排除」，不进覆盖率分母；
+    #    伪造排除（目标不在任何禁区内）必须被安全检查拒绝。
     covered = copy.deepcopy(base)
     covered["no_spray_zones"] = [_zone("ns-cover", 0.5, 0.5, 4.5, 4.5)]
     covered_plan = generate_plan(covered)
-    _assert(covered_plan["status"] == "failed", "罩住目标不应成功")
+    _assert(covered_plan["status"] == "success", covered_plan["reason"])
+    excluded = covered_plan.get("excluded_targets", [])
+    _assert(excluded and all(e["reason"] == "no_spray" for e in excluded), f"排除记录错误：{excluded}")
+    check(covered, covered_plan)
+    forged = copy.deepcopy(covered_plan)
+    forged["excluded_targets"] = [dict(e, reason="no_fly") for e in excluded]
+    try:
+        check(covered, forged)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("伪造排除理由未被拒绝")
+    from execution import build as _build
+    from evaluation import build as _eval, at as _at
+
+    timeline = _build(covered, covered_plan)
+    evaluation = _eval(covered, covered_plan, timeline)
     _assert(
-        "缺少有效喷洒关联" in covered_plan["reason"],
-        f"失败原因错误：{covered_plan['reason']}",
+        sorted(evaluation["excluded_targets"]) == sorted(e["target_id"] for e in excluded),
+        "评估未记录排除目标",
     )
-    _assert(covered_plan["segments"] == [], "失败计划不得携带航段")
+    _assert(
+        not ({e["target_id"] for e in excluded} & set(_at(evaluation, timeline, timeline["duration"])["missed_targets"])),
+        "排除目标不应计入漏喷",
+    )
+
+    # 4b. 禁飞区罩住目标：条带断开并绕行，目标排除理由为 no_fly，安全检查通过。
+    no_fly = copy.deepcopy(base)
+    no_fly["no_fly_zones"] = [dict(_zone("nf-cover", 0.5, 0.5, 4.5, 4.5), z_max=base["extent"]["max"][2])]
+    no_fly_plan = generate_plan(no_fly)
+    _assert(no_fly_plan["status"] == "success", no_fly_plan["reason"])
+    _assert(
+        no_fly_plan.get("excluded_targets") and all(e["reason"] == "no_fly" for e in no_fly_plan["excluded_targets"]),
+        "禁飞排除记录错误",
+    )
+    check(no_fly, no_fly_plan)
 
     # 5. search 转场模式下切割同样成立，独立安全检查通过。
     searched = generate_plan(mid, {"transition_mode": "search"})
@@ -126,7 +157,7 @@ def run() -> int:
             _assert(math.dist(previous, seg["start"]) <= 1e-8, "航段不连续")
         previous = seg["end"]
 
-    print("通过 · 禁喷切割：无区回归/中间切割/多区合并/罩目标失败/搜索模式/反向连续")
+    print("通过 · 禁喷切割：无区回归/中间切割/多区合并/罩目标排除/禁飞绕行/伪造排除拒绝/搜索模式/反向连续")
     return 0
 
 

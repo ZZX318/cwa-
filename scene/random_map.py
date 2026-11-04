@@ -90,7 +90,7 @@ def _defaults() -> Dict[str, Dict[str, Any]]:
             ground_z=0.0,
         ),
         "random_obstacles_zones": dict(
-            base_style="regular",
+            base_style="jitter_rows",
             base_params={},
             obstacle_count=3,
             obstacle_size_range=[1.5, 4.0],

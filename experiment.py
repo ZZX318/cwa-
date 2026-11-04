@@ -174,11 +174,18 @@ def one(scene, config, method, seed, uavs):
         return row
 
 
-def run(seeds=(0,), methods=("fixed-y", "naive", "multi", "rl"), uavs=(1,), config=None, scene_config=None):
+def run(seeds=(0,), methods=("fixed-y", "naive", "multi", "rl"), uavs=(1,), config=None, scene_config=None, scene_style=None, scene_params=None, require_reachable=False):
+    """``scene_style`` set: each seed builds its own random scene (seed drives geometry)."""
     job = configuration(config or {})
     rows = []
+    scene_reports = []
     for seed in seeds:
-        scene = generate(scene_config or {})
+        if scene_style:
+            from random_scene import generate_with_report
+            scene, report = generate_with_report(scene_style, seed, scene_params, require_reachable)
+            scene_reports.append(dict(seed=seed, style=scene_style, scene_hash=fingerprint(scene), seed_used_for_scene=report.get("seed_used", seed + report.get("attempts", 1) - 1), attempts=report.get("attempts")))
+        else:
+            scene = generate(scene_config or {})
         scene_hash = fingerprint(scene)
         config_hash = config_fingerprint(job)
         for n in uavs:
@@ -237,7 +244,9 @@ def run(seeds=(0,), methods=("fixed-y", "naive", "multi", "rl"), uavs=(1,), conf
         rows=rows,
         summary=summary,
         seeds=list(seeds),
-        seed_note="确定性规划器不使用 seed；同场景不同 seed 的结果必然相同（runs=1, std=None）。rl 与未来随机多起点才使用 seed。",
+        seed_note=("scene_style 模式：每个 seed 生成独立随机场景，seed 决定场景几何；规划器本身仍是确定性的。" if scene_style else "确定性规划器不使用 seed；同场景不同 seed 的结果必然相同（runs=1, std=None）。rl 与未来随机多起点才使用 seed。"),
+        scene_style=scene_style,
+        scenes=scene_reports,
         config=job,
         config_hash=config_fingerprint(job),
     )

@@ -21,7 +21,10 @@ def build(scene, plan, timeline, resolution=0.5):
     ] != fingerprint(plan):
         raise ValueError("执行与场景/计划指纹不匹配")
     cells = []
+    excluded = sorted({e["target_id"] for e in plan.get("excluded_targets") or []})
     for target in scene["targets"]:
+        if target["id"] in excluded:
+            continue
         g = target["geometry"]
         x, y = g["center"]
         r = g["radius"]
@@ -44,6 +47,7 @@ def build(scene, plan, timeline, resolution=0.5):
         plan_hash=fingerprint(plan),
         timeline_id=timeline["execution_id"],
         cells=cells,
+        excluded_targets=excluded,
         duration=timeline["duration"],
         config=config,
     )
@@ -100,5 +104,6 @@ def at(evaluation, timeline, time):
         missed_targets=[x['target_id'] for x in target_stats if x['coverage'] < 1.0],
         repeated_targets=[x['target_id'] for x in target_stats if x['repeated'] > 0],
         total_spray_amount=spray_seconds * evaluation['config']['flow_rate'],
-        grid_note='网格近似；目标级统计按目标投影采样单元汇总',
+        excluded_targets=evaluation.get('excluded_targets', []),
+        grid_note='网格近似；目标级统计按目标投影采样单元汇总；excluded_targets（禁喷/禁飞区内）不计入覆盖率分母',
     )

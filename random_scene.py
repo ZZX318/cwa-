@@ -3,6 +3,7 @@
 Kept outside ``scene/`` so the pure scene layer never imports the planner.
 """
 
+import hashlib
 from typing import Any, Dict, Optional, Tuple
 
 from scene.random_map import build
@@ -36,6 +37,15 @@ def _reachability(scene: Scene) -> Dict[str, Any]:
     )
 
 
+def derive_seed(seed: int, attempt: int) -> int:
+    """attempt 0 uses ``seed`` itself; retries use a hash-derived seed in
+    [2**31, 2**32) so they never collide with another requested seed n+k."""
+    if attempt == 0:
+        return seed
+    digest = hashlib.sha256(f"cwa-retry:{seed}:{attempt}".encode()).digest()
+    return 2**31 + int.from_bytes(digest[:4], "big") % 2**31
+
+
 def generate_with_report(
     style: str,
     seed: int,
@@ -55,10 +65,11 @@ def generate_with_report(
     attempts = max_attempts if require_reachable else 1
     last_reason = ""
     for attempt in range(attempts):
-        used_seed = seed + attempt
+        used_seed = derive_seed(seed, attempt)
         scene, report = build(style, used_seed, params)
         report["attempts"] = attempt + 1
         report["seed_requested"] = seed
+        report["seed_used"] = used_seed
         if require_reachable or check_reachability:
             reachability = _reachability(scene)
             report["reachability"] = reachability

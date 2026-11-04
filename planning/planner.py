@@ -72,6 +72,21 @@ def fixed_y_lanes(scene: dict, raw=None) -> dict:
     return dict(lanes=lanes, strip_count=active, work_height=height, config=c)
 
 
+def lane_parts(scene: dict, lane: dict, c: dict) -> list:
+    """_split_lane without leading/trailing no-fly gaps.
+
+    An end of the lane that falls inside a no-fly buffer is simply not flown:
+    the planner enters at the first kept piece's start and leaves from the
+    last kept piece's end.  A lane fully inside no-fly returns ``[]``.
+    """
+    parts = _split_lane(scene, lane, c)
+    while parts and parts[0]["type"] == "detour":
+        parts.pop(0)
+    while parts and parts[-1]["type"] == "detour":
+        parts.pop()
+    return parts
+
+
 def _split_lane(scene: dict, lane: dict, c: dict) -> list:
     """Cut one fixed-Y spray lane where its footprint meets no-spray zones.
 
@@ -91,31 +106,38 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
     x_lo, x_hi = x - swath / 2, x + swath / 2
 
     blocked = []
-    for zone in scene["no_spray_zones"]:
-        bounds = polygon_bounds(zone["footprint"])
-        zx_lo, zy_lo = bounds["min"]
-        zx_hi, zy_hi = bounds["max"]
-        # Closed-set contact with the same 1e-9 rule as boxes_touch: tangency
-        # also cuts, since safety rejects touching footprints.
-        if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
-            gap_lo = max(lane_lo, zy_lo - _ZONE_GAP)
-            gap_hi = min(lane_hi, zy_hi + _ZONE_GAP)
-            if gap_hi - gap_lo > 1e-9:
-                blocked.append((gap_lo, gap_hi))
+    # 禁喷：只关喷头，飞机照常沿条带飞越（gap 类型 transit）。
+    # 禁飞：既不能喷也不能进入，条带在区外留出净空后断开，断口由规划器绕行（gap 类型 detour）。
+    for key, margin, gap_kind in (
+        ("no_spray_zones", _ZONE_GAP, "transit"),
+        ("no_fly_zones", c["clearance"] + _ZONE_GAP, "detour"),
+    ):
+        for zone in scene.get(key, []):
+            bounds = polygon_bounds(zone["footprint"])
+            zx_lo, zy_lo = bounds["min"]
+            zx_hi, zy_hi = bounds["max"]
+            # Closed-set contact with the same 1e-9 rule as boxes_touch: tangency
+            # also cuts, since safety rejects touching footprints.
+            if x_lo <= zx_hi + 1e-9 and zx_lo <= x_hi + 1e-9:
+                gap_lo = max(lane_lo, zy_lo - margin)
+                gap_hi = min(lane_hi, zy_hi + margin)
+                if gap_hi - gap_lo > 1e-9:
+                    blocked.append((gap_lo, gap_hi, gap_kind))
     blocked.sort()
     merged = []
-    for a, b in blocked:
+    for a, b, kind in blocked:
         if merged and a <= merged[-1][1]:
-            merged[-1] = (merged[-1][0], max(merged[-1][1], b))
+            prev = merged[-1]
+            merged[-1] = (prev[0], max(prev[1], b), "detour" if "detour" in (prev[2], kind) else "transit")
         else:
-            merged.append((a, b))
+            merged.append((a, b, kind))
 
     pieces = []
     cursor = lane_lo
-    for a, b in merged:
+    for a, b, kind in merged:
         if a - cursor > 1e-9:
             pieces.append((cursor, a, True))
-        pieces.append((a, b, False))
+        pieces.append((a, b, kind))
         cursor = b
     if lane_hi - cursor > 1e-9:
         pieces.append((cursor, lane_hi, True))
@@ -138,8 +160,11 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
 
     segments = []
     for lo, hi, sprayable in pieces:
+        if sprayable == "detour":
+            segments.append(make_segment(lo, hi, "detour", []))
+            continue
         ids = []
-        if sprayable:
+        if sprayable is True:
             ids = [
                 tid
                 for tid in lane["target_ids"]
@@ -149,6 +174,37 @@ def _split_lane(scene: dict, lane: dict, c: dict) -> list:
             make_segment(lo, hi, "spray" if ids else "transit", ids)
         )
     return segments
+
+
+def zone_exclusions(scene: dict, segments: list) -> list:
+    """Targets left unsprayed *because* they sit in a no-spray (or no-fly) zone.
+
+    A target counts as excluded only when no spray segment is associated with
+    it and its XY bounding box touches at least one zone AABB (same
+    conservative contract as ``planning.safety``). Anything else that is
+    missing stays a hard failure.
+    """
+    from .footprint import boxes_touch
+
+    associated = {tid for seg in segments if seg.get("spray") for tid in seg["target_ids"]}
+    out = []
+    for target in scene["targets"]:
+        if target["id"] in associated:
+            continue
+        g = target["geometry"]
+        x, y = g["center"]
+        r = g["radius"]
+        box = ([x - r, y - r], [x + r, y + r])
+        for key, reason in (("no_spray_zones", "no_spray"), ("no_fly_zones", "no_fly")):
+            zones = [
+                z["id"]
+                for z in scene[key]
+                if boxes_touch(box, (polygon_bounds(z["footprint"])["min"], polygon_bounds(z["footprint"])["max"]))
+            ]
+            if zones:
+                out.append(dict(target_id=target["id"], reason=reason, zone_ids=zones))
+                break
+    return out
 
 
 def generate_plan(scene: dict, raw=None, uav=1) -> dict:
@@ -200,14 +256,59 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
                 )
             current = end[:]
 
+        detours = 0
+
+        def detour(goal):
+            nonlocal detours
+            from .routing3d import route3d
+
+            result = route3d(scene, list(current), list(goal), c)
+            if result["status"] != "success":
+                raise ValueError(
+                    f"禁飞区绕行失败 {current} → {goal}：{result.get('reason', '未知原因')}"
+                )
+            detours += 1
+            for point in result["path"][1:]:
+                add(list(point), "transit")
+            if list(current) != list(goal):
+                add(list(goal), "transit")
+
+        has_no_fly = bool(scene.get("no_fly_zones"))
         add([start[0], start[1], height], "takeoff")
         for lane in lanes:
-            add(lane["start"], "transit")
-            for part in _split_lane(scene, lane, c):
-                add(part["end"], part["type"], part["target_ids"])
-        add([end_point[0], end_point[1], height], "transit")
+            parts = lane_parts(scene, lane, c)
+            if not parts:
+                continue
+            entry = parts[0]["start"]
+            if has_no_fly and list(current) != list(entry):
+                detour(entry)
+            else:
+                add(entry, "transit")
+            for part in parts:
+                if part["type"] == "detour":
+                    detour(part["end"])
+                else:
+                    add(part["end"], part["type"], part["target_ids"])
+        home_air = [end_point[0], end_point[1], height]
+        if has_no_fly and list(current) != home_air:
+            detour(home_air)
+        if detours and plan["version"] != "1.2":
+            plan.update(
+                version="1.2",
+                planner="fixed-y-boustrophedon",
+                objective="time",
+                planner_options={},
+                planner_options_hash=options_fingerprint({}),
+            )
+        if detours:
+            plan["no_fly_detours"] = detours
+        if list(current) != home_air:
+            add(home_air, "transit")
         add(end_point, "landing")
         plan.update(status="success", strip_count=layout["strip_count"], work_height=height)
+        excluded = zone_exclusions(scene, plan["segments"])
+        if excluded:
+            plan["excluded_targets"] = excluded
         if c["transition_mode"] == "search":
             from routing import route
 
