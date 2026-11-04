@@ -1,0 +1,277 @@
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 0, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.88, "fully_cut_lane_x": [[2.88, [0.88, 4.88]], [6.88, [4.88, 8.88]], [10.88, [8.88, 12.88]]], "n_geom_missing": 11, "same_as_safety": true}
+[
+ {
+  "seed": 0,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "failed",
+  "stage": "safety",
+  "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-03', 'target-tree-02-05', 'target-tree-02-06', 'target-tree-02-08', 'target-tree-02-09', 'target-tree-02-10', 'target-tree-02-11', 'target-tree-02-12', 'target-tree-02-14', 'target-tree-02-15']（不在任何禁喷/禁飞区排除范围内）",
+  "geom_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-05",
+   "target-tree-02-06",
+   "target-tree-02-08",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-14",
+   "target-tree-02-15"
+  ],
+  "safety_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-05",
+   "target-tree-02-06",
+   "target-tree-02-08",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-14",
+   "target-tree-02-15"
+  ],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 0.88,
+  "fully_cut_lane_x": [
+   [
+    2.88,
+    [
+     0.88,
+     4.88
+    ]
+   ],
+   [
+    6.88,
+    [
+     4.88,
+     8.88
+    ]
+   ],
+   [
+    10.88,
+    [
+     8.88,
+     12.88
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [
+   {
+    "target": "target-tree-02-02",
+    "center": [
+     11.061,
+     8.832
+    ],
+    "radius": 1.314,
+    "crown_x": [
+     9.747,
+     12.375
+    ],
+    "lanes": [
+     {
+      "lane": 19,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       7.518,
+       10.146
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         7.518,
+         10.146
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.061,
+      "y": [
+       7.518,
+       10.146
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-03",
+    "center": [
+     11.09,
+     15.125
+    ],
+    "radius": 1.486,
+    "crown_x": [
+     9.604,
+     12.576
+    ],
+    "lanes": [
+     {
+      "lane": 20,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       13.639,
+       16.611
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         13.639,
+         16.611
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.09,
+      "y": [
+       13.639,
+       16.611
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-05",
+    "center": [
+     11.319,
+     27.338
+    ],
+    "radius": 1.524,
+    "crown_x": [
+     9.795,
+     12.843
+    ],
+    "lanes": [
+     {
+      "lane": 22,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       25.814,
+       28.862
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         25.814,
+         28.862
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.319,
+      "y": [
+       25.814,
+       28.862
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-15",
+    "center": [
+     11.061,
+     86.913
+    ],
+    "radius": 1.422,
+    "crown_x": [
+     9.639,
+     12.483
+    ],
+    "lanes": [
+     {
+      "lane": 32,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       85.491,
+       88.335
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         85.491,
+         88.335
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.061,
+      "y": [
+       85.491,
+       88.335
+      ]
+     }
+    ],
+    "classify_entry": null
+   }
+  ]
+ }
+]
+PLANDONE 0

@@ -1,0 +1,1278 @@
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 0, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.88, "fully_cut_lane_x": [[2.88, [0.88, 4.88]], [6.88, [4.88, 8.88]], [10.88, [8.88, 12.88]]], "n_geom_missing": 11, "same_as_safety": true, "only_tree_centred": false}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 1, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.857, "fully_cut_lane_x": [[2.857, [0.857, 4.857]], [6.857, [4.857, 8.857]], [10.857, [8.857, 12.857]]], "n_geom_missing": 10, "same_as_safety": true, "only_tree_centred": false}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 2, "offset": 0.0, "status": "success", "lane_anchor_xmin": 1.15, "fully_cut_lane_x": [[3.15, [1.15, 5.15]], [7.15, [5.15, 9.15]]], "n_geom_missing": 0, "same_as_safety": true, "only_tree_centred": true}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 3, "offset": 0.0, "status": "success", "lane_anchor_xmin": 1.01, "fully_cut_lane_x": [[3.01, [1.01, 5.01]], [7.01, [5.01, 9.01]]], "n_geom_missing": 0, "same_as_safety": true, "only_tree_centred": true}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 4, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.902, "fully_cut_lane_x": [[2.902, [0.902, 4.902]], [6.902, [4.902, 8.902]], [10.902, [8.902, 12.902]]], "n_geom_missing": 10, "same_as_safety": true, "only_tree_centred": false}
+[
+ {
+  "seed": 0,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "failed",
+  "stage": "safety",
+  "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-03', 'target-tree-02-05', 'target-tree-02-06', 'target-tree-02-08', 'target-tree-02-09', 'target-tree-02-10', 'target-tree-02-11', 'target-tree-02-12', 'target-tree-02-14', 'target-tree-02-15']（不在任何禁喷/禁飞区排除范围内）",
+  "reason_source": "results/a_trial_extra_sweep0_h0_7e7318e_w4.csv",
+  "geom_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-05",
+   "target-tree-02-06",
+   "target-tree-02-08",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-14",
+   "target-tree-02-15"
+  ],
+  "safety_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-05",
+   "target-tree-02-06",
+   "target-tree-02-08",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-14",
+   "target-tree-02-15"
+  ],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 0.88,
+  "fully_cut_lane_x": [
+   [
+    2.88,
+    [
+     0.88,
+     4.88
+    ]
+   ],
+   [
+    6.88,
+    [
+     4.88,
+     8.88
+    ]
+   ],
+   [
+    10.88,
+    [
+     8.88,
+     12.88
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [
+   {
+    "target": "target-tree-02-02",
+    "center": [
+     11.061,
+     8.832
+    ],
+    "radius": 1.314,
+    "crown_x": [
+     9.747,
+     12.375
+    ],
+    "lanes": [
+     {
+      "lane": 19,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       7.518,
+       10.146
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         7.518,
+         10.146
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.061,
+      "y": [
+       7.518,
+       10.146
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-03",
+    "center": [
+     11.09,
+     15.125
+    ],
+    "radius": 1.486,
+    "crown_x": [
+     9.604,
+     12.576
+    ],
+    "lanes": [
+     {
+      "lane": 20,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       13.639,
+       16.611
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         13.639,
+         16.611
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.09,
+      "y": [
+       13.639,
+       16.611
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-05",
+    "center": [
+     11.319,
+     27.338
+    ],
+    "radius": 1.524,
+    "crown_x": [
+     9.795,
+     12.843
+    ],
+    "lanes": [
+     {
+      "lane": 22,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       25.814,
+       28.862
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         25.814,
+         28.862
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.319,
+      "y": [
+       25.814,
+       28.862
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-15",
+    "center": [
+     11.061,
+     86.913
+    ],
+    "radius": 1.422,
+    "crown_x": [
+     9.639,
+     12.483
+    ],
+    "lanes": [
+     {
+      "lane": 32,
+      "x": 10.88,
+      "x_band": [
+       8.88,
+       12.88
+      ],
+      "lane_y": [
+       85.491,
+       88.335
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         85.491,
+         88.335
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.061,
+      "y": [
+       85.491,
+       88.335
+      ]
+     }
+    ],
+    "classify_entry": null
+   }
+  ],
+  "missing_classify_basis": [
+   {
+    "target": "target-tree-02-02",
+    "cx": 11.061,
+    "crown_xmax": 12.375,
+    "tree_centred_band": [
+     9.061,
+     13.061
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-03",
+    "cx": 11.09,
+    "crown_xmax": 12.576,
+    "tree_centred_band": [
+     9.09,
+     13.09
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-05",
+    "cx": 11.319,
+    "crown_xmax": 12.843,
+    "tree_centred_band": [
+     9.319,
+     13.319
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-06",
+    "cx": 11.164,
+    "crown_xmax": 12.851,
+    "tree_centred_band": [
+     9.164,
+     13.164
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-08",
+    "cx": 10.96,
+    "crown_xmax": 12.758,
+    "tree_centred_band": [
+     8.96,
+     12.96
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-09",
+    "cx": 11.235,
+    "crown_xmax": 12.803,
+    "tree_centred_band": [
+     9.235,
+     13.235
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-10",
+    "cx": 11.104,
+    "crown_xmax": 12.45,
+    "tree_centred_band": [
+     9.104,
+     13.104
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-11",
+    "cx": 10.694,
+    "crown_xmax": 12.371,
+    "tree_centred_band": [
+     8.694,
+     12.694
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-12",
+    "cx": 11.253,
+    "crown_xmax": 12.541,
+    "tree_centred_band": [
+     9.253,
+     13.253
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-14",
+    "cx": 11.144,
+    "crown_xmax": 12.725,
+    "tree_centred_band": [
+     9.144,
+     13.144
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-15",
+    "cx": 11.061,
+    "crown_xmax": 12.483,
+    "tree_centred_band": [
+     9.061,
+     13.061
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   }
+  ],
+  "all_missing_eligible_only_via_tree_centred_candidate": false
+ },
+ {
+  "seed": 1,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "failed",
+  "stage": "safety",
+  "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-04', 'target-tree-02-06', 'target-tree-02-07', 'target-tree-02-09', 'target-tree-02-10', 'target-tree-02-11', 'target-tree-02-12', 'target-tree-02-13', 'target-tree-02-15']（不在任何禁喷/禁飞区排除范围内）",
+  "reason_source": "results/a_trial_extra_sweep0_h0_7e7318e_w4.csv",
+  "geom_missing": [
+   "target-tree-02-02",
+   "target-tree-02-04",
+   "target-tree-02-06",
+   "target-tree-02-07",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-13",
+   "target-tree-02-15"
+  ],
+  "safety_missing": [
+   "target-tree-02-02",
+   "target-tree-02-04",
+   "target-tree-02-06",
+   "target-tree-02-07",
+   "target-tree-02-09",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-13",
+   "target-tree-02-15"
+  ],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 0.857,
+  "fully_cut_lane_x": [
+   [
+    2.857,
+    [
+     0.857,
+     4.857
+    ]
+   ],
+   [
+    6.857,
+    [
+     4.857,
+     8.857
+    ]
+   ],
+   [
+    10.857,
+    [
+     8.857,
+     12.857
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [
+   {
+    "target": "target-tree-02-02",
+    "center": [
+     11.017,
+     8.915
+    ],
+    "radius": 1.494,
+    "crown_x": [
+     9.523,
+     12.511
+    ],
+    "lanes": [
+     {
+      "lane": 19,
+      "x": 10.857,
+      "x_band": [
+       8.857,
+       12.857
+      ],
+      "lane_y": [
+       7.421,
+       10.409
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         7.421,
+         10.409
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.017,
+      "y": [
+       7.421,
+       10.409
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-04",
+    "center": [
+     10.915,
+     20.736
+    ],
+    "radius": 1.501,
+    "crown_x": [
+     9.414,
+     12.416
+    ],
+    "lanes": [
+     {
+      "lane": 21,
+      "x": 10.857,
+      "x_band": [
+       8.857,
+       12.857
+      ],
+      "lane_y": [
+       19.235,
+       22.237
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         19.235,
+         22.237
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-06",
+    "center": [
+     11.011,
+     33.362
+    ],
+    "radius": 1.547,
+    "crown_x": [
+     9.464,
+     12.558
+    ],
+    "lanes": [
+     {
+      "lane": 23,
+      "x": 10.857,
+      "x_band": [
+       8.857,
+       12.857
+      ],
+      "lane_y": [
+       31.815,
+       34.909
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         31.815,
+         34.909
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.011,
+      "y": [
+       31.815,
+       34.909
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-15",
+    "center": [
+     10.804,
+     87.273
+    ],
+    "radius": 1.604,
+    "crown_x": [
+     9.2,
+     12.408
+    ],
+    "lanes": [
+     {
+      "lane": 32,
+      "x": 10.857,
+      "x_band": [
+       8.857,
+       12.857
+      ],
+      "lane_y": [
+       85.669,
+       88.877
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         85.669,
+         88.877
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [],
+    "classify_entry": null
+   }
+  ],
+  "missing_classify_basis": [
+   {
+    "target": "target-tree-02-02",
+    "cx": 11.017,
+    "crown_xmax": 12.511,
+    "tree_centred_band": [
+     9.017,
+     13.017
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-04",
+    "cx": 10.915,
+    "crown_xmax": 12.416,
+    "tree_centred_band": [
+     8.915,
+     12.915
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-06",
+    "cx": 11.011,
+    "crown_xmax": 12.558,
+    "tree_centred_band": [
+     9.011,
+     13.011
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-07",
+    "cx": 10.815,
+    "crown_xmax": 12.589,
+    "tree_centred_band": [
+     8.815,
+     12.815
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-09",
+    "cx": 11.247,
+    "crown_xmax": 12.784,
+    "tree_centred_band": [
+     9.247,
+     13.247
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-10",
+    "cx": 10.645,
+    "crown_xmax": 12.187,
+    "tree_centred_band": [
+     8.645,
+     12.645
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-11",
+    "cx": 11.004,
+    "crown_xmax": 12.418,
+    "tree_centred_band": [
+     9.004,
+     13.004
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-12",
+    "cx": 11.031,
+    "crown_xmax": 12.598,
+    "tree_centred_band": [
+     9.031,
+     13.031
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-13",
+    "cx": 10.622,
+    "crown_xmax": 11.928,
+    "tree_centred_band": [
+     8.622,
+     12.622
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-15",
+    "cx": 10.804,
+    "crown_xmax": 12.408,
+    "tree_centred_band": [
+     8.804,
+     12.804
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   }
+  ],
+  "all_missing_eligible_only_via_tree_centred_candidate": false
+ },
+ {
+  "seed": 2,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "success",
+  "stage": "plan",
+  "reason": "",
+  "reason_source": "results/a_trial_extra_sweep0_h0_7e7318e_w4.csv",
+  "geom_missing": [],
+  "safety_missing": [],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 1.15,
+  "fully_cut_lane_x": [
+   [
+    3.15,
+    [
+     1.15,
+     5.15
+    ]
+   ],
+   [
+    7.15,
+    [
+     5.15,
+     9.15
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [],
+  "missing_classify_basis": [],
+  "all_missing_eligible_only_via_tree_centred_candidate": true
+ },
+ {
+  "seed": 3,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "success",
+  "stage": "plan",
+  "reason": "",
+  "reason_source": "results/a_trial_extra_sweep0_h0_7e7318e_w4.csv",
+  "geom_missing": [],
+  "safety_missing": [],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 1.01,
+  "fully_cut_lane_x": [
+   [
+    3.01,
+    [
+     1.01,
+     5.01
+    ]
+   ],
+   [
+    7.01,
+    [
+     5.01,
+     9.01
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [],
+  "missing_classify_basis": [],
+  "all_missing_eligible_only_via_tree_centred_candidate": true
+ },
+ {
+  "seed": 4,
+  "swath": 4.0,
+  "d": 10.0,
+  "offset": 0.0,
+  "status": "failed",
+  "stage": "safety",
+  "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-03', 'target-tree-02-06', 'target-tree-02-07', 'target-tree-02-08', 'target-tree-02-10', 'target-tree-02-11', 'target-tree-02-12', 'target-tree-02-13', 'target-tree-02-15']（不在任何禁喷/禁飞区排除范围内）",
+  "reason_source": "results/a_trial_extra_sweep0_h0_7e7318e_w4.csv",
+  "geom_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-06",
+   "target-tree-02-07",
+   "target-tree-02-08",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-13",
+   "target-tree-02-15"
+  ],
+  "safety_missing": [
+   "target-tree-02-02",
+   "target-tree-02-03",
+   "target-tree-02-06",
+   "target-tree-02-07",
+   "target-tree-02-08",
+   "target-tree-02-10",
+   "target-tree-02-11",
+   "target-tree-02-12",
+   "target-tree-02-13",
+   "target-tree-02-15"
+  ],
+  "geom_missing_equals_safety_missing": true,
+  "lane_anchor_xmin": 0.902,
+  "fully_cut_lane_x": [
+   [
+    2.902,
+    [
+     0.902,
+     4.902
+    ]
+   ],
+   [
+    6.902,
+    [
+     4.902,
+     8.902
+    ]
+   ],
+   [
+    10.902,
+    [
+     8.902,
+     12.902
+    ]
+   ]
+  ],
+  "no_spray_zones_expanded": [
+   {
+    "id": "ns-ablation",
+    "xy": [
+     [
+      -8.0,
+      5.0
+     ],
+     [
+      9.0,
+      5.0
+     ],
+     [
+      9.0,
+      95.0
+     ],
+     [
+      -8.0,
+      95.0
+     ]
+    ]
+   }
+  ],
+  "detail": [
+   {
+    "target": "target-tree-02-02",
+    "center": [
+     11.212,
+     9.092
+    ],
+    "radius": 1.342,
+    "crown_x": [
+     9.87,
+     12.554
+    ],
+    "lanes": [
+     {
+      "lane": 19,
+      "x": 10.902,
+      "x_band": [
+       8.902,
+       12.902
+      ],
+      "lane_y": [
+       7.75,
+       10.434
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         7.75,
+         10.434
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [
+     {
+      "x": 11.212,
+      "y": [
+       7.75,
+       10.434
+      ]
+     }
+    ],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-03",
+    "center": [
+     10.742,
+     14.967
+    ],
+    "radius": 1.226,
+    "crown_x": [
+     9.516,
+     11.968
+    ],
+    "lanes": [
+     {
+      "lane": 20,
+      "x": 10.902,
+      "x_band": [
+       8.902,
+       12.902
+      ],
+      "lane_y": [
+       13.741,
+       16.193
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         13.741,
+         16.193
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-06",
+    "center": [
+     10.928,
+     33.355
+    ],
+    "radius": 1.572,
+    "crown_x": [
+     9.356,
+     12.5
+    ],
+    "lanes": [
+     {
+      "lane": 23,
+      "x": 10.902,
+      "x_band": [
+       8.902,
+       12.902
+      ],
+      "lane_y": [
+       31.783,
+       34.927
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         31.783,
+         34.927
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [],
+    "classify_entry": null
+   },
+   {
+    "target": "target-tree-02-15",
+    "center": [
+     10.793,
+     86.928
+    ],
+    "radius": 1.222,
+    "crown_x": [
+     9.571,
+     12.015
+    ],
+    "lanes": [
+     {
+      "lane": 32,
+      "x": 10.902,
+      "x_band": [
+       8.902,
+       12.902
+      ],
+      "lane_y": [
+       85.706,
+       88.15
+      ],
+      "parts": [
+       {
+        "type": "transit",
+        "y": [
+         85.706,
+         88.15
+        ],
+        "covers_tree": true,
+        "tid_in_part": false
+       }
+      ]
+     }
+    ],
+    "classify_candidates": [],
+    "classify_entry": null
+   }
+  ],
+  "missing_classify_basis": [
+   {
+    "target": "target-tree-02-02",
+    "cx": 11.212,
+    "crown_xmax": 12.554,
+    "tree_centred_band": [
+     9.212,
+     13.212
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-03",
+    "cx": 10.742,
+    "crown_xmax": 11.968,
+    "tree_centred_band": [
+     8.742,
+     12.742
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-06",
+    "cx": 10.928,
+    "crown_xmax": 12.5,
+    "tree_centred_band": [
+     8.928,
+     12.928
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-07",
+    "cx": 10.835,
+    "crown_xmax": 12.301,
+    "tree_centred_band": [
+     8.835,
+     12.835
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-08",
+    "cx": 10.905,
+    "crown_xmax": 12.304,
+    "tree_centred_band": [
+     8.905,
+     12.905
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-10",
+    "cx": 10.832,
+    "crown_xmax": 12.621,
+    "tree_centred_band": [
+     8.832,
+     12.832
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-11",
+    "cx": 10.766,
+    "crown_xmax": 11.999,
+    "tree_centred_band": [
+     8.766,
+     12.766
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-12",
+    "cx": 11.141,
+    "crown_xmax": 12.366,
+    "tree_centred_band": [
+     9.141,
+     13.141
+    ],
+    "n_cand": 1,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-13",
+    "cx": 10.799,
+    "crown_xmax": 12.072,
+    "tree_centred_band": [
+     8.799,
+     12.799
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   },
+   {
+    "target": "target-tree-02-15",
+    "cx": 10.793,
+    "crown_xmax": 12.015,
+    "tree_centred_band": [
+     8.793,
+     12.793
+    ],
+    "n_cand": 0,
+    "all_cands_tree_centred": true,
+    "any_cand_on_fixed_lane": false
+   }
+  ],
+  "all_missing_eligible_only_via_tree_centred_candidate": false
+ }
+]
