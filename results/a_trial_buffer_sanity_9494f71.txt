@@ -1,0 +1,125 @@
+# A 小试前置健全性检查（HEAD 9494f71，未改 planning/）  2026-11-04 06:12:44 PST
+## 结论：buffer_expand=1 在消融场景下无效且导致规划失败，A 小试按规定未运行
+
+### /tmp/atrial/sanity.py
+import sys, json, math
+sys.path.insert(0, '/workspace/cwa-bench'); sys.path.insert(0, '/workspace/cwa-bench/scripts')
+from ablation_sort_vs_sort_drift import _inject_downwind_no_spray
+from random_scene import generate_with_report
+from planning.model import configuration
+from planning.drift import expand_sensitive_inward, resolve_effective_buffer
+from planning.planner import fixed_y_lanes, lane_parts
+from planning.zones import classify
+job = json.load(open('configs/job.ablation.crosswind.json'))
+scene,_ = generate_with_report("ha_orchard", 0, {"plot_width":100.0,"plot_height":100.0})
+scene = _inject_downwind_no_spray(scene)
+print("plot verts", scene["plot"]["vertices"])
+for be in (0.0, 1.0):
+    c = configuration({**job, "drift_mode":"sort", "buffer_expand":be})
+    d = resolve_effective_buffer(c)
+    geo = expand_sensitive_inward(scene, c)
+    v = geo["no_spray_zones"][0]["footprint"]["vertices"]
+    lay = fixed_y_lanes(geo, {**job, "drift_mode":"sort", "buffer_expand":be})
+    lanes = lay["lanes"]; cc = lay["config"]
+    from collections import Counter
+    cnt = Counter(); nsplit=0
+    for L in lanes:
+        ps = lane_parts(geo, L, cc)
+        cnt.update(p["type"] for p in ps)
+        if any(p["type"]!="spray" for p in ps): nsplit+=1
+    cl = classify(scene, cc)
+    print(f"buffer_expand={be} d={d} zone_verts={v} n_lanes={len(lanes)} lane_xmin={min(L['start'][0] for L in lanes):.2f} part_types={dict(cnt)} lanes_with_nonspray={nsplit} classify_excluded={len(cl)} reasons={Counter(e['reason'] for e in cl.values())}")
+### output
+  File "/workspace/cwa-bench/scene/validation.py", line 286, in validate_scene
+    require(contained(b, s["extent"]), o["id"], o, "必须位于场景范围内")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cwa-bench/scene/schema.py", line 43, in require
+    raise SceneError(f"{field} = {value!r}：{reason}", field=field, code=code)
+scene.schema.SceneError: ns-ablation = {'id': 'ns-ablation', 'kind': 'polygon_prism', 'footprint': {'kind': 'polygon', 'vertices': [[-18.0, 5.000000000000001], [-11.0, 5.000000000000001], [-11.0, 95.0], [-18.0, 95.0]]}, 'z_min': 0.0, 'z_max': 10.0}：必须位于场景范围内
+
+### /tmp/atrial/sanity2.py
+import sys, json, time
+sys.path.insert(0, '/workspace/cwa-bench'); sys.path.insert(0, '/workspace/cwa-bench/scripts')
+from ablation_sort_vs_sort_drift import _inject_downwind_no_spray
+from random_scene import generate_with_report
+from planning.model import configuration
+from planning.zones import classify
+from planner_api import make_planner
+job = json.load(open('configs/job.ablation.crosswind.json'))
+scene,_ = generate_with_report("ha_orchard", 0, {"plot_width":100.0,"plot_height":100.0})
+scene = _inject_downwind_no_spray(scene)
+print("extent", scene["extent"])
+c = configuration({**job, "drift_mode":"sort", "buffer_expand":1.0})
+try:
+    print("classify", len(classify(scene, c)))
+except Exception as e: print("classify EXC", type(e).__name__, str(e)[:200])
+t=time.time()
+p = make_planner("caw").plan(scene, c, options=dict(step_xy=2.0,max_grid_nodes=5_000_000,max_expansions=500_000))
+print("plan", p.get("status"), p.get("stage"), str(p.get("reason"))[:300], round(time.time()-t,1))
+### output
+extent {'min': [-8.0, -8.0, 0.0], 'max': [108.0, 108.0, 12.0]}
+classify EXC SceneError ns-ablation = {'id': 'ns-ablation', 'kind': 'polygon_prism', 'footprint': {'kind': 'polygon', 'vertices': [[-18.0, 5.000000000000001], [-11.0, 5.000000000000001], [-11.0, 95.0], [-18.0, 95.0]]}, 'z_mi
+plan failed plan ns-ablation = {'id': 'ns-ablation', 'kind': 'polygon_prism', 'footprint': {'kind': 'polygon', 'vertices': [[-18.0, 5.000000000000001], [-11.0, 5.000000000000001], [-11.0, 95.0], [-18.0, 95.0]]}, 'z_min': 0.0, 'z_max': 10.0}：必须位于场景范围内 0.0
+
+### /tmp/atrial/sanity3.py
+import sys, json
+sys.path.insert(0, '/workspace/cwa-bench')
+from random_scene import generate_with_report
+from planning.model import configuration
+from planning.drift import expand_sensitive_inward
+from planning.planner import fixed_y_lanes, lane_parts
+from planning.zones import classify
+from collections import Counter
+job = json.load(open('configs/job.ablation.crosswind.json'))
+scene,_ = generate_with_report("ha_orchard", 0, {"plot_width":100.0,"plot_height":100.0})
+scene["no_spray_zones"]=[dict(id="ns-upwind-demo",kind="polygon_prism",footprint=dict(kind="polygon",vertices=[[101.0,5.0],[108.0,5.0],[108.0,95.0],[101.0,95.0]]),z_min=0.0,z_max=10.0)]
+for be in (0.0,1.0):
+    raw={**job,"drift_mode":"sort","buffer_expand":be}; c=configuration(raw)
+    geo=expand_sensitive_inward(scene,c)
+    lay=fixed_y_lanes(geo,raw); cnt=Counter(); ns=0
+    for L in lay["lanes"]:
+        ps=lane_parts(geo,L,lay["config"]); cnt.update(p["type"] for p in ps); ns+=any(p["type"]!="spray" for p in ps)
+    cl=classify(scene,c)
+    print(be, geo["no_spray_zones"][0]["footprint"]["vertices"], dict(cnt), "lanes_cut",ns, "classify_excl",len(cl))
+### output
+0.0 [[101.0, 5.0], [108.0, 5.0], [108.0, 95.0], [101.0, 95.0]] {'spray': 407} lanes_cut 0 classify_excl 0
+1.0 [[91.0, 5.000000000000001], [98.0, 5.000000000000001], [98.0, 95.0], [91.0, 95.0]] {'spray': 389, 'transit': 18} lanes_cut 18 classify_excl 0
+
+### planning/drift.py:152-164
+    wind_dir = float(config.get("wind_direction", 0.0) or 0.0)
+    # 下风向单位向量
+    dx = math.cos(wind_dir + math.pi)
+    dy = math.sin(wind_dir + math.pi)
+    zones = out.get("no_spray_zones") or []
+    for zone in zones:
+        if not _zone_is_exterior_sensitive(zone, plot, d):
+            continue
+        fp = zone["footprint"]
+        fp["vertices"] = [
+            [v[0] + d * dx, v[1] + d * dy] + (list(v[2:]) if len(v) > 2 else [])
+            for v in fp["vertices"]
+        ]
+
+### drift_checks.py:96-117 (fixture zone on +x upwind side)
+        scene["no_spray_zones"] = [
+            dict(
+                id="ns-out",
+                kind="polygon_prism",
+                footprint=dict(
+                    kind="polygon",
+                    vertices=[
+                        [xmax + 1, 5],
+                        [xmax + 5, 5],
+                        [xmax + 5, 10],
+                        [xmax + 1, 10],
+                    ],
+                ),
+                z_min=0.0,
+                z_max=10.0,
+            )
+        ]
+        before = copy.deepcopy(scene["no_spray_zones"][0]["footprint"]["vertices"])
+        out = expand_sensitive_inward(scene, c)
+        after = out["no_spray_zones"][0]["footprint"]["vertices"]
+        # wind_direction=0 → 来自 +x；下风 = +π → -x，顶点 x 应减少 10
+        assert abs(after[0][0] - (before[0][0] - 10.0)) < 1e-9
