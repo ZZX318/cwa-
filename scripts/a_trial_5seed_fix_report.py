@@ -46,6 +46,10 @@ def pools_for(tr):
         "S2'": [r for r in main if r["heading"] == 0],
         "S3-grid4": main,
         "S3": main + heur + oh90,  # 0°/o_h 计划本身有效，即使 S_h 不适用也保留为候选
+        # 1b 基线钩子（行来自 a_trial_extra_runs；配对报告见 a_trial_1b_report.py）
+        "B-online-c0.25": [r for r in tr if r["variant"] == "b_online_c0.25"],
+        "B-online-c0.5": [r for r in tr if r["variant"] == "b_online_c0.5"],
+        "B-boundary": [r for r in tr if r["variant"] == "b_boundary"],
     }
 
 
