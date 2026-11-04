@@ -268,7 +268,9 @@ def spray_samples(segments, half, step=0.1):
     return np.concatenate(xs), np.concatenate(ys)
 
 
-def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0), resolutions=(0.2, 0.1, 0.05)):
+def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0), resolutions=(0.2, 0.1, 0.05),
+             extra_cov=False):
+    """extra_cov=True 时每个分辨率另报 A_cov_tau* = |C ∩ P|（全冠层覆盖，分母固定为 A_C）；默认关闭，输出不变。"""
     half = swath / 2.0
     F = buffer_set(scene, d, wd)
     cut_idx, bounds = cut_analysis(segments, half, F)
@@ -301,6 +303,9 @@ def evaluate(scene, segments, d, wd, swath, speed, config, taus=(0.0, 0.5, 1.0),
         for tau, rs in rect_sets.items():
             P = R.rects(rs, half)
             row[f"A_extra_tau{tau:g}"] = float((C & ~Fm & ~P).sum() * R.cell)
+            if extra_cov:
+                row[f"A_cov_tau{tau:g}"] = float((C & P).sum() * R.cell)
+                row[f"A_CFP_tau{tau:g}"] = float((C & Fm & P).sum() * R.cell)
         per_res[res] = row
     out["by_resolution"] = {f"{k:g}": v for k, v in per_res.items()}
     pairs = {}

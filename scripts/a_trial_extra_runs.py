@@ -130,7 +130,30 @@ def _boundary_offset(scene, heading, d, w, job):
                          else "abs(o - oh_rot_or_heuristic) >= 1e-12"))
 
 
+def _sweep0_jobs(seed, U, headings):
+    """1c-sweep：只跑 0° 的三种方案（S1=0°/0、S_h=0°/o_h、B-boundary=0°/地块边界对齐）。"""
+    return [dict(seed=seed, U=U, heading=0, variant="sweep0", kind=k) for k in ("s1", "heuristic", "b_boundary")]
+
+
+def _sweep0_run(job):
+    seed, U = job["seed"], job["U"]
+    if job["kind"] == "s1":
+        row, geom = H.run(dict(seed=seed, U=U, heading=0, offset=0.0, variant="main"))
+        row["variant"], row["extra_info"] = "s1", dict(kind="s1")
+    elif job["kind"] == "heuristic":
+        row, geom = H.run(dict(seed=seed, U=U, heading=0, offset=0.0, variant="heuristic"))
+        row["extra_info"] = dict(kind="heuristic")
+    else:
+        w = float(H.JOB["swath"])
+        o, info = _boundary_offset(H.scene0(seed), 0, H.TIERS[U], w, job)
+        row, geom = H.run(dict(seed=seed, U=U, heading=0, offset=o, variant="main"))
+        row["variant"], row["extra_info"] = "b_boundary", info
+    return row, geom
+
+
 VARIANTS = {
+    "sweep0": dict(jobs=_sweep0_jobs, run_fn=_sweep0_run,
+                   label="1c-sweep：0° 下 S1 / S_h / B-boundary（喷幅余数扫描）"),
     "oh_rot": dict(jobs=_oh_jobs, offset_fn=lambda scene, heading, d, w, job: oh_rot(scene, heading, d, w), label="S_h 推广：航向 h 下的几何偏移 o_h(h)，作为 S3 的第 5 个偏移候选"),
     "b_online": dict(jobs=_online_jobs, offset_fn=_online_offset,
                      row_variant=lambda job: f"b_online_c{job['c']}",
@@ -161,7 +184,9 @@ def main():
     ap.add_argument("--headings", default="90")
     ap.add_argument("--seeds", default="0-4")
     ap.add_argument("--workers", type=int, default=7)
+    ap.add_argument("--swath", type=float, default=None)
     a = ap.parse_args()
+    H.apply_swath_override(a.swath)
     variants = a.variants.split(",")
     headings = [int(h) for h in a.headings.split(",")]
     seeds = H.parse_seeds(a.seeds)
@@ -200,13 +225,14 @@ def main():
             "path_cut_off", "path_transit_other", "cut_segments", "cut_boundaries", "violations", "spray_samples",
             "excluded_targets", "n_lanes", "strip_count", "matrix_mode", "order_strategy", "plan_frame_duration",
             "time_reeval_minus_plan_frame", "A_C", "solve_seconds", "plan_hash", "reason"]
-    out = ROOT / f"results/a_trial_extra_{'_'.join(variants)}_h{'_'.join(map(str, headings))}_{sha}"
+    out = ROOT / f"results/a_trial_extra_{'_'.join(variants)}_h{'_'.join(map(str, headings))}_{sha}{H.swath_tag()}"
     with open(str(out) + ".csv", "w", newline="", encoding="utf8") as fh:
         wr = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore")
         wr.writeheader()
         for r in rows:
             wr.writerow(r)
     meta = dict(commit=sha, worktree_dirty_tracked=bool(dirty), workers=a.workers, wall_seconds=round(wall, 1),
+                swath=float(H.JOB["swath"]),
                 cpu_count=os.cpu_count(), python=platform.python_version(), variants={v: VARIANTS[v]["label"] for v in variants},
                 headings=headings, seeds=seeds, options=H.OPTIONS, job=H.JOB, tiers={f"U={k:g}": f"d={v:g}" for k, v in H.TIERS.items()},
                 oh_rot_h0_check=sh_check, rows_full=rows)

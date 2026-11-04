@@ -40,6 +40,27 @@ from random_scene import generate_with_report
 
 OPTIONS = dict(step_xy=2.0, max_grid_nodes=5_000_000, max_expansions=500_000)  # 与主消融/seed0 健全性相同
 JOB = json.loads((ROOT / "configs/job.ablation.crosswind.json").read_text())
+SWATH_ENV = "A_TRIAL_SWATH"
+
+
+def apply_swath_override(w=None):
+    if w is None:
+        w = os.environ.get(SWATH_ENV)
+    if w is None or w == "":
+        return None
+    w = float(w)
+    if not math.isfinite(w) or w <= 0:
+        raise ValueError("swath must be finite and positive")
+    JOB["swath"] = w
+    os.environ[SWATH_ENV] = repr(w)
+    return w
+
+
+def swath_tag():
+    return "" if SWATH_ENV not in os.environ else "_w" + format(float(JOB["swath"]), "g")
+
+
+apply_swath_override()
 TIERS = {2.0: 10.0, 4.0: 16.0}  # U → d（孔令标 2026 查表）
 HEADINGS = (0, 90)
 
@@ -352,9 +373,12 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--seeds", help="seed range (0-4) or comma-separated list (1,2,3); overrides --seed")
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--swath", type=float, default=None)
+    ap.add_argument("--no-controls", action="store_true")
     ap.add_argument("--only-rot180-aligned", action="store_true",
                     help="只跑 180° 且条带网格对齐的一致性对照（结果写 *_rot180aligned.*）")
     a = ap.parse_args()
+    apply_swath_override(a.swath)
     seeds = parse_seeds(a.seeds) if a.seeds is not None else [a.seed]
     sha = subprocess.check_output(["git", "-C", str(ROOT), "rev-parse", "--short=7", "HEAD"], text=True).strip()
     dirty = subprocess.check_output(["git", "-C", str(ROOT), "status", "--porcelain", "--untracked-files=no"], text=True).strip()
@@ -363,6 +387,8 @@ def main():
     for seed, probe in probes.items():
         print("translation_probe", "seed", seed, json.dumps(probe), flush=True)
     jobs = [job for seed in seeds for job in jobs_for(seed, w)]
+    if a.no_controls:
+        jobs = [job for job in jobs if job["variant"] not in ("no_zone", "wind_away", "rot180", "rot180_aligned")]
     if a.only_rot180_aligned:
         jobs = [job for job in jobs if job["variant"] == "rot180_aligned"]
     t0 = time.time()
@@ -400,6 +426,7 @@ def main():
         pass
     meta = dict(commit=sha, worktree_dirty_tracked=bool(dirty), cpu=cpu, nproc=os.cpu_count(),
                 python=platform.python_version(), workers=a.workers, wall_seconds=round(wall, 1), job=JOB,
+                swath=float(JOB["swath"]), swath_override=(SWATH_ENV in os.environ), no_controls=a.no_controls,
                 tiers={f"U={k:g}": f"d={v:g}" for k, v in TIERS.items()}, planner="caw", options=OPTIONS,
                 drift_mode="sort", buffer_expand=1.0, scene="ha_orchard 100x100 + _inject_downwind_no_spray",
                 resolutions=[0.2, 0.1, 0.05], sh_formula=SH_FORMULA, tau_s=[0.0, 0.5, 1.0], tau_label="假设值（无设备数据）",
@@ -410,7 +437,7 @@ def main():
     suffix = "_rot180aligned" if a.only_rot180_aligned else ""
     for seed in seeds:
         selected_rows = [r for r in rows if r["seed"] == seed]
-        out = ROOT / f"results/a_trial_seed{seed}_{sha}{suffix}"
+        out = ROOT / f"results/a_trial_seed{seed}_{sha}{swath_tag()}{suffix}"
         write_csv(out, selected_rows)
         seed_meta = dict(meta, seed=seed, translation_probe=probes[seed], rows_full=selected_rows,
                          convergence={f'{r["variant"]}_U{r["U"]:g}_h{r["heading"]}_o{r["offset"]:g}':
@@ -426,7 +453,7 @@ def main():
         print("wrote", str(out) + ".csv", "wall", round(wall, 1))
     if a.seeds is not None:
         label = a.seeds.replace(",", "_")
-        out = ROOT / f"results/a_trial_seeds{label}_{sha}{suffix}"
+        out = ROOT / f"results/a_trial_seeds{label}_{sha}{swath_tag()}{suffix}"
         write_csv(out, rows)
         combined_meta = dict(meta, seeds=seeds, translation_probe=probes, rows_full=rows)
         Path(str(out) + ".meta.json").write_text(json.dumps(combined_meta, ensure_ascii=False, indent=1))
