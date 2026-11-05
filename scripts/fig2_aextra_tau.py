@@ -167,18 +167,26 @@ def plot(long, summary):
     for ax, (U, d), letter in zip(axes, TIERS, "ab"):
         for series, label, (color, marker, style), offset in zip(SERIES, LABELS, STYLES, offsets):
             means = np.array([r["mean"] for r in summary if r["U"] == U and r["series"] == series])
-            ax.fill_between(x, means - 1, means + 1, color="grey", alpha=0.15,
-                            linewidth=0, zorder=1)
-            ax.plot(x, means, color=color, marker=marker, linestyle=style,
-                    linewidth=LW_DATA, markersize=3.5, label=label, zorder=3)
+            # Grey ±1 m² phase band only for S_h (other series bands overlap into mush).
+            if series == "S_h":
+                ax.fill_between(x, means - 1, means + 1, color="grey", alpha=0.15,
+                                linewidth=0, zorder=1)
+            # S1 at U=2 is bimodal (~0 and ~55); do not draw its mean line — points only.
+            if series != "S1":
+                ax.plot(x, means, color=color, marker=marker, linestyle=style,
+                        linewidth=LW_DATA, markersize=3.5, label=label, zorder=3)
+            else:
+                # Legend entry without a misleading mean line.
+                ax.plot([], [], color=color, marker=marker, linestyle="none",
+                        markersize=3.5, label=label, zorder=3)
             points = [r for r in long if r["U"] == U and r["series"] == series]
             ax.scatter([r["tau_s"] + offset for r in points],
                        [r["A_extra_m2"] for r in points], marker=marker, s=9,
                        facecolors="none", edgecolors=color, linewidths=0.6, zorder=2)
         ax.set_xticks(TAUS, ["0", "0.5", "1.0"])
         ax.set_xlim(-0.13, 1.13)
-        ax.set_xlabel("阀门延迟 τ/s")
-        ax.set_ylabel(r"额外喷洒面积 $A_{\mathrm{extra}}$/m$^2$")
+        ax.set_xlabel("等效喷施滞后 τ/s")
+        ax.set_ylabel(r"额外漏喷面积 $A_{\mathrm{extra}}$/m$^2$")
         ax.set_title(f"({letter}) U={U:g} m/s, d={d} m")
         if U == 4:
             ax.text(0.04, 0.94, r"S$_h$: n=4", transform=ax.transAxes, va="top", fontsize=7)
@@ -203,12 +211,17 @@ def main():
             writer.writerows(records)
     plot(long, summary)
     caption = (
-        "图2 两风速档下额外喷洒面积 A_extra 随阀门延迟 τ 的变化；线为 5 个随机场景均值（U=4 时 S_h 为 n=4），"
-        "空心点为逐场景值，灰带为均值 ±1 m²（0.05 m 栅格相位误差，差值小于 1 m² 不解读）。"
+        "图2 两风速档下额外漏喷面积 A_extra（缓冲区外未喷到的冠层面积）随等效喷施滞后 τ 的变化；"
+        "除 S1 外折线为 5 个随机场景均值（U=4 时 S_h 为 n=4），空心点为逐场景值。"
+        "S1 在 U=2 呈双峰（约 0 与 55 m²），故只画逐 seed 点、不连均值线。"
+        "灰带仅标在 S_h 上，为均值 ±1 m²（0.05 m 栅格相位误差；|Δ|<1 m² 不解读）。"
         "τ=1.0 s 为假设值（Wang 2023 等效约 0.6–1.0 s）。B-online、B-boundary 为文献方法的简化代理，非原方法复现。\n\n"
-        "Fig. 2 Extra sprayed area A_extra versus valve delay τ at two wind speeds. Lines show means over five random "
-        "scenarios (S_h: n=4 at U=4); hollow points show individual scenarios. Grey bands indicate mean ±1 m² "
-        "(phase error of the 0.05 m raster); differences below 1 m² are not interpreted. The delay τ=1.0 s is assumed "
+        "Fig. 2 Extra unsprayed canopy area A_extra (canopy outside the buffer not covered by the spray footprint) "
+        "versus equivalent spray lag τ at two wind speeds. Except for S1, lines show means over five random "
+        "scenarios (S_h: n=4 at U=4); hollow points show individual scenarios. S1 at U=2 is bimodal "
+        "(clusters near 0 and ~55 m²), so only per-seed points are drawn (no mean line). "
+        "The grey band is shown only for S_h and indicates mean ±1 m² (phase error of the 0.05 m raster); "
+        "differences below 1 m² are not interpreted. The lag τ=1.0 s is assumed "
         "(Wang 2023: equivalent approximately 0.6–1.0 s). B-online and B-boundary are simplified proxies for published "
         "methods, not reproductions of the original methods.\n\n"
         "数据来源 / Data sources: existing rows_full results at commits 2ff2df1/58024ac/0e0715a; "
