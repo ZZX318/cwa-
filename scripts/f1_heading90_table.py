@@ -274,7 +274,13 @@ def main():
     report += ['## 缺失数据', ''] + (missing or ['无缺失源行。'])
     report += ['', '## 不适用（不是缺失）', ''] + (excluded or ['无。'])
     report += ['', '## 来源 commits', ''] + [f'- `{path}` — `{commit}`' for path, commit in SOURCES]
-    report += ['', '复现：`bash scripts/repro_F.sh`（仅运行 `python3 scripts/f1_heading90_table.py`）。',
+    report += ['', '## 验收口径更正', '',
+               '表 A 的 30 个 seed×τ 配对中，18 个 plan_hash 完全一致；其余配对仅 offset 浮点差≤5×10⁻¹⁵（同一计划按三个 τ 重复计数）。oh_rot(90°) 与 B-boundary(90°) 在此几何下的相位、航线重合。',
+               '因此 Δ=0 仅说明两种对齐规则在此几何下重合，不是两种不同方法的比较性能证据，不能据此声称优劣。',
+               '表 B 的同对象 90°−0° 配对可直接用于主表差值的航向归因：U=2 的 90° 平均快 63.8006 s，但 τ=0.5/1.0 的额外漏喷分别多 5.0000/11.9635 m²。',
+               '基线回归：`python3 -u drift_checks.py`→23/0；`python3 -u main.py --check`→170/0。日志为 `results/F_checks_drift.log`、`results/F_checks_main.log`。',
+               '`git diff 463badb --stat -- planning/` 为空。', '']
+    report += ['', '复现：`python3 scripts/f1_heading90_table.py`（只抽既有 CSV，不重规划）。',
                '', f'ASSERT OK: {CHECKS} cell checks', '']
     (ROOT/'results/F1.report.md').write_text('\n'.join(report), encoding='utf-8')
     print('\n'.join(report))
