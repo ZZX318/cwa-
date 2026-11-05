@@ -1,0 +1,24 @@
+{
+  "frozen_b": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+  "frozen_h": "d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86",
+  "fresh_b": {
+    "plan_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+    "solve": 79.3
+  },
+  "fresh_h": {
+    "plan_hash": "d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86",
+    "solve": 79.1
+  },
+  "chain_h_then_b": {
+    "pred_hash": "d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86",
+    "target_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+    "target_solve": 20.5
+  },
+  "chain_b_then_h": {
+    "pred_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+    "target_hash": "d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86",
+    "target_solve": 20.5
+  },
+  "ok": true,
+  "errors": []
+}
