@@ -7,6 +7,8 @@ SD 为样本 SD；n<2 为“-”。|Δ|≤1e-12 为 tie；其余 |Δ|<1 m² 不�
 Wilcoxon 删除零差，保留不解读项；绝对值以 1e-9 容差分组并取平均秩，用 Fraction 枚举全部符号，双侧 p=min(1,2·min(lower tail,upper tail))。无非零差时 p 不适用。n_eff≤5 时最小双侧 p≥0.0625，不作显著性结论。
 相位重合时，固定 90° 的所有 Δ 预期为 0；不强制改写任何源值。
 
+> **Table A 口径：几何重合，非性能证据。** 此处 Δ=0 表示两种对齐规则在本几何下重合：30 对中 18 对 plan_hash 完全相同，其余仅 offset 的浮点写法不同（差值 ≤5e-15）；oh_rot 90° 与 B 90° 是同一份计划，不作为性能对比证据。Table B 仍是主表中 B 选择 90° 的航向归因证据。
+
 ## Table A: S_h vs B-boundary，均固定 90°
 
 | U | τ | n | 左 A_extra mean±SD /m² | 右 A_extra mean±SD /m² | Δ mean±SD [min,max] /m² | win/tie/loss/not_interpreted | exact two-sided p | 左 total_time mean±SD /s | 右 total_time mean±SD /s | Δt mean±SD [min,max] /s | violations sums 左/右 |
