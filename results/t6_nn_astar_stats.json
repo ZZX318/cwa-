@@ -1,0 +1,340 @@
+{
+  "styles": {
+    "clusters_gaps": {
+      "strategies": {
+        "nn+2opt": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 11.186911606004287,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 328.5483757676709,
+              "sd": 32.63516784566562
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 164.27418788383545,
+              "sd": 16.317583922832814
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 86.87233404696548,
+              "sd": 10.484599661482019
+            }
+          }
+        },
+        "nn_astar": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 543.8303743119832,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 334.99565848567374,
+              "sd": 35.12499827739561
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 167.49782924283684,
+              "sd": 17.562499138697817
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 90.09597540596688,
+              "sd": 11.21836016802689
+            }
+          }
+        }
+      },
+      "paired": {
+        "path_length": {
+          "delta": {
+            "n": 10,
+            "mean": 6.447282718002822,
+            "sd": 7.094968106117649
+          },
+          "paired_t": {
+            "t": 2.873599684028223,
+            "df": 9,
+            "p_two_sided": 0.01836860876153683,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 10,
+            "p_two_sided": 0.001953125,
+            "method": "exact sign permutations"
+          }
+        },
+        "total_time": {
+          "delta": {
+            "n": 10,
+            "mean": 3.2236413590014052,
+            "sd": 3.547484053058831
+          },
+          "paired_t": {
+            "t": 2.8735996840282128,
+            "df": 9,
+            "p_two_sided": 0.018368608761537113,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 10,
+            "p_two_sided": 0.001953125,
+            "method": "exact sign permutations"
+          }
+        },
+        "transit_time": {
+          "delta": {
+            "n": 10,
+            "mean": 3.2236413590014052,
+            "sd": 3.5474840530588274
+          },
+          "paired_t": {
+            "t": 2.8735996840282154,
+            "df": 9,
+            "p_two_sided": 0.018368608761537054,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 10,
+            "p_two_sided": 0.001953125,
+            "method": "exact sign permutations"
+          }
+        }
+      }
+    },
+    "jitter_rows": {
+      "strategies": {
+        "nn+2opt": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 5.7056450770032825,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 286.9359057623177,
+              "sd": 16.213158611404978
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 143.46795288115885,
+              "sd": 8.106579305702502
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 67.91352487212582,
+              "sd": 5.554785054938074
+            }
+          }
+        },
+        "nn_astar": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 319.9064133460124,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 287.6714429326214,
+              "sd": 17.161332387365224
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 143.8357214663107,
+              "sd": 8.580666193682626
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 68.28129345727768,
+              "sd": 5.930446963021175
+            }
+          }
+        }
+      },
+      "paired": {
+        "path_length": {
+          "delta": {
+            "n": 10,
+            "mean": 0.7355371703037349,
+            "sd": 1.3145878249163703
+          },
+          "paired_t": {
+            "t": 1.7693551680527213,
+            "df": 9,
+            "p_two_sided": 0.11061895971314012,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 3,
+            "p_two_sided": 0.25,
+            "method": "exact sign permutations"
+          }
+        },
+        "total_time": {
+          "delta": {
+            "n": 10,
+            "mean": 0.36776858515186744,
+            "sd": 0.6572939124581805
+          },
+          "paired_t": {
+            "t": 1.7693551680527337,
+            "df": 9,
+            "p_two_sided": 0.11061895971313786,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 3,
+            "p_two_sided": 0.25,
+            "method": "exact sign permutations"
+          }
+        },
+        "transit_time": {
+          "delta": {
+            "n": 10,
+            "mean": 0.36776858515186606,
+            "sd": 0.6572939124581815
+          },
+          "paired_t": {
+            "t": 1.7693551680527244,
+            "df": 9,
+            "p_two_sided": 0.11061895971313948,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 3,
+            "p_two_sided": 0.25,
+            "method": "exact sign permutations"
+          }
+        }
+      }
+    },
+    "size_mix": {
+      "strategies": {
+        "nn+2opt": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 5.773463974015613,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 267.52201348278635,
+              "sd": 8.732255581513924
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 133.76100674139317,
+              "sd": 4.366127790756983
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 69.41729050280479,
+              "sd": 5.28031873380076
+            }
+          }
+        },
+        "nn_astar": {
+          "count": 10,
+          "successes": 10,
+          "failures": 0,
+          "safety_violations": 0,
+          "runtime_sum": 355.55949908099865,
+          "metrics": {
+            "path_length": {
+              "n": 10,
+              "mean": 270.78725406474257,
+              "sd": 9.843860386290029
+            },
+            "total_time": {
+              "n": 10,
+              "mean": 135.39362703237126,
+              "sd": 4.921930193145035
+            },
+            "transit_time": {
+              "n": 10,
+              "mean": 71.04991079378289,
+              "sd": 6.075139403484705
+            }
+          }
+        }
+      },
+      "paired": {
+        "path_length": {
+          "delta": {
+            "n": 10,
+            "mean": 3.2652405819561805,
+            "sd": 4.00515687343006
+          },
+          "paired_t": {
+            "t": 2.5780756344138585,
+            "df": 9,
+            "p_two_sided": 0.029790513310778755,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 7,
+            "p_two_sided": 0.015625,
+            "method": "exact sign permutations"
+          }
+        },
+        "total_time": {
+          "delta": {
+            "n": 10,
+            "mean": 1.632620290978096,
+            "sd": 2.002578436715027
+          },
+          "paired_t": {
+            "t": 2.5780756344138718,
+            "df": 9,
+            "p_two_sided": 0.029790513310778095,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 7,
+            "p_two_sided": 0.015625,
+            "method": "exact sign permutations"
+          }
+        },
+        "transit_time": {
+          "delta": {
+            "n": 10,
+            "mean": 1.632620290978089,
+            "sd": 2.0025784367150257
+          },
+          "paired_t": {
+            "t": 2.5780756344138624,
+            "df": 9,
+            "p_two_sided": 0.029790513310778515,
+            "degenerate": false
+          },
+          "wilcoxon": {
+            "w": 0.0,
+            "n_nonzero": 7,
+            "p_two_sided": 0.015625,
+            "method": "exact sign permutations"
+          }
+        }
+      }
+    }
+  },
+  "baseline_mismatches": [],
+  "deterministic": true,
+  "note": "Sample SD; paired differences nn_astar - nn+2opt; successful pairs only. Cold planning runtime excludes generation, hash repeat and evaluation. Safety violations count failed safety checks, not individual collisions."
+}

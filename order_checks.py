@@ -2,6 +2,7 @@
 
 import json
 import math
+from unittest.mock import patch
 
 from execution import build
 from joint import candidate_plan, optimize
@@ -89,6 +90,43 @@ def run() -> int:
         assert result["lower_bound"] is not None
         assert result["order_cost"] >= result["lower_bound"] - 1e-9
 
+    def nn_astar():
+        first = solve_order(scene, job, lanes, strategy="nn_astar")
+        second = solve_order(scene, job, lanes, strategy="nn_astar")
+        nn = solve_order(scene, job, lanes, strategy="nn", matrix_mode="exact3d")
+        assert first["status"] == "success"
+        assert first["matrix_mode"] == "exact3d"
+        assert sorted(first["order"]) == list(range(3))
+        assert first["order"] == nn["order"]
+        assert abs(first["order_cost"] - nn["order_cost"]) < 1e-9
+        assert first["evaluated"] == 3  # no 2-opt
+        assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+        forced = solve_order(scene, job, lanes, strategy="nn_astar", matrix_mode="euclidean_lb")
+        assert forced == first
+        assert solve_order(scene, job, lanes) == solve_order(scene, job, lanes, strategy="nn+2opt")
+        try:
+            solve_order(scene, job, lanes, strategy="bogus")
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("未知策略未拒绝")
+
+    def large_astar_guard():
+        # Exercise the real matrix/NN path with cheap route responses; tiny test
+        # above covers real A*. Avoid hundreds of searches in the unit suite.
+        many = lanes * 8
+        with patch("planning.order.route3d", return_value={"status": "success", "cost": 1.0}) as route:
+            result = solve_order(scene, job, many, strategy="nn_astar", step_xy=2.0)
+            assert result["status"] == "success" and result["matrix_mode"] == "exact3d"
+            assert route.call_count == 24 * 25
+            assert sorted(result["order"]) == list(range(24))
+            try:
+                solve_order(scene, job, many, strategy="nn", matrix_mode="exact3d")
+            except ValueError as error:
+                assert "超过 20 条" in str(error)
+            else:
+                raise AssertionError("旧策略的 exact3d 上限改变")
+
     def unsupported():
         small = generate(dict(rows=2, trees_per_row=2))
         result = optimize(small, {}, 6, {"transition": "caw"})
@@ -101,5 +139,7 @@ def run() -> int:
     check("nn", nn_bound)
     check("infeasible", infeasible)
     check("large-proxy", large_proxy)
+    check("nn-astar", nn_astar)
+    check("large-astar-guard", large_astar_guard)
     check("unsupported", unsupported)
     return 1 if failed else 0

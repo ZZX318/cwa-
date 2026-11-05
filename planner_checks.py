@@ -37,6 +37,7 @@ def run() -> int:
     tiny = generate(dict(rows=1, trees_per_row=3))
 
     def registry():
+        assert make_planner("caw").validate_options({"order_strategy": "nn_astar"})["order_strategy"] == "nn_astar"
         assert set(PLANNERS) == {
             "fixed-y-boustrophedon",
             "naive-target-order",

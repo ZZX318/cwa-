@@ -1,6 +1,7 @@
 """Deterministic spray-lane ordering heuristics over transition cost matrices.
 
-Two matrix modes are reported explicitly:
+``nn_astar`` always uses exact3d, including above 20 lanes.
+Other strategies retain the automatic matrix modes:
 
 * ``exact3d`` for ``n <= 20``: every ordered pair (including home) is routed by
   ``routing3d`` with the shared time model.
@@ -58,7 +59,7 @@ def _pair_cost(scene, config, a, b, objective, matrix_mode, step_xy):
     return result["cost"], result
 
 
-def cost_matrix(scene, config, lanes, home=None, objective="time", matrix_mode=None, step_xy=1.0):
+def cost_matrix(scene, config, lanes, home=None, objective="time", matrix_mode=None, step_xy=1.0, allow_large_exact3d=False):
     """Return ``C`` with home as index 0 and lanes as 1..n, plus diagnostics."""
     if objective not in ("time", "energy"):
         raise ValueError("objective 必须为 time 或 energy")
@@ -67,7 +68,7 @@ def cost_matrix(scene, config, lanes, home=None, objective="time", matrix_mode=N
         matrix_mode = "exact3d" if count <= 20 else "euclidean_lb"
     if matrix_mode not in ("exact3d", "euclidean_lb"):
         raise ValueError("matrix_mode 必须为 exact3d 或 euclidean_lb")
-    if count > 20 and matrix_mode == "exact3d":
+    if count > 20 and matrix_mode == "exact3d" and not allow_large_exact3d:
         raise ValueError("超过 20 条航段时不允许完整 exact3d 矩阵")
     if home is None:
         home = _work_home(scene, config)
@@ -221,8 +222,8 @@ def solve_order(
     effective = configuration(config)
     if not isinstance(lanes, list) or not lanes:
         raise ValueError("lanes 必须是非空列表")
-    if strategy not in ("fixed", "nn", "nn+2opt"):
-        raise ValueError("strategy 必须为 fixed、nn 或 nn+2opt")
+    if strategy not in ("fixed", "nn", "nn+2opt", "nn_astar"):
+        raise ValueError("strategy 必须为 fixed、nn、nn+2opt 或 nn_astar")
     if objective not in ("time", "energy"):
         raise ValueError("objective 必须为 time 或 energy")
     if type(rounds) is not int or isinstance(rounds, bool) or rounds < 0:
@@ -258,8 +259,9 @@ def solve_order(
         lanes,
         home=home,
         objective=objective,
-        matrix_mode=matrix_mode,
+        matrix_mode="exact3d" if strategy == "nn_astar" else matrix_mode,
         step_xy=step_xy,
+        allow_large_exact3d=strategy == "nn_astar",
     )
     matrix = matrix_info["matrix"]
     evaluated = 0

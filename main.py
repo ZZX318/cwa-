@@ -72,7 +72,7 @@ def main() -> int:
     )
     p.add_argument("--objective", default="time", choices=("time", "energy"))
     p.add_argument(
-        "--order-strategy", default="nn+2opt", choices=("fixed", "nn", "nn+2opt")
+        "--order-strategy", default="nn+2opt", choices=("fixed", "nn", "nn+2opt", "nn_astar")
     )
     p.add_argument("--step-xy", type=float, default=1.0)
     p.add_argument("--joint-transition", choices=("fixed", "search", "caw"))

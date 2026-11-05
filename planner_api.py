@@ -290,8 +290,8 @@ class CawAStarPlanner(Planner):
             value = normalized[key]
             if type(value) is not int or isinstance(value, bool) or value < 1:
                 raise ValueError(f"{key} 必须为正整数")
-        if normalized["order_strategy"] not in ("fixed", "nn", "nn+2opt"):
-            raise ValueError("order_strategy 必须为 fixed / nn / nn+2opt")
+        if normalized["order_strategy"] not in ("fixed", "nn", "nn+2opt", "nn_astar"):
+            raise ValueError("order_strategy 必须为 fixed / nn / nn+2opt / nn_astar")
         if normalized["objective"] not in ("time", "energy"):
             raise ValueError("objective 必须为 time 或 energy")
         if normalized["matrix_mode"] not in (None, "exact3d", "euclidean_lb"):
