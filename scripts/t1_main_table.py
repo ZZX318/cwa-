@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import itertools
+import json
 import re
 import statistics as st
 from fractions import Fraction
@@ -58,7 +59,7 @@ def load_rows():
                     elif key in ('heuristic_lane_found', 'heuristic_grid_aligned'):
                         assert value in ('True', 'False', ''), (key, value)
                         row[key] = {'True': True, 'False': False, '': None}[value]
-                    elif key in ('heading', 'seed'):
+                    elif key in ('heading', 'seed', 'violations'):
                         row[key] = int(value)
                     else:
                         row[key] = float(value) if value else None
@@ -120,6 +121,9 @@ def self_test():
     assert wilcoxon([-3, -2, -1, 1, 2])[2] == expected
     assert wilcoxon([-2, -1, 1, 2])[2] == 1.0
     assert wilcoxon([None, 0, 1e-13])[2] is None
+    assert relative_text(None) == '—'
+    assert relative_text(None, False) == '不适用'
+    assert relative_text(-0.825) == '-82.5%'
     assert [classify(d) for d in (None, 0, -0.5, -1, 1)] == [
         'not_applicable', 'tie', 'not_interpreted', 'win', 'loss']
 
@@ -143,17 +147,35 @@ def compute(rows):
                          if comparison == 'min_time' else zero[0])
                     delta = None if sh is None else sh[tk] - b[tk]
                     cell.append(dict(comparison=comparison, U=U, tau=tau, seed=seed,
-                                     B_label=lab(b), B_A_extra=b[tk],
+                                     B_label=lab(b), B_A_extra=b[tk], B_heading=b['heading'],
+                                     B_total_time=b['total_time'], B_path_length=b['path_length'],
+                                     B_violations=b['violations'],
+                                     Sh_total_time=None if sh is None else sh['total_time'],
+                                     Sh_path_length=None if sh is None else sh['path_length'],
+                                     Sh_violations=None if sh is None else sh['violations'],
+                                     dtime=None if sh is None else sh['total_time'] - b['total_time'],
+                                     rel_impr=None if delta is None or abs(delta) <= ZERO or b[tk] <= ZERO
+                                     else delta / b[tk],
                                      Sh_label=None if sh is None else lab(sh),
                                      Sh_A_extra=None if sh is None else sh[tk],
                                      delta=delta, **{'class': classify(delta)}))
                 paired = [r for r in cell if r['delta'] is not None]
                 summary = dict(comparison=comparison, U=U, tau=tau, n=len(paired))
-                for prefix, column in (('Sh', 'Sh_A_extra'), ('B', 'B_A_extra'), ('delta', 'delta')):
+                for prefix, column in (('Sh', 'Sh_A_extra'), ('B', 'B_A_extra'), ('delta', 'delta'),
+                                       ('Sh_time', 'Sh_total_time'), ('B_time', 'B_total_time'),
+                                       ('dtime', 'dtime')):
                     values = [r[column] for r in paired]
                     summary[prefix + '_mean'] = st.mean(values) if values else None
                     summary[prefix + '_sd'] = st.stdev(values) if len(values) >= 2 else None
                 ds = [r['delta'] for r in paired]
+                dt = [r['dtime'] for r in paired]
+                summary.update(dtime_min=min(dt) if dt else None, dtime_max=max(dt) if dt else None,
+                               Sh_viol_sum=sum(r['Sh_violations'] for r in paired),
+                               B_viol_sum=sum(r['B_violations'] for r in paired),
+                               B_heading_counts='/'.join(
+                                   f"{h}°:{sum(r['B_heading'] == h for r in paired)}" for h in (0, 90)),
+                               rel_impr=None if not ds or all(d == 0 for d in ds)
+                               or summary['B_mean'] <= ZERO else summary['delta_mean'] / summary['B_mean'])
                 summary.update(delta_min=min(ds) if ds else None, delta_max=max(ds) if ds else None)
                 summary.update({c: sum(r['class'] == c for r in cell) for c in CLASSES})
                 n, w, p, pmin = wilcoxon(ds)
@@ -173,11 +195,12 @@ def section(text, heading):
     return parts[1].split('\n## ', 1)[0]
 
 
-def check_reference(records, summaries):
+def check_reference(records, summaries, rows):
     text = (ROOT / REFERENCE).read_text(encoding='utf-8')
     paired_section = section(text, '## 配对：S_h−B-boundary (min total_time) 与 S3−B-boundary (min total_time)')
     baseline_section = section(text, '## 基线各行（0.05 m）')
     paired_cells, summary_cells, baseline_cells = {}, {}, {}
+    all_baseline_cells = {}
     current = None
     for line in paired_section.splitlines():
         match = re.fullmatch(r'### U=(2|4) · τ=(0|0\.5|1\.0)', line)
@@ -197,6 +220,10 @@ def check_reference(records, summaries):
         if not re.match(r'^\| [0-4] \|', line):
             continue
         cells = [c.strip() for c in line.strip('|').split('|')]
+        if cells[1] == 'b_boundary':
+            key = (float(cells[2]), int(cells[0]), cells[3])
+            assert key not in all_baseline_cells
+            all_baseline_cells[key] = cells
         if cells[1] == 'b_boundary' and cells[3].startswith('0°/'):
             key = (float(cells[2]), int(cells[0]))
             assert key not in baseline_cells
@@ -246,6 +273,55 @@ def check_reference(records, summaries):
         equal(s['win'] + s['loss'], int(match[5]), 'interpretable n')
         for key, group in zip(CLASSES, range(6, 10)):
             equal(s[key], int(match[group]), key)
+    equal(len(all_baseline_cells), 20, 'both baseline headings')
+    time_cells = {}
+    time_section = section(text, '### B-boundary 若改用 min path_length 选航向（对照主准则）')
+    for line in time_section.splitlines():
+        if re.match(r'^\| [0-4] \|', line):
+            cells = [c.strip() for c in line.strip('|').split('|')]
+            key = (float(cells[1]), int(cells[0]))
+            equal(key in time_cells, False, 'unique time criterion')
+            match = re.fullmatch(r'(\S+) t=(\S+) L=(\S+)', cells[2])
+            equal(match is not None, True, 'time criterion format')
+            time_cells[key] = match.groups()
+    equal(len(time_cells), 10, 'time criterion rows')
+    meta_rows = []
+    for source in (SOURCES[0][0], SOURCES[2][0]):
+        meta_rows.extend(json.loads((ROOT / source).with_suffix('.meta.json').read_text(
+            encoding='utf-8'))['rows_full'])
+    by_key = {(r['comparison'], r['U'], r['tau'], r['seed']): r for r in records}
+    for r in records:
+        context = str((r['comparison'], r['U'], r['tau'], r['seed']))
+        baseline = all_baseline_cells[(r['U'], r['seed'], r['B_label'])]
+        for field, index in (('path_length', 9), ('total_time', 10)):
+            equal(f(r['B_' + field], 1), baseline[index], context + ' baseline ' + field)
+        equal(str(r['B_violations']), baseline[11], context + ' baseline violations')
+        if r['comparison'] == 'min_time':
+            label, time, length = time_cells[(r['U'], r['seed'])]
+            equal(r['B_label'], label, context + ' time criterion label')
+            equal(f(r['B_total_time'], 1), time, context + ' time criterion time')
+            equal(f(r['B_path_length'], 1), length, context + ' time criterion length')
+        for prefix, variant in (('Sh', 'heuristic'), ('B', 'b_boundary')):
+            if r[prefix + '_label'] is None:
+                continue
+            selected = [row for row in rows if row['variant'] == variant
+                        and row['seed'] == r['seed'] and row['U'] == r['U']
+                        and lab(row) == r[prefix + '_label']]
+            equal(len(selected), 1, context + ' unique selected CSV row ' + prefix)
+            row = selected[0]
+            matches = [m for m in meta_rows if all(m[k] == row[k] for k in
+                       ('variant', 'seed', 'U', 'heading')) and abs(m['offset'] - row['offset']) < TIE]
+            equal(len(matches), 1, context + ' unique metadata row ' + prefix)
+            for field in ('total_time', 'path_length', 'violations', *TAUS):
+                equal(abs(row[field] - matches[0][field]) <= TIE, True,
+                      context + ' CSV/metadata ' + prefix + ' ' + field)
+        if r['comparison'] == 'min_time' and r['delta'] is not None:
+            b0 = by_key[('heading_0', r['U'], r['tau'], r['seed'])]
+            equal(abs(r['Sh_A_extra'] - b0['B_A_extra']) <= TIE, True, context + ' Sh=B0 area')
+            equal(abs(r['delta'] - (b0['B_A_extra'] - r['B_A_extra'])) <= TIE,
+                  True, context + ' delta identity')
+            if r['B_heading'] == 0:
+                equal(abs(r['delta']) <= TIE, True, context + ' heading 0 delta')
     return count
 
 
@@ -255,18 +331,27 @@ def markdown_table(headers, rows):
                 '| ' + ' | '.join(map(str, row)) + ' |' for row in rows]
 
 
+def relative_text(value, applicable=True):
+    return '不适用' if not applicable else '—' if value is None else f'{value:.1%}'
+
+
 def summary_table(summaries, digits):
     headers = ['U (m/s)', 'τ (s)', 'n', 'S_h A_extra/m² (mean±SD)',
                'B A_extra/m² (mean±SD)', 'ΔA_extra/m² mean±SD [min,max]',
-               '胜/平/负/不解读', 'Wilcoxon p (exact, two-sided)']
+               '胜/平/负/不解读', 'Wilcoxon p (exact, two-sided)',
+               '相对改进 ΔA/A_B', 'S_h 总时间/s mean±SD', 'B 总时间/s mean±SD',
+               'Δt=S_h−B /s mean±SD [min,max]', 'B 航向(0°/90°)', '几何违规 S_h/B']
     rows = []
     for s in summaries:
-        def ms(prefix):
-            return f(s[prefix + '_mean'], digits) + '±' + f(s[prefix + '_sd'], digits)
+        def ms(prefix, precision=digits):
+            return f(s[prefix + '_mean'], precision) + '±' + f(s[prefix + '_sd'], precision)
         rows.append([f"{s['U']:g}", s['tau'], str(s['n']), ms('Sh'), ms('B'),
                      ms('delta') + f" [{f(s['delta_min'], digits)},{f(s['delta_max'], digits)}]",
                      '/'.join(str(s[c]) for c in CLASSES),
-                     NA if s['p_exact_two_sided'] is None else f(s['p_exact_two_sided'], 4)])
+                     NA if s['p_exact_two_sided'] is None else f(s['p_exact_two_sided'], 4),
+                     relative_text(s['rel_impr'], s['n'] > 0), ms('Sh_time', 1), ms('B_time', 1),
+                     ms('dtime', 1) + f" [{f(s['dtime_min'], 1)},{f(s['dtime_max'], 1)}]",
+                     s['B_heading_counts'], f"{s['Sh_viol_sum']}/{s['B_viol_sum']}"])
     return headers, rows
 
 
@@ -287,6 +372,8 @@ def render(records, summaries, checks):
         'Δ=S_h−B；负值表示 S_h 额外面积更少。',
         '0<|Δ|<1 m² 不解读（0.05 m 栅格相位误差约 ±1 m²）；|Δ|≤1e-12 计平。',
         'n=4 的格：U=4 时 seed 4 的 S_h 不适用；所有均值与样本 SD 使用同一组配对 seed。',
+        '相对改进为 ΔA/A_B（汇总用均值之比），保留 1 位百分数；零差或基线≤1e-12 显示“—”，S_h 不适用显示“不适用”。',
+        '时间保留 1 位小数；Δt=S_h−B；航向计数及几何违规总数均使用配对 seed，零违规仍显示 0/0。',
         MIN_NOTE,
         'τ=1.0 s 为假设值；B-boundary 是张昆 2022 的简化代理（只读到摘要）。',
         'Wilcoxon 用全部非零配对 Δ（含 0<|Δ|<1 的不解读项，如 U=2 τ=0.5 seed 3 的 −0.67）；p 值保留 4 位小数。',
@@ -306,8 +393,8 @@ def render(records, summaries, checks):
              '绝对值排序，同值容差 1e-9，组内平均秩。W+ 为正差秩和；'
              '以 Fraction 枚举 2^n_eff 种符号分配，p=min(1,2·min(P(W+≤obs),P(W+≥obs)))。'
              'n_eff=0 时检验及最小 p 不适用；否则最小双侧 p=2/2^n_eff。', '']
-    main += notes + ['', f'逐格断言通过：{checks} 项（数值保留 4 位小数，标签逐字核对）。', '']
-    paper = ['# T1 三线表', '', '面积及统计量保留 2 位小数；精确 p 的未舍入值见汇总 CSV。', '']
+    main += notes + ['', f'逐格断言通过：{checks} 项（面积 4 位、时间/路径 1 位与报告核对；元数据及面积恒等式容差 1e-9）。', '']
+    paper = ['# T1 三线表', '', '面积保留 2 位小数、时间 1 位小数；精确 p 的未舍入值见汇总 CSV。', '']
     for comp, title in zip(COMPARISONS, TITLES):
         ss = [s for s in summaries if s['comparison'] == comp]
         main += ['## ' + title, '', '### 汇总', '']
@@ -318,12 +405,22 @@ def render(records, summaries, checks):
         for s in ss:
             cell = [r for r in records if (r['comparison'], r['U'], r['tau']) == (comp, s['U'], s['tau'])]
             main += [f"### U={s['U']:g} · τ={s['tau']} · n={s['n']}", '']
-            main += markdown_table(['seed', 'B 标签', 'B A_extra', 'S_h 标签', 'S_h A_extra', 'Δ', '分类'], [
+            main += markdown_table(['seed', 'B 标签', 'B A_extra', 'S_h 标签', 'S_h A_extra', 'Δ', '分类',
+                                     'B 航向', 'B 总时间', 'S_h 总时间', 'Δt', '相对改进', '违规 S_h/B'], [
                 [str(r['seed']), r['B_label'], f(r['B_A_extra']), r['Sh_label'] or 'S_h 不适用',
-                 f(r['Sh_A_extra']), f(r['delta']), CLASS_CN[r['class']]] for r in cell]) + ['']
+                 f(r['Sh_A_extra']), f(r['delta']), CLASS_CN[r['class']],
+                 f"{r['B_heading']}°", f(r['B_total_time'], 1), f(r['Sh_total_time'], 1),
+                 f(r['dtime'], 1), relative_text(r['rel_impr'], r['delta'] is not None),
+                 f"{r['Sh_violations'] if r['Sh_violations'] is not None else '不适用'}/{r['B_violations']}"]
+                for r in cell]) + ['']
         headers, table_rows = summary_table(ss, 2)
-        paper += ['## ' + title, ''] + markdown_table(headers, table_rows) + ['']
-        paper += plain_table(headers, table_rows) + ['']
+        paper += ['## ' + title, '']
+        for subtitle, indices in (('面积表', list(range(9))),
+                                  ('时间表', [0, 1, 2, 9, 10, 11, 12, 13])):
+            split_headers = [headers[i] for i in indices]
+            split_rows = [[row[i] for i in indices] for row in table_rows]
+            paper += ['### ' + subtitle, ''] + markdown_table(split_headers, split_rows) + ['']
+            paper += plain_table(split_headers, split_rows) + ['']
     paper += ['注：', ''] + notes + ['']
     return '\n'.join(main), '\n'.join(paper)
 
@@ -332,7 +429,7 @@ def main():
     self_test()
     rows = load_rows()
     records, summaries = compute(rows)
-    checks = check_reference(records, summaries)
+    checks = check_reference(records, summaries, rows)
     main_md, paper_md = render(records, summaries, checks)
     for name, data in (('T1_main_table.csv', records), ('T1_main_table_summary.csv', summaries)):
         with (ROOT / 'results' / name).open('w', encoding='utf-8', newline='') as stream:
