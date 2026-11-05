@@ -17,7 +17,7 @@ from planning import (
     options_fingerprint,
 )
 from planning.order import solve_order
-from planning.planner import fixed_y_lanes, lane_parts, zone_exclusions
+from planning.planner import fixed_y_lanes, lane_parts, zone_exclusions, maybe_append_repair_lanes
 from planning.drift import expand_sensitive_inward
 from planning.routing3d import route3d
 from scene import validate_scene
@@ -309,6 +309,7 @@ class CawAStarPlanner(Planner):
             c = configuration(config or {})
             scene = expand_sensitive_inward(original_scene, c)
             layout = fixed_y_lanes(scene, c)
+            layout = maybe_append_repair_lanes(scene, layout, c)
             lanes = layout["lanes"]
             height = layout["work_height"]
             resolved = resolve(scene, 1)

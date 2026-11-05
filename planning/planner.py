@@ -74,6 +74,36 @@ def fixed_y_lanes(scene: dict, raw=None) -> dict:
     return dict(lanes=lanes, strip_count=active, work_height=height, config=c)
 
 
+def maybe_append_repair_lanes(scene: dict, layout: dict, c: dict) -> dict:
+    """「新增，不改已冻结主表」: append legal candidate parts after strip cuts.
+
+    scene is already expanded. Keep the original lanes and their order intact;
+    callers route and safety-check repairs exactly like other lanes.
+    """
+    if not c.get("repair_lanes", 0):
+        return layout
+    from .zones import _spray_candidates, active_no_fly
+
+    associated = {
+        tid for lane in layout["lanes"] for part in lane_parts(scene, lane, c)
+        if part.get("spray") for tid in part["target_ids"]
+    }
+    active = active_no_fly(scene, c, layout["work_height"])
+    repairs = []
+    for target in scene["targets"]:
+        if target["id"] in associated:
+            continue
+        candidates = _spray_candidates(scene, c, target, active)
+        if candidates:
+            repair = copy.deepcopy(candidates[0])
+            repairs.append(repair)
+            associated.update(repair["target_ids"])
+    if not repairs:
+        return layout
+    return dict(layout, lanes=layout["lanes"] + repairs,
+                strip_count=layout["strip_count"] + len(repairs))
+
+
 def lane_parts(scene: dict, lane: dict, c: dict) -> list:
     """_split_lane without leading/trailing no-fly gaps.
 
@@ -250,6 +280,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
         scene = expand_sensitive_inward(original_scene, c0)
         layout = fixed_y_lanes(scene, raw or {})
         c = layout["config"]
+        layout = maybe_append_repair_lanes(scene, layout, c)
         lanes = layout["lanes"]
         height = layout["work_height"]
         plan["config"] = c

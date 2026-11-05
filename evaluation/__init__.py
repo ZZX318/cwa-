@@ -68,7 +68,7 @@ def at(evaluation, timeline, time):
       total_cells  = build() 中按 resolution（默认 0.5 m）cell 中心采样、且只取"应喷目标"树冠圆盘内的单元数；
                      应喷目标 = 不在 planning.zones.classify(scene, config) 结果里的目标。classify 会按
                      buffer_expand 外扩后的禁喷几何判定，树冠圆盘完全落在外扩禁喷区内的树记为 no_spray 豁免，
-                     不可达的记为 no_fly / no_spray_cut，这些树整棵移出分母。
+                     不可达的记为 no_fly / no_spray_cut / unreachable，这些树整棵移出分母。
       covered_cells = 上述单元中，中心落在至少一个喷洒段矩形 rectangle(seg, swath)（闭区间）内的单元数。
     因此：
       * 整棵落入缓冲区的树不计入损失（只体现在 N_eligible / exemption_rate 中）；
@@ -173,7 +173,7 @@ def _zone_metrics(evaluation, target_stats):
                 caused = True
                 break
         entry = classified.get(x["target_id"])
-        if entry and entry.get("reason") in ("no_fly", "no_spray_cut"):
+        if entry and entry.get("reason") in ("no_fly", "no_spray_cut", "unreachable"):
             caused = True
         if caused:
             partial.append(dict(target_id=x["target_id"], covered_fraction=x["coverage"]))

@@ -427,7 +427,7 @@ def run() -> int:
         }
         truth = classify(scene, configuration(c))
         assert truth, "外扩后应有豁免/不可达目标"
-        assert all(e["reason"] in ("no_spray", "no_spray_cut", "no_fly") for e in truth.values())
+        assert all(e["reason"] in ("no_spray", "no_spray_cut", "no_fly", "unreachable") for e in truth.values())
         plan = generate_plan(scene, c)
         assert plan["status"] == "success", plan.get("reason")
         assert "缺少有效喷洒关联" not in (plan.get("reason") or "")
@@ -594,6 +594,64 @@ def run() -> int:
         assert abs(area - 2.0) < 1e-9, area  # Two 1 x 1 arms.
         assert zones.rect_poly_positive_overlap(rect, {"vertices": split_u}) is True
         print("  指标 · " + " | ".join(results))
+
+    def repair_lane_variant():
+        """「新增，不改已冻结主表」: append-only and default-off contract."""
+        from planning.planner import maybe_append_repair_lanes, lane_parts
+        scene = generate(dict(rows=1, trees_per_row=1))
+        off = configuration({})
+        on = configuration(dict(repair_lanes=1))
+        full = fixed_y_lanes(scene, off)
+        snapshot = copy.deepcopy(full)
+        assert maybe_append_repair_lanes(scene, full, off) is full
+        assert maybe_append_repair_lanes(scene, full, on) is full
+        assert full == snapshot
+        gap = dict(full, lanes=[], strip_count=0)
+        assert maybe_append_repair_lanes(scene, gap, off) is gap
+        repaired = maybe_append_repair_lanes(scene, gap, on)
+        assert repaired["lanes"] and gap["lanes"] == []
+        associated = {tid for lane in repaired["lanes"] for part in lane_parts(scene, lane, on)
+                      if part["spray"] for tid in part["target_ids"]}
+        assert associated == {t["id"] for t in scene["targets"]}
+        assert maybe_append_repair_lanes(scene, repaired, on) is repaired
+        for invalid in (-1, 2, True, "1", float("nan")):
+            try:
+                configuration(dict(repair_lanes=invalid))
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(invalid)
+
+    def unreachable_classification():
+        from unittest.mock import patch
+        from planning.zones import classify, summary, _spray_candidates
+        from planning.safety import check as safety_check
+        scene = generate(dict(rows=1, trees_per_row=2))
+        c = configuration({})
+        tid = scene["targets"][0]["id"]
+        plan = generate_plan(scene, c)
+        for seg in plan["segments"]:
+            seg["target_ids"] = [t for t in seg["target_ids"] if t != tid]
+            if seg["spray"] and not seg["target_ids"]:
+                seg.update(spray=False, type="transit")
+        def candidates(scene, c, target, active):
+            return [] if target["id"] == tid else _spray_candidates(scene, c, target, active)
+        with patch("planning.zones._spray_candidates", side_effect=candidates):
+            truth = classify(scene, c)
+            assert truth[tid]["reason"] == "unreachable"
+            assert summary(scene, c)["unreachable"] == [tid]
+            plan["excluded_targets"] = list(truth.values())
+            safety_check(scene, plan)
+            plan["excluded_targets"][0]["reason"] = "no_fly"
+            try:
+                safety_check(scene, plan)
+            except ValueError as error:
+                assert "排除理由与区域几何不符" in str(error)
+            else:
+                raise AssertionError("forged exclusion accepted")
+
+    check("「新增，不改已冻结主表」repair默认关闭/补带/幂等", repair_lane_variant)
+    check("「新增，不改已冻结主表」unreachable分类与安全核对", unreachable_classification)
 
     check("min_buffer几何下限与默认回归", min_buffer_semantics)
     check("查表分档", table)

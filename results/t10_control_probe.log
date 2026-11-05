@@ -1,0 +1,4 @@
+「新增，不改已冻结主表」 — control; reasons read from frozen CSV, geometry recomputed
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 0, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.88, "fully_cut_lane_x": [[2.88, [0.88, 4.88]], [6.88, [4.88, 8.88]], [10.88, [8.88, 12.88]]], "n_geom_missing": 9, "same_as_safety": false, "only_tree_centred": true}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 1, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.857, "fully_cut_lane_x": [[2.857, [0.857, 4.857]], [6.857, [4.857, 8.857]], [10.857, [8.857, 12.857]]], "n_geom_missing": 5, "same_as_safety": false, "only_tree_centred": true}
+SUMMARY {"w": 4.0, "U": 2.0, "d": 10.0, "seed": 4, "offset": 0.0, "status": "failed", "lane_anchor_xmin": 0.902, "fully_cut_lane_x": [[2.902, [0.902, 4.902]], [6.902, [4.902, 8.902]], [10.902, [8.902, 12.902]]], "n_geom_missing": 2, "same_as_safety": false, "only_tree_centred": true}

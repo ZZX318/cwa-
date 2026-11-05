@@ -261,6 +261,9 @@ def classify(scene, c, buffer=None):
         ]
         if sprays:
             out[t["id"]] = dict(target_id=t["id"], reason="no_spray_cut", zone_ids=sprays)
+        else:
+            # 「新增，不改已冻结主表」：no legal candidate, no zone overlap.
+            out[t["id"]] = dict(target_id=t["id"], reason="unreachable", zone_ids=[])
     return out
 
 
@@ -280,6 +283,7 @@ def summary(scene, c=None, excluded=None):
         exempt_no_spray=by("no_spray"),
         unreachable_no_fly=by("no_fly"),
         unreachable_no_spray=by("no_spray_cut"),
+        unreachable=by("unreachable"),
         exemption_rate=len(items) / total if total else 0.0,
         classified=items,
     )
