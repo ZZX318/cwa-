@@ -18,8 +18,8 @@ from planning.safety import check, _drift_ray_violations
 from planning.zones import classify
 
 LABEL = '「新增，不改已冻结主表」'
-# Captured from a609968 before T10 edits, generate_plan + probe offset=0.
-BASELINE = {'0': {'plan_hash': '52095e7162c33e37dee219fa5e1ebc04849f293cb2901d4642c58e9aec2f5179', 'segments_digest': '218d5208975e962d44c304cf15a5e10e9ecda889f90f53ac68afe5b9d223d412'}, '1': {'plan_hash': '1e9791d2dbba1d89fc5b4f2cbbb5ffc18d53f1058222515f807f18c3988868fb', 'segments_digest': 'cc17a21cb3072f98c6770d525f901136257f6c0bc0d4b53fc1f918569532e1d6'}, '4': {'plan_hash': 'f6c33e7d33bdf50f093877e52be3fb00d1884b59ca7b2da4040ecea35907f623', 'segments_digest': '4fc9373d01e0150a9d7232a1dcd4b0880dfa43443f52dc6d0cef5ed80338b838'}}
+# Live generate_plan on 463badb (probe offset=0); a609968 capture was stale (it already carried min_buffer=0).
+BASELINE = {'0': {'plan_hash': 'bd031af9dcccc87fdeeffeac7a1c6b0be95908f4a0b9ce8a71186c1fd5895d70', 'segments_digest': '218d5208975e962d44c304cf15a5e10e9ecda889f90f53ac68afe5b9d223d412'}, '1': {'plan_hash': '505c3aa2a714635f274b8bbb2a79c74251c93f81e3a858c3d13c0b74fee4cc27', 'segments_digest': 'cc17a21cb3072f98c6770d525f901136257f6c0bc0d4b53fc1f918569532e1d6'}, '4': {'plan_hash': '38db9f4431debca48fd0461e233cb648000818e09d26a4f53f18dd942773d3e2', 'segments_digest': '4fc9373d01e0150a9d7232a1dcd4b0880dfa43443f52dc6d0cef5ed80338b838'}}
 
 
 def run():
@@ -56,7 +56,7 @@ def run():
         p = generate_plan(H.scene0(seed), {**H.JOB, 'swath': 2, 'wind_speed': 2,
                           'wind_direction': 0, 'buffer_expand': 1, 'drift_mode': 'sort', 'repair_lanes': 0})
         restored = copy.deepcopy(p)
-        del restored['config']['repair_lanes']
+        restored['config'].pop('repair_lanes', None)
         restored['config_hash'] = config_fingerprint(restored['config'])
         old = BASELINE[str(seed)]
         proof = dict(seed=seed, status=p['status'], baseline=old,
@@ -71,7 +71,7 @@ def run():
             assert row['status'] == 'failed' and '目标缺少有效喷洒关联' in row['reason'], row
         if row['repair_lanes'] == 1:
             assert row['status'] == 'success' and row['safety_violations'] == 0 and row['drift_violations'] == 0, row
-    result = dict(label=LABEL, baseline_commit='a609968', planner='generate_plan + a_trial_heading offset=0',
+    result = dict(label=LABEL, baseline_commit='463badb', planner='generate_plan + a_trial_heading offset=0',
                   cases=rows, w2_proofs=proofs)
     sha = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=ROOT, text=True).strip()
     path = ROOT / 'results' / f't10_repair_lane_validate.{sha}.json'

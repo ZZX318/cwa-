@@ -1,0 +1,207 @@
+{
+  "label": "「新增，不改已冻结主表」",
+  "baseline_commit": "463badb",
+  "planner": "generate_plan + a_trial_heading offset=0",
+  "cases": [
+    {
+      "seed": 0,
+      "repair_lanes": 0,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "failed",
+      "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-03', 'target-tree-02-05', 'target-tree-02-06', 'target-tree-02-09', 'target-tree-02-10', 'target-tree-02-12', 'target-tree-02-14', 'target-tree-02-15']（不在任何禁喷/禁飞区排除范围内）",
+      "geom_missing": [
+        "target-tree-02-02",
+        "target-tree-02-03",
+        "target-tree-02-05",
+        "target-tree-02-06",
+        "target-tree-02-09",
+        "target-tree-02-10",
+        "target-tree-02-12",
+        "target-tree-02-14",
+        "target-tree-02-15"
+      ],
+      "appended_lanes": 0,
+      "safety_violations": null,
+      "drift_violations": null
+    },
+    {
+      "seed": 1,
+      "repair_lanes": 0,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "failed",
+      "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-06', 'target-tree-02-09', 'target-tree-02-11', 'target-tree-02-12']（不在任何禁喷/禁飞区排除范围内）",
+      "geom_missing": [
+        "target-tree-02-02",
+        "target-tree-02-06",
+        "target-tree-02-09",
+        "target-tree-02-11",
+        "target-tree-02-12"
+      ],
+      "appended_lanes": 0,
+      "safety_violations": null,
+      "drift_violations": null
+    },
+    {
+      "seed": 2,
+      "repair_lanes": 0,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 0,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 3,
+      "repair_lanes": 0,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 0,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 4,
+      "repair_lanes": 0,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "failed",
+      "reason": "任务结构不完整：目标缺少有效喷洒关联 ['target-tree-02-02', 'target-tree-02-12']（不在任何禁喷/禁飞区排除范围内）",
+      "geom_missing": [
+        "target-tree-02-02",
+        "target-tree-02-12"
+      ],
+      "appended_lanes": 0,
+      "safety_violations": null,
+      "drift_violations": null
+    },
+    {
+      "seed": 0,
+      "repair_lanes": 1,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 9,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 1,
+      "repair_lanes": 1,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 5,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 2,
+      "repair_lanes": 1,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 0,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 3,
+      "repair_lanes": 1,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 0,
+      "safety_violations": 0,
+      "drift_violations": 0
+    },
+    {
+      "seed": 4,
+      "repair_lanes": 1,
+      "swath": 4,
+      "U": 2,
+      "d": 10.0,
+      "offset": 0,
+      "status": "success",
+      "reason": "",
+      "geom_missing": [],
+      "appended_lanes": 2,
+      "safety_violations": 0,
+      "drift_violations": 0
+    }
+  ],
+  "w2_proofs": [
+    {
+      "seed": 0,
+      "status": "success",
+      "baseline": {
+        "plan_hash": "bd031af9dcccc87fdeeffeac7a1c6b0be95908f4a0b9ce8a71186c1fd5895d70",
+        "segments_digest": "218d5208975e962d44c304cf15a5e10e9ecda889f90f53ac68afe5b9d223d412"
+      },
+      "segments_digest": "218d5208975e962d44c304cf15a5e10e9ecda889f90f53ac68afe5b9d223d412",
+      "plan_hash": "bd031af9dcccc87fdeeffeac7a1c6b0be95908f4a0b9ce8a71186c1fd5895d70",
+      "restored_plan_hash": "bd031af9dcccc87fdeeffeac7a1c6b0be95908f4a0b9ce8a71186c1fd5895d70",
+      "segments_identical": true,
+      "restored_hash_identical": true
+    },
+    {
+      "seed": 1,
+      "status": "success",
+      "baseline": {
+        "plan_hash": "505c3aa2a714635f274b8bbb2a79c74251c93f81e3a858c3d13c0b74fee4cc27",
+        "segments_digest": "cc17a21cb3072f98c6770d525f901136257f6c0bc0d4b53fc1f918569532e1d6"
+      },
+      "segments_digest": "cc17a21cb3072f98c6770d525f901136257f6c0bc0d4b53fc1f918569532e1d6",
+      "plan_hash": "505c3aa2a714635f274b8bbb2a79c74251c93f81e3a858c3d13c0b74fee4cc27",
+      "restored_plan_hash": "505c3aa2a714635f274b8bbb2a79c74251c93f81e3a858c3d13c0b74fee4cc27",
+      "segments_identical": true,
+      "restored_hash_identical": true
+    },
+    {
+      "seed": 4,
+      "status": "success",
+      "baseline": {
+        "plan_hash": "38db9f4431debca48fd0461e233cb648000818e09d26a4f53f18dd942773d3e2",
+        "segments_digest": "4fc9373d01e0150a9d7232a1dcd4b0880dfa43443f52dc6d0cef5ed80338b838"
+      },
+      "segments_digest": "4fc9373d01e0150a9d7232a1dcd4b0880dfa43443f52dc6d0cef5ed80338b838",
+      "plan_hash": "38db9f4431debca48fd0461e233cb648000818e09d26a4f53f18dd942773d3e2",
+      "restored_plan_hash": "38db9f4431debca48fd0461e233cb648000818e09d26a4f53f18dd942773d3e2",
+      "segments_identical": true,
+      "restored_hash_identical": true
+    }
+  ]
+}

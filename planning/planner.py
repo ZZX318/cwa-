@@ -5,7 +5,7 @@ from scene.geometry import polygon_bounds
 from scene.launch import resolve
 from .footprint import overlaps_target
 from .zones import rect_poly_positive_overlap
-from .model import configuration, config_fingerprint, fingerprint, options_fingerprint
+from .model import configuration, config_fingerprint, fingerprint, options_fingerprint, public_config
 from .drift import expand_sensitive_inward
 from .safety import check
 
@@ -283,7 +283,7 @@ def generate_plan(scene: dict, raw=None, uav=1) -> dict:
         layout = maybe_append_repair_lanes(scene, layout, c)
         lanes = layout["lanes"]
         height = layout["work_height"]
-        plan["config"] = c
+        plan["config"] = public_config(c)
         plan["config_hash"] = config_fingerprint(c)
         resolved = resolve(scene, uav)
         start = list(resolved["start"]["position"])

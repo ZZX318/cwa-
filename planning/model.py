@@ -61,9 +61,22 @@ def fingerprint(scene: dict) -> str:
     return _digest(scene)
 
 
+# 463badb 之后新增的可选开关：取默认 0 时不序列化，保证默认 plan_hash 与 463badb 一致。
+_OPTIONAL_DEFAULT_OFF = ("repair_lanes", "min_buffer")
+
+
+def public_config(config: dict) -> dict:
+    """Drop newly added optional switches that sit at their default 0 value."""
+    c = dict(config)
+    for k in _OPTIONAL_DEFAULT_OFF:
+        if k in c and not isinstance(c[k], bool) and c[k] == 0:
+            del c[k]
+    return c
+
+
 def config_fingerprint(config: dict) -> str:
     """Fingerprint of the effective job configuration, including transition mode."""
-    return _digest(config)
+    return _digest(public_config(config))
 
 
 def options_fingerprint(options: dict) -> str:
