@@ -4,6 +4,18 @@
 
 现已实现单机基础几何作业计划；未实现无人机运动、喷洒仿真、覆盖统计、多机协同、研究指标、随机地图、图片导入或复杂地形。页面中没有这些功能的空壳或虚构结果。
 
+## 完整工程交付（paper/zones-drift-p1）
+
+主线定稿与数字指针、τ=1.0 敏感性档、未做项见 [`RESULTS_complete.md`](RESULTS_complete.md)。  
+主对比（`S_h` vs `B-boundary`）冻结复现：
+
+```bash
+bash scripts/repro_main_contrast.sh
+# 等价：python3 scripts/a_trial_1b_report.py 2ff2df1 58024ac 0e0715a
+```
+
+（从钉死 CSV 重算 1b 表，不重规划。隔夜全文：`RESULTS_overnight.md`。）
+
 ## 论文 A 小试：对照基线说明
 
 本仓库 `scripts/a_trial_extra_runs.py` 中的 **B-online** / **B-boundary** 是对照实验用的**简化几何代理，不是原方法复现**。
