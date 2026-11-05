@@ -1,5 +1,7 @@
 # RESULTS_overnight
 
+> **完整工程交付入口**：见同目录 [`RESULTS_complete.md`](RESULTS_complete.md)（主线定稿、关键数字指针、τ=1.0 敏感性档、拒出附录指针、未做项、可复现命令）。本文件保留隔夜实验全文，数字以各节引用的 CSV/报告/commit 为准。
+
 ## 1. A 小试 seed 0–4
 
 - 运行脚本：`scripts/a_trial_heading.py --seeds 0-4 --workers 7`，数据 commit **2ff2df1**（worktree 干净），CSV：`results/a_trial_seeds0-4_2ff2df1.csv`（逐 seed：`results/a_trial_seed{0..4}_2ff2df1.csv`），另有 `.summary.json` / `.meta.json` / `.log`。
