@@ -637,6 +637,21 @@ def run() -> int:
         def candidates(scene, c, target, active):
             return [] if target["id"] == tid else _spray_candidates(scene, c, target, active)
         with patch("planning.zones._spray_candidates", side_effect=candidates):
+            # 默认 repair_lanes=0：不豁免（fail-closed），未喷目标必须被安全校验拒绝
+            assert tid not in classify(scene, c)
+            assert summary(scene, c)["unreachable"] == []
+            plan["excluded_targets"] = []
+            try:
+                safety_check(scene, plan)
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("OFF: unsprayed unreachable target accepted")
+            # repair_lanes=1：标注 unreachable 豁免
+            c = configuration({"repair_lanes": 1})
+            from planning.model import config_fingerprint
+            plan["config"] = dict(plan["config"], repair_lanes=1)
+            plan["config_hash"] = config_fingerprint(plan["config"])
             truth = classify(scene, c)
             assert truth[tid]["reason"] == "unreachable"
             assert summary(scene, c)["unreachable"] == [tid]

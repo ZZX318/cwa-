@@ -261,8 +261,9 @@ def classify(scene, c, buffer=None):
         ]
         if sprays:
             out[t["id"]] = dict(target_id=t["id"], reason="no_spray_cut", zone_ids=sprays)
-        else:
+        elif c.get("repair_lanes", 0) == 1:
             # 「新增，不改已冻结主表」：no legal candidate, no zone overlap.
+            # 仅 repair_lanes=1 时标注豁免；默认（0）保持原 fail-closed：不列入，交由规划/安全校验失败。
             out[t["id"]] = dict(target_id=t["id"], reason="unreachable", zone_ids=[])
     return out
 
