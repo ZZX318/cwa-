@@ -2,11 +2,15 @@
 
 新增，不改已冻结主表。
 d∈{11,13,15} 是几何假设档（geometric assumption tiers），不是孔令标风速档；wind_speed carrier U=2.0，进程内 drift_buffer override；w=2。
-Δ=S_h−B-boundary；负值为 S_h 面积更小。仅成功且适用的相同 seed 配对；SD 为样本 SD。
+Δ=S_h−B-boundary；负值表示 S_h 的 A_extra 更小（符号约定，不作优劣结论）。仅成功且适用的相同 seed 配对；SD 为样本 SD。
 |Δ|≤1e-12 为 tie；其余 |Δ|<1 m² 为 not_interpreted。复用 F1 classify/wilcoxon；exact 双侧符号枚举、平均秩、去零差，保留不解读项；n≤5 最小 p≥0.0625。
-τ 仅影响评估阈值，每个计划同时评估 0/0.5/1.0；total_time 是计划执行时间（秒）。
+τ 仅影响评估阈值，每个计划同时评估 0/0.5/1.0；total_time 是计划执行时间（秒）。面积与时间必须并列；禁止写「S_h 更优」。
+
+> **口径摘要：**（1）τ=0 的 Δ 是**几何核算**：B 的 A_extra(τ=0) 等于损失带 [x_F, x_F+r] 内非 F 冠层面积；d=11 时 5/5 seed 为 42.61/44.34/40.94/41.62/41.38，不是独立实验证据。（2）d=11、0° 须并列时间：S_h 多花 +149.9±10.8 s（约 10%）；航道 556–563 vs 398–409（S_h 边界落在偶数 x、树多跨 3 带）；seed0：A_extra(τ=0) 0 vs 42.61 m²，时间 1606.25 vs 1459.62 s。（3）d=15：缓冲边界落在行间空带，没有被切的冠层，对齐问题不存在，S_h 不适用——几何必然，非算法缺陷；τ>0 描述性数字先不作证据解读（表中 90° 源值仍保留以便核对）。（4）90° Δ=0 为**几何重合**（与 F1 同）：各 d 上 3/5 plan_hash 相同，其余仅浮点差，同一份计划。
 
 ## d=11, r=d−floor(d/w)w=1
+
+> τ=0：几何核算。0°：面积与时间并列。90°：几何重合。
 
 | heading /° | τ | n | 左 A_extra mean±SD /m² | 右 A_extra mean±SD /m² | Δ mean±SD [min,max] /m² | win/tie/loss/not_interpreted | exact two-sided p | 左 total_time mean±SD /s | 右 total_time mean±SD /s | Δt mean±SD [min,max] /s | violations sums 左/右 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -19,6 +23,8 @@ d∈{11,13,15} 是几何假设档（geometric assumption tiers），不是孔令
 
 ## d=13, r=d−floor(d/w)w=1
 
+> τ=0：几何核算；90°：几何重合。时间与 d=11 同批计划并列报告。
+
 | heading /° | τ | n | 左 A_extra mean±SD /m² | 右 A_extra mean±SD /m² | Δ mean±SD [min,max] /m² | win/tie/loss/not_interpreted | exact two-sided p | 左 total_time mean±SD /s | 右 total_time mean±SD /s | Δt mean±SD [min,max] /s | violations sums 左/右 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | 0 | 5 | 0.0000±0.0000 | 13.3930±2.9420 | -13.3930±2.9420 [-17.8075,-10.2325] | 5/0/0/0 | 0.0625 | 1609.2772±6.5320 | 1459.3366±12.8927 | 149.9405±10.8301 [141.0876,168.3514] | 0/0 |
@@ -29,6 +35,8 @@ d∈{11,13,15} 是几何假设档（geometric assumption tiers），不是孔令
 | 90 | 1.0 | 5 | 14.3595±3.7853 | 14.3595±3.7853 | 0.0000±0.0000 [0.0000,0.0000] | 0/5/0/0 | 不适用（无非零配对差） | 1395.5361±29.5374 | 1395.5361±29.5374 | 0.0000±0.0000 [0.0000,0.0000] | 0/0 |
 
 ## d=15, r=d−floor(d/w)w=1
+
+> 缓冲边界落在行间空带，没有被切的冠层，对齐问题不存在，S_h 不适用（几何必然，非算法缺陷）。0° 配对 n=0。90°：几何重合。τ>0 描述性数字先不作证据解读（表中 90° 源值仍保留以便核对）。
 
 | heading /° | τ | n | 左 A_extra mean±SD /m² | 右 A_extra mean±SD /m² | Δ mean±SD [min,max] /m² | win/tie/loss/not_interpreted | exact two-sided p | 左 total_time mean±SD /s | 右 total_time mean±SD /s | Δt mean±SD [min,max] /s | violations sums 左/右 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
