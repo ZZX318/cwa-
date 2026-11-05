@@ -41,6 +41,37 @@ def run() -> int:
         assert buffer_distance_m(5) == 16.0
         assert buffer_distance_m(6) is None
 
+    def min_buffer_semantics():
+        from planning.drift import drift_cost_buffer
+        for expand in (0, 1):
+            for wind in (0, 1, 2, 3, 4, 5, 6):
+                for explicit in (0, 7, 20):
+                    c = configuration(dict(buffer_expand=expand, wind_speed=wind,
+                                           drift_buffer=explicit, min_buffer=0))
+                    expected = (0.0 if not expand or wind == 0 else
+                                explicit if explicit > 0 else buffer_distance_m(wind))
+                    if expected is None:
+                        try:
+                            resolve_effective_buffer(c)
+                        except ValueError:
+                            continue
+                        raise AssertionError("Expected out-of-range error")
+                    assert resolve_effective_buffer(c) == expected
+        for expand, wind, explicit, minimum, expected in (
+            (1, 0, 0, 1, 1), (1, 2, 0, 1, 10), (0, 2, 0, 1, 0),
+            (1, 2, 7, 12, 12), (1, 4, 0, 20, 20), (1, 0, 7, 1, 1),
+        ):
+            c = configuration(dict(buffer_expand=expand, wind_speed=wind,
+                                   drift_buffer=explicit, min_buffer=minimum))
+            assert resolve_effective_buffer(c) == expected
+            assert drift_cost_buffer(c) == drift_cost_buffer({**c, "min_buffer": 0})
+        for bad in (-1, float("nan"), float("inf")):
+            try:
+                configuration(dict(min_buffer=bad))
+            except ValueError:
+                continue
+            raise AssertionError("Invalid min_buffer accepted")
+
     def wind0_zero():
         c = configuration({"buffer_expand": 1.0, "wind_speed": 0.0})
         assert resolve_effective_buffer(c) == 0.0
@@ -564,6 +595,7 @@ def run() -> int:
         assert zones.rect_poly_positive_overlap(rect, {"vertices": split_u}) is True
         print("  指标 · " + " | ".join(results))
 
+    check("min_buffer几何下限与默认回归", min_buffer_semantics)
     check("查表分档", table)
     check("无风有效缓冲为0", wind0_zero)
     check("U=4→16", u4_is_16)

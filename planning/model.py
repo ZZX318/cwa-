@@ -6,7 +6,7 @@ import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
 
-DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0, buffer_expand=0.0, drift_mode="sort")
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", drift_buffer=0.0, min_buffer=0.0, buffer_expand=0.0, drift_mode="sort")
 
 PLAN_VERSIONS = ("1.0", "1.1", "1.2")
 OBJECTIVES = ("time", "energy")
@@ -95,7 +95,7 @@ def configuration(raw: dict) -> dict:
     if type(be) not in (int, float) or not math.isfinite(be) or be not in (0, 0.0, 1, 1.0):
         raise ValueError("buffer_expand 必须为 0 或 1")
     c["buffer_expand"] = float(be)
-    allow_zero = ("wind_speed", "wind_direction", "drift_buffer", "buffer_expand")
+    allow_zero = ("wind_speed", "wind_direction", "drift_buffer", "buffer_expand", "min_buffer")
     for k, v in c.items():
         if k in ("target_type", "transition_mode", "drift_mode"):
             continue

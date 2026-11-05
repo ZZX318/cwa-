@@ -11,7 +11,9 @@ DOI：10.11975/j.issn.1002-6819.202509207
 - buffer_expand: 0/1，是否启用外扩约束（消融可关）
 - drift_mode: "off"|"sort"|"sort_drift"（排序是否加漂移代理代价）
 - drift_buffer: 显式缓冲(m)；>0 时覆盖查表结果（仍受 buffer_expand / 风速门控）
-- wind_speed==0 时有效缓冲恒为 0；DEFAULT.buffer_expand 默认关，论文消融显式打开
+- min_buffer: 非负几何最小缓冲(m)，默认 0；不是孔令标 2026 的推荐值
+- buffer_expand 关 → 0；无风 → min_buffer；有风 → max(显式值或查表值, min_buffer)
+- DEFAULT.buffer_expand 默认关；min_buffer 不影响排序漂移代理 drift_cost_buffer
 """
 
 from __future__ import annotations
@@ -44,26 +46,27 @@ def resolve_effective_buffer(config) -> float:
 
     门控顺序：
     1. buffer_expand 关（0/false）→ 0
-    2. wind_speed == 0 → 0（保护无风回归；即使显式打开 buffer_expand 也不外扩）
-    3. 显式 drift_buffer > 0 → 用该值（覆盖查表）
-    4. 否则查表；U>5 → ValueError，禁止静默外推
+    2. wind_speed == 0 → min_buffer（默认 0；几何假设可用于无风）
+    3. 显式 drift_buffer > 0 → max(该值, min_buffer)
+    4. 否则 max(查表值, min_buffer)；U>5 → ValueError，禁止静默外推
     """
     expand = config.get("buffer_expand", 0.0)
     if expand in (0, 0.0, False):
         return 0.0
+    minimum = float(config.get("min_buffer", 0.0) or 0.0)
     wind = float(config.get("wind_speed", 0.0) or 0.0)
     if wind == 0.0:
-        return 0.0
+        return minimum if minimum > 0 else 0.0
     explicit = float(config.get("drift_buffer", 0.0) or 0.0)
     if explicit > 0.0:
-        return explicit
+        return max(explicit, minimum) if minimum > 0 else explicit
     looked = buffer_distance_m(wind)
     if looked is None:
         raise ValueError(
             f"风速 {wind} m/s 超出孔令标 2026 推荐范围（≤5 m/s），"
             "禁止静默外推；请关闭 buffer_expand 或给出显式 drift_buffer"
         )
-    return float(looked)
+    return max(float(looked), minimum) if minimum > 0 else float(looked)
 
 
 def drift_cost_buffer(config) -> float:
