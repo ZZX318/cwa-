@@ -1,0 +1,5 @@
+图1 试验场景、禁喷区 Z、风致缓冲区 F 与航线对比（seed 0，U=2 m/s，d=10 m，喷幅 w=2 m）。(a) 全场 S_h 喷洒段；(b) 局部放大，S_h 与 B-boundary(0°) 喷洒段重合（d 为 w 的整数倍时二者相位相同）。红线为被切条带。B-boundary 为文献方法的简化代理，非原方法复现。 S_h: o_h=1.88 m, A_extra(τ=0/0.5/1.0)=0.00/1.30/3.00 m², A_excluded=123.62 m², cut=1, path_cut_off=2.60 m；B-boundary(0°): o_h=1.88 m, A_extra(τ=0/0.5/1.0)=0.00/1.30/3.00 m², A_excluded=123.62 m², cut=1, path_cut_off=2.60 m。
+
+Fig. 1 Scene, no-spray zone Z, wind-induced buffer F and lane comparison (seed 0, U=2 m/s, d=10 m, swath w=2 m). (a) Full-field S_h spray segments; (b) coincident S_h and B-boundary(0°) spray segments: d is an integer multiple of w, giving the same lane phase. Red lines show cut segments. B-boundary is a simplified proxy for a published method, not a reproduction.
+
+数据来源 / Data sources: a_trial_seeds0-4_2ff2df1.csv, a_trial_seed0_2ff2df1.geom.json [heuristic_U2_h0_o1.88]; a_trial_extra_b_online_b_boundary_h0_90_0e0715a.csv, a_trial_extra_b_online_b_boundary_h0_90_0e0715a.geom.json [b_boundary_s0_U2_h0_o1.88]; scene: a_trial_heading.scene0(0); script: scripts/fig1_scene_buffer_lanes.py.
