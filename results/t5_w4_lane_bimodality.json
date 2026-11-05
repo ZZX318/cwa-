@@ -1,0 +1,814 @@
+{
+  "source_csv": "results/a_trial_1c_sweep_7e7318e.rows.csv",
+  "source_commit_note": "d0d41d3 (1c-sweep delivery; file present at baseline 463badb)",
+  "hypothesis": "2w = 8 m = row_spacing",
+  "csv_modes": {
+    "high": {
+      "n": 15,
+      "n_lanes": [
+        384
+      ],
+      "offsets_rounded": [
+        1.857,
+        1.88,
+        1.902,
+        2.01,
+        2.15
+      ],
+      "schemes": [
+        "B",
+        "S_h"
+      ],
+      "rows": [
+        {
+          "scheme": "B",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 0,
+          "offset": 1.88,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 0,
+          "offset": 1.88,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 0,
+          "offset": 1.879999999999999,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 1,
+          "offset": 1.8570000000000002,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 1,
+          "offset": 1.8570000000000002,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 1,
+          "offset": 1.8569999999999993,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 2,
+          "offset": 2.15,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 2,
+          "offset": 2.15,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 2,
+          "offset": 2.1500000000000004,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 3,
+          "offset": 2.01,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 3,
+          "offset": 2.01,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 3,
+          "offset": 2.01,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 4,
+          "offset": 1.9020000000000001,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "B",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 4,
+          "offset": 1.9020000000000001,
+          "n_lanes": 384,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 4,
+          "offset": 1.902000000000001,
+          "n_lanes": 384,
+          "status": "success"
+        }
+      ]
+    },
+    "low": {
+      "n": 15,
+      "n_lanes": [
+        206,
+        207,
+        209,
+        213,
+        214,
+        216,
+        217,
+        218
+      ],
+      "offsets_rounded": [
+        0.0,
+        0.01,
+        0.15,
+        3.857,
+        3.88,
+        3.902
+      ],
+      "schemes": [
+        "S1",
+        "S_h"
+      ],
+      "rows": [
+        {
+          "scheme": "S1",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 0,
+          "offset": 0.0,
+          "n_lanes": 214,
+          "status": "failed"
+        },
+        {
+          "scheme": "S_h",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 0,
+          "offset": 3.879999999999999,
+          "n_lanes": 209,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 0,
+          "offset": 0.0,
+          "n_lanes": 214,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 1,
+          "offset": 0.0,
+          "n_lanes": 218,
+          "status": "failed"
+        },
+        {
+          "scheme": "S_h",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 1,
+          "offset": 3.8569999999999993,
+          "n_lanes": 213,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 1,
+          "offset": 0.0,
+          "n_lanes": 218,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 2,
+          "offset": 0.0,
+          "n_lanes": 217,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 2,
+          "offset": 0.15000000000000036,
+          "n_lanes": 209,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 2,
+          "offset": 0.0,
+          "n_lanes": 217,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 3,
+          "offset": 0.0,
+          "n_lanes": 207,
+          "status": "success"
+        },
+        {
+          "scheme": "S_h",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 3,
+          "offset": 0.009999999999999787,
+          "n_lanes": 206,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 3,
+          "offset": 0.0,
+          "n_lanes": 207,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 4,
+          "offset": 0.0,
+          "n_lanes": 216,
+          "status": "failed"
+        },
+        {
+          "scheme": "S_h",
+          "U": 2.0,
+          "d": 10.0,
+          "seed": 4,
+          "offset": 3.902000000000001,
+          "n_lanes": 217,
+          "status": "success"
+        },
+        {
+          "scheme": "S1",
+          "U": 4.0,
+          "d": 16.0,
+          "seed": 4,
+          "offset": 0.0,
+          "n_lanes": 216,
+          "status": "success"
+        }
+      ]
+    }
+  },
+  "geometry": [
+    {
+      "seed": 0,
+      "row_spacing_param": 8.0,
+      "plant_spacing": 6.0,
+      "n_rows": 12,
+      "n_clusters": 12,
+      "mean_pitch": 8.003079545454545,
+      "centers": [
+        2.9634,
+        11.0589,
+        18.8711,
+        27.0406,
+        35.0938,
+        42.9041,
+        51.0381,
+        59.1107,
+        67.0464,
+        74.9848,
+        82.9848,
+        90.9972
+      ]
+    },
+    {
+      "seed": 1,
+      "row_spacing_param": 8.0,
+      "plant_spacing": 6.0,
+      "n_rows": 12,
+      "n_clusters": 12,
+      "mean_pitch": 8.008079545454546,
+      "centers": [
+        2.9541,
+        10.9369,
+        18.9499,
+        26.9706,
+        35.0071,
+        43.0908,
+        51.0546,
+        58.9821,
+        67.1287,
+        74.9593,
+        83.0473,
+        91.043
+      ]
+    },
+    {
+      "seed": 2,
+      "row_spacing_param": 8.0,
+      "plant_spacing": 6.0,
+      "n_rows": 12,
+      "n_clusters": 12,
+      "mean_pitch": 7.986982954545454,
+      "centers": [
+        3.1073,
+        10.9441,
+        18.9269,
+        26.9684,
+        35.0114,
+        43.0041,
+        51.0079,
+        59.0292,
+        66.9414,
+        75.0801,
+        82.8822,
+        90.9641
+      ]
+    },
+    {
+      "seed": 3,
+      "row_spacing_param": 8.0,
+      "plant_spacing": 6.0,
+      "n_rows": 12,
+      "n_clusters": 12,
+      "mean_pitch": 7.984187500000001,
+      "centers": [
+        3.1023,
+        10.9667,
+        19.0071,
+        26.9714,
+        35.0016,
+        43.0101,
+        51.0668,
+        58.9876,
+        67.0546,
+        74.972,
+        83.0611,
+        90.9284
+      ]
+    },
+    {
+      "seed": 4,
+      "row_spacing_param": 8.0,
+      "plant_spacing": 6.0,
+      "n_rows": 12,
+      "n_clusters": 12,
+      "mean_pitch": 8.002960227272727,
+      "centers": [
+        2.9783,
+        10.9289,
+        19.1406,
+        26.9195,
+        35.029,
+        42.9993,
+        51.0337,
+        58.9591,
+        66.8708,
+        75.0735,
+        82.9113,
+        91.0108
+      ]
+    }
+  ],
+  "seed0_offset_probes": [
+    {
+      "strip_count": 24,
+      "n_lanes": 214,
+      "seg_per_strip_hist": {
+        "1": 6,
+        "2": 4,
+        "3": 1,
+        "5": 1,
+        "16": 12
+      },
+      "n_full16": 12,
+      "n_sparse": 12,
+      "label": "low_S1_offset0",
+      "offset": 0.0,
+      "n_strips": 24
+    },
+    {
+      "strip_count": 24,
+      "n_lanes": 384,
+      "seg_per_strip_hist": {
+        "16": 24
+      },
+      "n_full16": 24,
+      "n_sparse": 0,
+      "label": "high_B_offset1p88",
+      "offset": 1.88,
+      "n_strips": 24
+    },
+    {
+      "strip_count": 23,
+      "n_lanes": 209,
+      "seg_per_strip_hist": {
+        "1": 7,
+        "2": 2,
+        "3": 2,
+        "16": 12
+      },
+      "n_full16": 12,
+      "n_sparse": 11,
+      "label": "low_Sh_U2_offset3p88",
+      "offset": 3.88,
+      "n_strips": 23
+    }
+  ],
+  "seed0_probe_strips_detail": {
+    "low_S1_offset0": {
+      "2.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "6.88": {
+        "n_seg": 2,
+        "n_targets": 3
+      },
+      "10.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "14.88": {
+        "n_seg": 2,
+        "n_targets": 2
+      },
+      "18.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "22.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "26.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "30.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "34.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "38.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "42.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "46.88": {
+        "n_seg": 2,
+        "n_targets": 2
+      },
+      "50.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "54.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "58.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "62.88": {
+        "n_seg": 5,
+        "n_targets": 5
+      },
+      "66.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "70.88": {
+        "n_seg": 2,
+        "n_targets": 2
+      },
+      "74.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "78.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "82.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "86.88": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "90.88": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "93.005": {
+        "n_seg": 3,
+        "n_targets": 3
+      }
+    },
+    "high_B_offset1p88": {
+      "1.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "5.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "9.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "13.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "17.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "21.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "25.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "29.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "33.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "37.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "41.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "45.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "49.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "53.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "57.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "61.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "65.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "69.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "73.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "77.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "81.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "85.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "89.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "92.065": {
+        "n_seg": 16,
+        "n_targets": 16
+      }
+    },
+    "low_Sh_U2_offset3p88": {
+      "-1.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "3.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "7.0": {
+        "n_seg": 3,
+        "n_targets": 4
+      },
+      "11.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "15.0": {
+        "n_seg": 1,
+        "n_targets": 2
+      },
+      "19.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "27.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "31.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "35.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "39.0": {
+        "n_seg": 3,
+        "n_targets": 3
+      },
+      "43.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "47.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "51.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "55.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "59.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "67.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "71.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "75.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "79.0": {
+        "n_seg": 2,
+        "n_targets": 2
+      },
+      "83.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "87.0": {
+        "n_seg": 1,
+        "n_targets": 1
+      },
+      "91.0": {
+        "n_seg": 16,
+        "n_targets": 16
+      },
+      "93.065": {
+        "n_seg": 2,
+        "n_targets": 2
+      }
+    }
+  },
+  "csv_probe_consistency": [
+    {
+      "scheme": "S1",
+      "U": 2.0,
+      "csv_n_lanes": 214,
+      "csv_offset": 0.0,
+      "probe_n_lanes": 214,
+      "probe_offset": 0.0,
+      "n_lanes_match": true
+    },
+    {
+      "scheme": "B",
+      "U": 2.0,
+      "csv_n_lanes": 384,
+      "csv_offset": 1.88,
+      "probe_n_lanes": 384,
+      "probe_offset": 1.88,
+      "n_lanes_match": true
+    },
+    {
+      "scheme": "S_h",
+      "U": 2.0,
+      "csv_n_lanes": 209,
+      "csv_offset": 3.879999999999999,
+      "probe_n_lanes": 209,
+      "probe_offset": 3.88,
+      "n_lanes_match": true
+    },
+    {
+      "scheme": "S_h",
+      "U": 4.0,
+      "csv_n_lanes": 384,
+      "csv_offset": 1.879999999999999,
+      "probe_n_lanes": 384,
+      "probe_offset": 1.88,
+      "n_lanes_match": true
+    }
+  ],
+  "mechanism": "Because lane pitch w and row pitch 2w lock, offset mod w selects whether strip centers sit near tree rows (one full 16-seg strip per row + sparse mid-gap leftovers) or midway so two adjacent strips each fully cover the same 16-tree row (24×16=384).",
+  "conclusion": "【已验证】 w=4 航道数双峰（约 206–218 vs 恒为 384）的根因是 2w = 8 m = ha_orchard 名义行距 row_spacing：偏移相位决定「每行 1 条满载航带 + 行间稀疏条带」还是「每行被 2 条满载航带双覆盖」。高峰：offset≈w/2（CSV 1.86–2.15）时 24 条航带均含 16 段 → 24×16=384；低峰：offset≈0 或 ≈w（CSV 0 / 3.86–3.90）时仅约 12 条满载（对正树行）+ 行间抖动擦边稀疏段 → ~210。fixed_y_lanes 对无冠层相交的条带直接 skip；行间条带因 jitter 常仍有 1–5 段，故 strip_count 并非减半，减半的是满载段数。不改代码。",
+  "conclusion_tag": "【已验证】",
+  "planning_untouched": true
+}
