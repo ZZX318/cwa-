@@ -140,7 +140,7 @@ def draw_a(ax, pts):
         handletextpad=0.2,
     )
 
-    # (a) r=0：axes 分数坐标，保证整框在轴内；簇说明无引线
+    # (a) r=0：axes 分数坐标，保证整框在轴内；簇说明框无引线
     box = dict(boxstyle="round,pad=0.12", fc="white", ec="0.6", lw=0.3, alpha=0.97)
     ax.annotate(
         "r=0 对照（条带空）",
@@ -157,18 +157,20 @@ def draw_a(ax, pts):
         clip_on=True,
     )
     ax.text(
-        0.48,
-        0.72,
-        "簇说明（无引线）\n"
+        0.34,
+        0.74,
+        "簇说明\n"
         "· (4,−4)：w=3.5，d=10\n"
-        "· (58,−58)：w=3 与 w=4，d=10\n"
-        "· 原点微条带含 w=3,d=16 等",
+        "· (58,−58)：w=3 与\n"
+        "  w=4，d=10\n"
+        "· 原点微条带含\n"
+        "  w=3,d=16 等",
         transform=ax.transAxes,
         fontsize=FS,
         ha="left",
         va="top",
         color="0.15",
-        linespacing=1.35,
+        linespacing=1.30,
         bbox=box,
         zorder=5,
         clip_on=True,
