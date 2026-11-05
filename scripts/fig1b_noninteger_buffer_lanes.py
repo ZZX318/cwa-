@@ -31,7 +31,7 @@ def main():
         assert rows[m]['violations'] == '0' and rows[m]['status'] == 'success'
     cg = json.loads(rows['S_h']['cut_geometry'])
     assert cg == json.loads(rows['B-boundary(0°)']['cut_geometry'])
-    x0, x1 = cg['lost_strip'][:2]
+    x0, x1, y0, y1 = cg['lost_strip']
     report = dict(sources={m: dict(csv=STEM + '.csv', geometry=STEM + '.geom.json', key=k[0]) for m, k in KEYS.items()},
                   lost_strip=cg['lost_strip'], cut_geometry=cg, checks={})
     for m, g in geoms.items():
@@ -51,7 +51,7 @@ def main():
     scene = H.scene0(0)
     A.configure_fonts()
     fig, axes = plt.subplots(1, 2, figsize=(170 / 25.4, 85 / 25.4))
-    fig.subplots_adjust(left=0.075, right=0.985, bottom=0.29, top=0.90, wspace=0.24)
+    fig.subplots_adjust(left=0.075, right=0.985, bottom=0.29, top=0.87, wspace=0.24)
     zones = [z['footprint']['vertices'] for z in scene['no_spray_zones']]
     for ax, (m, g) in zip(axes, geoms.items()):
         r = rows[m]
@@ -72,15 +72,18 @@ def main():
                 nv = np.array([-(b - a)[1], (b - a)[0]]) / n * swath / 2
                 ax.add_patch(Polygon([a + nv, b + nv, b - nv, a - nv], facecolor=color, alpha=0.22, edgecolor='none', zorder=3))
             ax.plot(*np.array([a, b]).T, color=color, lw=A.LW_DATA, zorder=4)
-        for i in report['checks'][m]['cut_ids']:
-            s = g['segments'][i]
-            ax.plot(*np.array([s['start'][:2], s['end'][:2]]).T, color=A.RED, lw=A.LW_DATA, zorder=6)
+        if m != 'S_h':
+            # Extra missed canopy: canopy inside lost strip [x0,x1]x[y0,y1] (outside F), = A_extra(tau=0).
+            clip = Rectangle((x0, max(y0, -1)), x1 - x0, min(y1, 22) - max(y0, -1), transform=ax.transData)
+            for t in scene['targets']:
+                gg = t['geometry']
+                hp = ax.add_patch(Circle(gg['center'][:2], gg['radius'], facecolor='none', edgecolor=A.RED,
+                                         hatch='//////', linewidth=0, zorder=5))
+                hp.set_clip_path(clip)
         for x, lab in [(x0, f'x_F={x0:g}'), (x1, f'x_F+r={x1:g}')]:
             ax.axvline(x, color='#555555', ls=':', lw=A.LW_AXIS, zorder=6)
-        ax.text((x0 + x1) / 2, 21.0, f'损失带\n[{x0:g},{x1:g}]', ha='center', va='top', color='#5B3A8A', zorder=8,
-                bbox=dict(facecolor='white', alpha=0.85, edgecolor='none', pad=0.4))
         name = 'S$_h$' if m == 'S_h' else m
-        ax.set(xlim=(-9, 20), ylim=(-1, 22), title=f"({'b1' if m == 'S_h' else 'b2'}) {name}，d=11 m，o={float(r['offset']):.2f} m")
+        ax.set(xlim=(-9, 20), ylim=(-1, 22), title=f"({'b1' if m == 'S_h' else 'b2'}) {name}，d=11 m，o={float(r['offset']):.2f} m，局部（y 0–22 m）", )
         ax.set_aspect('equal'); ax.set_xlabel('x/m', labelpad=1); ax.set_ylabel('y/m', labelpad=1)
         ax.tick_params(pad=2, length=2.5, width=A.LW_AXIS)
     c = report['checks']; s, b = c['S_h'], c['B-boundary(0°)']
@@ -90,18 +93,18 @@ def main():
     fig.text(0.5, 0.115, txt, ha='center', va='bottom', linespacing=1.3)
     handles = [Patch(facecolor='white', edgecolor='#802020', hatch='////', label='禁喷区 Z'),
                Patch(facecolor='#F6B65C', alpha=0.35, edgecolor='#D68416', label='缓冲区 F'),
-               Patch(facecolor='#9467BD', alpha=0.18, label='损失带 [x_F, x_F+r]'),
+               Patch(facecolor='#9467BD', alpha=0.18, label=f'损失带 [x_F, x_F+r]=[{x0:g},{x1:g}] m'),
                Patch(facecolor='#D9E9C5', edgecolor='#365B35', label='冠层'),
                Line2D([], [], color=A.BLUE, lw=A.LW_DATA, label='S$_h$ 喷洒段'),
                Line2D([], [], color=A.ORANGE, lw=A.LW_DATA, label='B-boundary(0°) 喷洒段'),
-               Line2D([], [], color=A.RED, lw=A.LW_DATA, label='被切条带')]
+               Patch(facecolor='none', edgecolor=A.RED, hatch='//////', label='额外漏喷冠层')]
     fig.legend(handles=handles, loc='lower center', bbox_to_anchor=(0.5, 0.0), ncol=4, frameon=False, columnspacing=1.3, handlelength=2)
     fig.savefig(str(PREFIX) + '.png', dpi=300); fig.savefig(str(PREFIX) + '.pdf'); plt.close(fig)
     report['png_sha256'] = hashlib.sha256(Path(str(PREFIX) + '.png').read_bytes()).hexdigest()
     Path(str(PREFIX) + '.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     cap = (f"图1(b) 非整数缓冲距离下的对齐对比（seed 0，U=2 m/s，航向 0°，d=11 m，喷幅 w=2 m）。"
            f"(b1) S_h（o={s['offset']:.2f} m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o={b['offset']:.2f} m，对齐田块边界）。"
-           f"紫色为损失带 [x_F, x_F+r]=[{x0:g}, {x1:g}] m，红线为被切条带。"
+           f"图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+r]=[{x0:g}, {x1:g}] m；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。Z 角处被切条带与损失带无关，本图不绘。"
            f"A_extra(τ=0)：S_h {s['A_extra_tau0']:.2f} m² vs B-boundary {b['A_extra_tau0']:.2f} m²，"
            f"该差值即损失带内非 F 冠层面积（{cg['n_trees']} 棵，{cg['canopy_m2']:.2f} m²），为几何核算，非独立实验证据。"
            f"代价并列：航道 {s['n_lanes']} vs {b['n_lanes']}，总用时 {s['total_time']:.2f} s vs {b['total_time']:.2f} s"
