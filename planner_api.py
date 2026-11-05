@@ -16,6 +16,7 @@ from planning import (
     generate_plan,
     options_fingerprint,
 )
+from planning.model import public_config
 from planning.order import solve_order
 from planning.planner import fixed_y_lanes, lane_parts, zone_exclusions, maybe_append_repair_lanes
 from planning.drift import expand_sensitive_inward
@@ -53,7 +54,7 @@ def _failed(
     if isinstance(config, dict):
         try:
             effective = configuration(config)
-            plan["config"] = effective
+            plan["config"] = public_config(effective)
             plan["config_hash"] = config_fingerprint(effective)
         except (ValueError, KeyError, TypeError):
             pass
@@ -215,7 +216,7 @@ class NaivePlanner(Planner):
                 strip_count=len(targets),
                 planner_options=normalized,
                 planner_options_hash=options_fingerprint(normalized),
-                config=c,
+                config=public_config(c),
                 config_hash=config_fingerprint(c),
             )
             if plan["version"] == "1.2":
@@ -434,7 +435,7 @@ class CawAStarPlanner(Planner):
                 order=list(order),
                 planner_options=normalized,
                 planner_options_hash=options_fingerprint(normalized),
-                config=c,
+                config=public_config(c),
                 config_hash=config_fingerprint(c),
                 search=dict(
                     model="layered-3d-clearance-a-star",
@@ -725,7 +726,7 @@ def _plan_subset(
         end_point_id=end_id,
         planner_options=normalized,
         planner_options_hash=options_fingerprint(normalized),
-        config=c,
+        config=public_config(c),
         config_hash=config_fingerprint(c),
         search=dict(
             model="layered-3d-clearance-a-star",

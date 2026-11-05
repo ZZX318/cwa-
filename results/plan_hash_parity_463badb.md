@@ -17,3 +17,18 @@
 | S_h | 4 | 1.902 | `7a533e2701a7fcc7c48454ce020c76f6bfb5bc527d8ac8f389a23a4a9c38876f` | `7a533e2701a7fcc7c48454ce020c76f6bfb5bc527d8ac8f389a23a4a9c38876f` | True | True |
 
 结论：10/10 plan_hash 与 segments_digest 逐一相等。
+
+## CAW 路径（planner_api，实际主表规划器）「新增，不改已冻结主表」
+
+修复：`planner_api.py` 三处 CAW/失败构造（config=c、plan["config"]=effective）改为 `public_config(...)`；此前 CAW 计划的完整 plan_hash 仍含零值新键。
+对比：live `scripts/caw_plan_hash_parity.py`（`a_trial_heading.run`，make_planner('caw')，variant=heuristic 即 S_h，U=2，heading 0）vs 冻结 CSV `results/a_trial_seeds0-4_2ff2df1.csv` 的 plan_hash。输出 `results/caw_plan_hash_parity.json`。
+
+| seed | 冻结 CSV plan_hash | HEAD plan_hash | 相等 | A_extra_tau0 冻结/HEAD | total_time 冻结/HEAD |
+|---|---|---|---|---|---|
+| 0 | `06ad3a1fa4889a50743aa2c683cc373d127b5b4ca42cbba4101a5f3967ad5707` | `06ad3a1fa4889a50743aa2c683cc373d127b5b4ca42cbba4101a5f3967ad5707` | True | 0.0/0.0 | 1459.6233/1459.6233 |
+| 1 | `7ddbec051432ae10af308e1da4a8b78e458145f57a69ce8d0ff5ca0586072ccc` | `7ddbec051432ae10af308e1da4a8b78e458145f57a69ce8d0ff5ca0586072ccc` | True | 0.0/0.0 | 1476.3425/1476.3425 |
+| 2 | `d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86` | `d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86` | True | 0.0/0.0 | 1442.2321/1442.2321 |
+| 3 | `b995b0705777d4b31b0f94745ad285de225738da00af03e091c04b93137c4de2` | `b995b0705777d4b31b0f94745ad285de225738da00af03e091c04b93137c4de2` | True | 0.0/0.0 | 1452.7997/1452.7997 |
+| 4 | `884169329a42615ee4695cc7e455e9c7c44d37cbbc62507a59b48713a6b2f4a0` | `884169329a42615ee4695cc7e455e9c7c44d37cbbc62507a59b48713a6b2f4a0` | True | 0.0/0.0 | 1465.6856/1465.6856 |
+
+结论：CAW 5/5 完整 plan_hash 与冻结 CSV 逐一相等。上方 generate_plan 证据保留。
