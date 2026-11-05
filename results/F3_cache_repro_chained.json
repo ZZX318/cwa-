@@ -1,0 +1,378 @@
+{
+  "pred_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "heuristic",
+    "family": "main"
+  },
+  "target_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "b_boundary",
+    "family": "main"
+  },
+  "frozen_b_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+  "pool_b_hash": "dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12",
+  "frozen_metrics": {
+    "A_extra_tau0": 0.0,
+    "A_extra_tau0.5": 0.5875000000000001,
+    "A_extra_tau1": 1.3725000000000003,
+    "total_time": 1442.2321342517662,
+    "violations": 0
+  },
+  "evidence_pred_from_checkpoint": "F3_main_checkpoint.jsonl completion order: [14] seed2 heuristic U=2 h=0 solve=77.7s hash=d742d538…; [15] seed2 b_boundary U=2 h=0 solve=13.9s hash=dc9c98d6… (anomalously short; pool mismatch). Worker PID not logged; same-process chain is the controlled repro.",
+  "cache_key_route": [
+    "fingerprint(scene)",
+    "config_fingerprint(effective)",
+    "objective",
+    "round(start,9)",
+    "round(goal,9)",
+    "step_xy",
+    "step_z",
+    "max_expansions",
+    "max_grid_nodes",
+    "smoothing"
+  ],
+  "cache_key_grid": [
+    "fingerprint(scene)",
+    "config_fingerprint(config)",
+    "step_xy",
+    "step_z",
+    "round(start_z,9)",
+    "round(goal_z,9)",
+    "(XY omitted)"
+  ],
+  "key_omits": "No explicit lane_offset / variant / heading fields — those enter only via scene fingerprint, config (wind_speed/direction, drift_buffer), and start/goal coordinates. start/goal are rounded to 9 decimals in the key, while the cached path retains the first caller's full-precision endpoints.",
+  "chained": {
+    "predecessor": {
+      "seed": 2,
+      "variant": "heuristic",
+      "U": 2.0,
+      "heading": 0,
+      "offset": 0.15000000000000036,
+      "lane_offset_used": 0.15000000000000036,
+      "plan_hash": "d742d538e13bfd1a70b42f2b5e25e7d5b31dd80e3c9bd546bab9169a311c2f86",
+      "solve_seconds": 78.5,
+      "A_extra_tau0": 0.0,
+      "A_extra_tau0.5": 0.5875000000000001,
+      "A_extra_tau1": 1.3725000000000003,
+      "total_time": 1442.2321342517662,
+      "violations": 0,
+      "path_length": 2830.106569172877,
+      "path_spray": 1074.2608065657894,
+      "n_lanes": 402,
+      "status": "success",
+      "_wall": 78.741
+    },
+    "after_pred": {
+      "route": 403,
+      "grid": 1,
+      "stats": {
+        "hits": 0,
+        "misses": 403,
+        "false_endpoint": 0,
+        "examples": [],
+        "route_calls": 403
+      }
+    },
+    "target": {
+      "seed": 2,
+      "variant": "b_boundary",
+      "U": 2.0,
+      "heading": 0,
+      "offset": 0.1499999999999999,
+      "lane_offset_used": 0.1499999999999999,
+      "plan_hash": "dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12",
+      "solve_seconds": 13.4,
+      "A_extra_tau0": 0.0,
+      "A_extra_tau0.5": 0.5875000000000001,
+      "A_extra_tau1": 1.3725000000000003,
+      "total_time": 1442.2321342517662,
+      "violations": 0,
+      "path_length": 2830.106569172877,
+      "path_spray": 1074.2608065657894,
+      "n_lanes": 402,
+      "status": "success",
+      "_wall": 13.585
+    },
+    "route_cache_stats_during_target": {
+      "hits": 403,
+      "misses": 0,
+      "false_endpoint": 25,
+      "examples": [
+        {
+          "req_start": [
+            -4.0,
+            50.0,
+            6.994
+          ],
+          "path_start": [
+            -4.0,
+            50.0,
+            6.994
+          ],
+          "req_goal": [
+            2.0,
+            73.53,
+            6.994
+          ],
+          "path_goal": [
+            1.9999999999999996,
+            73.53,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            2.0,
+            76.518,
+            6.994
+          ],
+          "path_start": [
+            1.9999999999999996,
+            76.518,
+            6.994
+          ],
+          "req_goal": [
+            4.0,
+            76.51767834556172,
+            6.994
+          ],
+          "path_goal": [
+            4.0,
+            76.51767834556172,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            4.0,
+            79.853,
+            6.994
+          ],
+          "path_start": [
+            4.0,
+            79.853,
+            6.994
+          ],
+          "req_goal": [
+            2.0,
+            79.85300035410769,
+            6.994
+          ],
+          "path_goal": [
+            1.9999999999999996,
+            79.85300035410769,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            2.0,
+            82.67699964589231,
+            6.994
+          ],
+          "path_start": [
+            1.9999999999999996,
+            82.67699964589231,
+            6.994
+          ],
+          "req_goal": [
+            2.0,
+            85.46159129629685,
+            6.994
+          ],
+          "path_goal": [
+            1.9999999999999996,
+            85.46159129629685,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            2.0,
+            88.47640870370314,
+            6.994
+          ],
+          "path_start": [
+            1.9999999999999996,
+            88.47640870370314,
+            6.994
+          ],
+          "req_goal": [
+            4.0,
+            88.50999999999999,
+            6.994
+          ],
+          "path_goal": [
+            4.0,
+            88.50999999999999,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            4.0,
+            85.428,
+            6.994
+          ],
+          "path_start": [
+            4.0,
+            85.428,
+            6.994
+          ],
+          "req_goal": [
+            2.0,
+            91.6680730527391,
+            6.994
+          ],
+          "path_goal": [
+            1.9999999999999996,
+            91.6680730527391,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            2.0,
+            94.3099269472609,
+            6.994
+          ],
+          "path_start": [
+            1.9999999999999996,
+            94.3099269472609,
+            6.994
+          ],
+          "req_goal": [
+            4.0,
+            94.322,
+            6.994
+          ],
+          "path_goal": [
+            4.0,
+            94.322,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "req_start": [
+            6.0,
+            68.99770801997707,
+            6.994
+          ],
+          "path_start": [
+            6.0,
+            68.99770801997707,
+            6.994
+          ],
+          "req_goal": [
+            2.0,
+            67.11896770218732,
+            6.994
+          ],
+          "path_goal": [
+            1.9999999999999996,
+            67.11896770218732,
+            6.994
+          ],
+          "start_ulp_diffs": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "goal_ulp_diffs": [
+            -4.440892098500626e-16,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "route_calls": 403
+    },
+    "cache_after_target": {
+      "route": 403,
+      "grid": 1
+    },
+    "hash_vs_frozen": false,
+    "hash_vs_pool": true,
+    "metrics_eq_frozen": {
+      "A_extra_tau0": true,
+      "A_extra_tau0.5": true,
+      "A_extra_tau1": true,
+      "total_time": true,
+      "violations": true
+    }
+  }
+}

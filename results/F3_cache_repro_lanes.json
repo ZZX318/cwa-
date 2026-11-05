@@ -1,0 +1,190 @@
+{
+  "pred_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "heuristic",
+    "family": "main"
+  },
+  "target_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "b_boundary",
+    "family": "main"
+  },
+  "frozen_b_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+  "pool_b_hash": "dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12",
+  "frozen_metrics": {
+    "A_extra_tau0": 0.0,
+    "A_extra_tau0.5": 0.5875000000000001,
+    "A_extra_tau1": 1.3725000000000003,
+    "total_time": 1442.2321342517662,
+    "violations": 0
+  },
+  "evidence_pred_from_checkpoint": "F3_main_checkpoint.jsonl completion order: [14] seed2 heuristic U=2 h=0 solve=77.7s hash=d742d538…; [15] seed2 b_boundary U=2 h=0 solve=13.9s hash=dc9c98d6… (anomalously short; pool mismatch). Worker PID not logged; same-process chain is the controlled repro.",
+  "cache_key_route": [
+    "fingerprint(scene)",
+    "config_fingerprint(effective)",
+    "objective",
+    "round(start,9)",
+    "round(goal,9)",
+    "step_xy",
+    "step_z",
+    "max_expansions",
+    "max_grid_nodes",
+    "smoothing"
+  ],
+  "cache_key_grid": [
+    "fingerprint(scene)",
+    "config_fingerprint(config)",
+    "step_xy",
+    "step_z",
+    "round(start_z,9)",
+    "round(goal_z,9)",
+    "(XY omitted)"
+  ],
+  "key_omits": "No explicit lane_offset / variant / heading fields — those enter only via scene fingerprint, config (wind_speed/direction, drift_buffer), and start/goal coordinates. start/goal are rounded to 9 decimals in the key, while the cached path retains the first caller's full-precision endpoints.",
+  "lane_compare": {
+    "offset_heuristic": 0.15000000000000036,
+    "offset_b_boundary": 0.1499999999999999,
+    "offset_diff": 4.440892098500626e-16,
+    "offset_round9_equal": true,
+    "boundary_info": {
+      "aligned_to": "field_boundary_not_buffer",
+      "edges": [
+        -1.0
+      ],
+      "frame_heading": 0,
+      "matches_oh_rot_or_heuristic": true,
+      "note": "abs(o - oh_rot_or_heuristic) < 1e-12"
+    },
+    "n_lanes_heuristic": 402,
+    "n_lanes_b_boundary": 402,
+    "lane_pairs_compared": 402,
+    "endpoint_bit_diffs": 32,
+    "endpoint_round9_diffs": 0,
+    "endpoint_examples": [
+      {
+        "i": 0,
+        "end": "start",
+        "heuristic": [
+          1.9999999999999996,
+          2.1792163048294233,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          2.1792163048294233,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      },
+      {
+        "i": 0,
+        "end": "end",
+        "heuristic": [
+          1.9999999999999996,
+          4.536783695170577,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          4.536783695170577,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      },
+      {
+        "i": 1,
+        "end": "start",
+        "heuristic": [
+          1.9999999999999996,
+          7.609576054379319,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          7.609576054379319,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      },
+      {
+        "i": 1,
+        "end": "end",
+        "heuristic": [
+          1.9999999999999996,
+          10.76842394562068,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          10.76842394562068,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      },
+      {
+        "i": 2,
+        "end": "start",
+        "heuristic": [
+          1.9999999999999996,
+          13.538333908046084,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          13.538333908046084,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      },
+      {
+        "i": 2,
+        "end": "end",
+        "heuristic": [
+          1.9999999999999996,
+          16.631666091953917,
+          6.994
+        ],
+        "b_boundary": [
+          2.0,
+          16.631666091953917,
+          6.994
+        ],
+        "diff": [
+          -4.440892098500626e-16,
+          0.0,
+          0.0
+        ],
+        "round9_equal": true
+      }
+    ]
+  }
+}
