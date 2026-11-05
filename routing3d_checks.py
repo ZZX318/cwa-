@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from planning.model import configuration
-from planning.routing3d import route3d
+from planning.routing3d import clear_cache, route3d
 from planning.safety import intersects
 from scene import generate
 
@@ -101,7 +101,7 @@ def run() -> int:
 
     def fresh_import():
         proc = subprocess.run(
-            [sys.executable, "-I", "-c", "import sys; sys.path.insert(0,'.'); from planning.routing3d import route3d; print('ok')"],
+            [sys.executable, "-I", "-c", "import sys; sys.path.insert(0,'.'); from planning.routing3d import clear_cache, route3d; print('ok')"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -235,6 +235,41 @@ def run() -> int:
         else:
             raise AssertionError("未拒绝非正步长")
 
+    def cache_exact_endpoints_order():
+        """ULP-near goals must not false-hit; path endpoints bit-match this call."""
+        clear_cache()
+        scene = generate()
+        start = [-3.0, 12.5, 6.2]
+        goal_a = [2.0, 12.5, 6.2]
+        goal_b = [1.9999999999999996, 12.5, 6.2]
+        assert goal_a != goal_b
+        assert tuple(round(v, 9) for v in goal_a) == tuple(round(v, 9) for v in goal_b)
+
+        # Order A then B
+        clear_cache()
+        ra1 = route3d(scene, start, goal_a, c)
+        rb1 = route3d(scene, start, goal_b, c)
+        assert ra1["status"] == "success" and rb1["status"] == "success"
+        assert ra1["path"][0] == start and ra1["path"][-1] == goal_a
+        assert rb1["path"][0] == start and rb1["path"][-1] == goal_b
+
+        # Order B then A
+        clear_cache()
+        rb2 = route3d(scene, start, goal_b, c)
+        ra2 = route3d(scene, start, goal_a, c)
+        assert ra2["path"][0] == start and ra2["path"][-1] == goal_a
+        assert rb2["path"][0] == start and rb2["path"][-1] == goal_b
+        assert ra1["path"] == ra2["path"]
+        assert rb1["path"] == rb2["path"]
+
+        # True identical query still cache-hits with same endpoints
+        clear_cache()
+        first = route3d(scene, start, goal_a, c)
+        second = route3d(scene, start, goal_a, c)
+        assert first["path"][0] == start and first["path"][-1] == goal_a
+        assert second["path"][0] == start and second["path"][-1] == goal_a
+        assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+
     check("fresh-import", fresh_import)
     check("straight", straight)
     check("wall", wall_detour)
@@ -248,4 +283,5 @@ def run() -> int:
     check("endpoint", endpoint_clearance)
     check("occupied", occupied_start)
     check("invalid", invalid)
+    check("cache-exact-endpoints-order", cache_exact_endpoints_order)
     return 1 if failed else 0

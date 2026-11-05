@@ -35,6 +35,15 @@ _GRID_CACHE = OrderedDict()
 _ROUTE_CACHE = OrderedDict()
 
 
+def _float_key(value):
+    """Exact float identity for cache keys (no rounding)."""
+    return float(value).hex()
+
+
+def _point_key(point):
+    return tuple(_float_key(v) for v in point)
+
+
 class _GridTooLarge(Exception):
     """Raised before allocating a free mask that would exceed the node cap."""
 
@@ -204,13 +213,15 @@ def _make_grid(scene, config, step_xy, step_z, start, goal, max_nodes):
 
 
 def _grid_for(scene, config, step_xy, step_z, start, goal, max_nodes):
+    # Exact Z identity: layers already round Z internally, but key must not
+    # alias ULP-distinct callers the way round(..., 9) did for routes.
     key = (
         fingerprint(scene),
         config_fingerprint(config),
         step_xy,
         step_z,
-        round(start[2], 9),
-        round(goal[2], 9),
+        _float_key(start[2]),
+        _float_key(goal[2]),
     )
     grid = _GRID_CACHE.get(key)
     if grid is None:
@@ -382,12 +393,15 @@ def route3d(scene, start, goal, config, objective="time", grid=None):
     if math.dist(start, goal) <= 1e-9:
         raise ValueError("起点与终点重合")
 
+    # Exact start/goal identity via float.hex — round(..., 9) falsely aliased
+    # ULP-near lane endpoints (F3 seed2 heuristic→B) and returned the first
+    # caller's path endpoints, changing plan_hash while metrics stayed equal.
     cache_key = (
         fingerprint(scene),
         config_fingerprint(effective),
         objective,
-        tuple(round(v, 9) for v in start),
-        tuple(round(v, 9) for v in goal),
+        _point_key(start),
+        _point_key(goal),
         step_xy,
         step_z,
         max_expansions,
@@ -396,7 +410,15 @@ def route3d(scene, start, goal, config, objective="time", grid=None):
     )
     cached = _ROUTE_CACHE.get(cache_key)
     if cached is not None:
-        return copy.deepcopy(cached)
+        hit = copy.deepcopy(cached)
+        if (
+            hit.get("status") == "success"
+            and hit.get("path")
+            and (list(hit["path"][0]) != start or list(hit["path"][-1]) != goal)
+        ):
+            pass  # treat as miss; fall through to recompute
+        else:
+            return hit
 
     try:
         grid_data = _grid_for(
