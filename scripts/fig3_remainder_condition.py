@@ -25,7 +25,7 @@ PNG = OUT_DIR / "fig3_remainder_condition.png"
 PDF = OUT_DIR / "fig3_remainder_condition.pdf"
 
 MM = 1 / 25.4
-FIG_W_MM, FIG_H_MM = 85.0, 168.0
+FIG_W_MM, FIG_H_MM = 85.0, 160.0
 FIG_W, FIG_H = FIG_W_MM * MM, FIG_H_MM * MM
 LW, LW_AXIS, FS, PHASE, DPI = 1.7, 0.8, 7, 1.0, 300
 
@@ -229,7 +229,6 @@ def draw_b(ax, table_rows):
 
     if gap_y is not None:
         ax.axhline(gap_y, color="0.78", lw=0.45, zorder=1)
-        ax.text(x_hi - 0.15, gap_y + 0.08, "上 d=16  /  下 d=10", fontsize=FS, ha="right", va="bottom", color="0.45")
 
     ax.set_yticks(yticks)
     ax.set_yticklabels(ylabels, fontsize=FS)
@@ -240,7 +239,7 @@ def draw_b(ax, table_rows):
     ax.set_xlim(x_lo, x_hi)
     ax.set_ylim(-0.65, y - 0.4)
     ax.set_xlabel("园地 x / m（示意，seed0 行心；绿带≈冠层）", fontsize=FS)
-    ax.set_title("(b) 损失条带相对树行 「示意」", fontsize=FS, loc="left", pad=2)
+    ax.set_title("(b) 损失条带相对树行（示意）", fontsize=FS, loc="left", pad=2)
 
     ax.text(
         0.99,
@@ -253,13 +252,13 @@ def draw_b(ax, table_rows):
         color="#5555aa",
         bbox=dict(boxstyle="round,pad=0.1", fc="white", ec="0.8", lw=0.25, alpha=0.92),
     )
-    ax.text(
-        0.01,
-        0.01,
+    ax.figure.text(
+        0.5,
+        0.018,
         r"$r=d-\lfloor d/w\rfloor\cdot w$（$0\leq r<w$）",
-        transform=ax.transAxes,
+        transform=ax.figure.transFigure,
         fontsize=FS,
-        ha="left",
+        ha="center",
         va="bottom",
         color="0.2",
         bbox=dict(boxstyle="round,pad=0.08", fc="white", ec="0.8", lw=0.25, alpha=0.92),
@@ -296,12 +295,12 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     pts, table_rows = load_points()
     fig, (ax_a, ax_b) = plt.subplots(
-        2, 1, figsize=(FIG_W, FIG_H), gridspec_kw={"height_ratios": [1.0, 1.55], "hspace": 0.36}
+        2, 1, figsize=(FIG_W, FIG_H), gridspec_kw={"height_ratios": [1.0, 1.55], "hspace": 0.25}
     )
     draw_a(ax_a, pts)
     draw_b(ax_b, table_rows)
     # 左侧为单行 y 标签留宽，防止自动折行
-    fig.subplots_adjust(left=0.34, right=0.985, bottom=0.045, top=0.955, hspace=0.40)
+    fig.subplots_adjust(left=0.34, right=0.985, bottom=0.105, top=0.955, hspace=0.25)
     fig.savefig(PNG, dpi=DPI)
     fig.savefig(PDF)
     plt.close(fig)
