@@ -212,6 +212,8 @@ $$\hat A_{\mathrm{nom}}(d)=16\sum_{i=0}^{11}A_\circ(3+8i,\,1.5;\,[x_F,x_F+\ell])
 
 **场景**：仅 `H.scene0(10)`（`ha_orchard` + 园外禁喷注入）。**不**调用规划器、**不**读航段。 \(x_F\) 以 `a_trial_eval.buffer_set` 扫掠多边形右缘为准；与名义 \(x_F=-1+d\) 不一致时以代码为准并记原因。
 
+**独立性说明**：预测脚本 `scripts/c1_blind_predict.py` 不调用规划器、不读航段，对规划器是独立的；但冠层与缓冲几何（如 `buffer_set`）复用 `scripts/a_trial_eval.py`，即与评价器共用几何原语，二者不完全独立。另：(w,d)=(7,16) 的 B 被校验器 fail-closed（target-tree-03-11 落在整条关喷航道内且不在排除区内），记为「不适用」，不计入可测组合；可测组合为 5/5。
+
 **seed 选用**：F2/F3 a_trial 几何/主对比仅用过 seed 0–9；本轮用 **seed=10**。（旁注：`ablation_sort_vs_sort_drift` 等其它矩阵曾出现 seed=10，但不是本相位对齐几何档。）
 
 **喷幅出处**（`/workspace/lit_review/real_orchard_params.md`）：S7、S5、S14/S16、S18；缓冲档 d=10/16 对应 S11。
