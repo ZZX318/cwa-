@@ -2,8 +2,8 @@
 
 默认模式只读冻结 CSV/JSON（先校验 9 个输入 + 2 张参照图的 SHA256），不重新规划；
 输出全部写到 results/repro_main/（已 gitignore），不改任何入库文件。
-逐格与稿件 v3.7 比对（scripts/p8_manuscript_v3_7_expected.json，抽自 draft_v3_skeleton.md
-v3.7，sha256 记录在该文件内），比对表写 results/repro_main/compare.md。
+逐格与稿件快照比对（scripts/p8_manuscript_expected.json，当前为 draft_v3_skeleton.md v3.9，
+版本与 sha256 记录在该文件内），比对表写 results/repro_main/compare.md；每次运行另查现行稿件是否仍与快照一致。
 
 用法（wt-P8 根目录）：
     MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/repro_main.py
@@ -30,7 +30,7 @@ sys.path[:0] = [str(HERE.parent), str(HERE)]
 sys.dont_write_bytecode = True
 from p8_common import OUT_DIR, ROOT, match, ms_numbers, sha256, verify_frozen  # noqa: E402
 
-EXPECTED = HERE / "p8_manuscript_v3_7_expected.json"
+EXPECTED = HERE / "p8_manuscript_expected.json"
 LIVE_MANUSCRIPT = Path("/workspace/paper/draft_v3_skeleton.md")
 
 # Full replan (NOT run by default; never run in 项目8). Upper bound = sum of recorded wall times.
@@ -184,6 +184,14 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
             C.claim("表2", f"{lab} 判定", c[9], c[9] == "不适用" and r["applicable"] == "False",
                     f"applicable={r['applicable']}; which={r['which']}", S2)
     C.sub("表2", "title", t["title"], r"seed 10，0°，\(\tau=0\)", [10, 0, 0], S2, "label")
+    src_note = cap["表2_source"]
+    ok_sign = all(float(r["err_a"]) == float(r["A_extra_B"]) - float(r["A_pred_a"])
+                  and float(r["err_b"]) == float(r["A_extra_B"]) - float(r["A_pred_b"])
+                  for r in T2rows if r["B_status"] == "success")
+    C.claim("表2", "出处注 误差定义 = 实测 − 预测（与 CSV 符号一致）", "误差 = 实测 − 预测",
+            "误差 = 实测 − 预测" in src_note and "误差 = 预测 − 实测" not in src_note and ok_sign,
+            f"definition in note: {'实测 − 预测' if '误差 = 实测 − 预测' in src_note else 'NOT FOUND'}; "
+            f"CSV err == A_extra_B − A_pred for all 5 measured rows: {ok_sign}", S2)
     C.claim("表2", "title w≠2", r"\(w\neq2\)", all(float(r["w"]) != 2 for r in T2rows), sorted({r["w"] for r in T2rows}), S2)
 
     # ---------------- 表3
@@ -324,8 +332,8 @@ def write_compare(C: Cmp, out: Path, E: dict, live: dict, F1: dict, F2: dict):
     from collections import Counter
     items = ["图1", "图2", "表1", "表2", "表3", "表4"]
     cnt = {i: Counter((r["kind"], r["result"]) for r in C.rows if r["item"] == i) for i in items}
-    L = ["# 项目8 逐格比对：正文 6 张图表 vs 稿件 v3.7", "",
-         f"- 期望值：`scripts/p8_manuscript_v3_7_expected.json`（抽自 `{E['source']}` 快照，sha256 `{E['source_sha256']}`）",
+    L = [f"# 项目8 逐格比对：正文 6 张图表 vs 稿件 {E['version']}", "",
+         f"- 快照版本：**{E['version']}**；稿件文件 sha256 `{E['source_sha256']}`（期望值 `scripts/p8_manuscript_expected.json`，抽自 `{E['source']}`）",
          f"- 现行稿件 `{live['path']}`：sha256 `{live['sha256']}`；6 张图表的表体/标题/注与快照{'一致' if live['tables_equal_snapshot'] else '**不一致**（见 live_manuscript_diff）'}",
          "- 判定：稿件写几位小数就按几位比（f-string 四舍五入后字符串相等）；科学计数按有效数字；|Δ| 为稿件值与原始值之差。",
          "- kind：data＝数据数字；label＝参数/标签数字（d、w、seed、航向等，也从数据核对）；claim＝逻辑/等价/文本判定。", "",
@@ -408,7 +416,7 @@ def tracked_changes() -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out-dir", default=str(OUT_DIR))
-    ap.add_argument("--manuscript", default=str(LIVE_MANUSCRIPT), help="live manuscript to check against the v3.7 snapshot")
+    ap.add_argument("--manuscript", default=str(LIVE_MANUSCRIPT), help="live manuscript to check against the snapshot")
     ap.add_argument("--replan", action="store_true", help="print the full-replan command list and exit (does NOT run it)")
     a = ap.parse_args(argv)
     if a.replan:
@@ -481,7 +489,7 @@ def main(argv=None) -> int:
     print(f"compare: PASS {tot['PASS']} FAIL {tot['FAIL']}  -> {out / 'compare.md'}")
     for i, c in cnt.items():
         print(f"  {i}: " + ", ".join(f"{k[0]} {k[1]}={v}" for k, v in sorted(c.items())))
-    print(f"planner calls: {GUARD['calls']}; live manuscript tables equal v3.7 snapshot: {live['tables_equal_snapshot']}")
+    print(f"planner calls: {GUARD['calls']}; live manuscript 6 items equal snapshot ({E['version']}): {live['tables_equal_snapshot']}")
     print(f"elapsed (in-script): {elapsed:.1f} s")
     if after != before:
         print("TRACKED FILES MODIFIED:\n" + after, file=sys.stderr)

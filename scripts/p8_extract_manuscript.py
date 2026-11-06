@@ -19,7 +19,8 @@ def table_after(prefix):
         rows.append({'line': k + 1, 'cells': [c.strip() for c in lines[k].strip().strip('|').split('|')]})
         k += 1
     return {'title_line': i + 1, 'title': lines[i].strip(), 'header': hdr, 'rows': rows}
-out = {'source': label, 'source_sha256': sha, 'version': 'v3.7',
+m_ver = re.search(r'v3\.\d+(?= 可迭代骨架)', txt)
+out = {'source': label, 'source_sha256': sha, 'version': m_ver.group(0) if m_ver else 'unknown',
        'tables': {t: table_after(t + '\u3000') for t in ['表1', '表2', '表3', '表4']}}
 def line_of(s):
     return next(k + 1 for k, l in enumerate(lines) if s in l)
