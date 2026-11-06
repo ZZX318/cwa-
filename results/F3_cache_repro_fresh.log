@@ -1,0 +1,69 @@
+{
+  "pred_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "heuristic",
+    "family": "main"
+  },
+  "target_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "b_boundary",
+    "family": "main"
+  },
+  "frozen_b_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+  "pool_b_hash": "dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12",
+  "frozen_metrics": {
+    "A_extra_tau0": 0.0,
+    "A_extra_tau0.5": 0.5875000000000001,
+    "A_extra_tau1": 1.3725000000000003,
+    "total_time": 1442.2321342517662,
+    "violations": 0
+  },
+  "evidence_pred_from_checkpoint": "F3_main_checkpoint.jsonl completion order: [14] seed2 heuristic U=2 h=0 solve=77.7s hash=d742d538…; [15] seed2 b_boundary U=2 h=0 solve=13.9s hash=dc9c98d6… (anomalously short; pool mismatch). Worker PID not logged; same-process chain is the controlled repro.",
+  "key_omits": "No explicit lane_offset / variant / heading fields — those enter only via scene fingerprint, config (wind_speed/direction, drift_buffer), and start/goal coordinates. start/goal are rounded to 9 decimals in the key, while the cached path retains the first caller's full-precision endpoints.",
+  "fresh_target": {
+    "row": {
+      "seed": 2,
+      "variant": "b_boundary",
+      "U": 2.0,
+      "heading": 0,
+      "offset": 0.1499999999999999,
+      "lane_offset_used": 0.1499999999999999,
+      "plan_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+      "solve_seconds": 77.8,
+      "A_extra_tau0": 0.0,
+      "A_extra_tau0.5": 0.5875000000000001,
+      "A_extra_tau1": 1.3725000000000003,
+      "total_time": 1442.2321342517662,
+      "violations": 0,
+      "path_length": 2830.106569172877,
+      "path_spray": 1074.2608065657894,
+      "n_lanes": 402,
+      "status": "success",
+      "_wall": 78.048
+    },
+    "hash_vs_frozen": true,
+    "hash_vs_pool": false,
+    "metrics_eq_frozen": {
+      "A_extra_tau0": true,
+      "A_extra_tau0.5": true,
+      "A_extra_tau1": true,
+      "total_time": true,
+      "violations": true
+    },
+    "route_cache_stats": {
+      "hits": 0,
+      "misses": 403,
+      "false_endpoint": 0,
+      "examples": [],
+      "route_calls": 403
+    },
+    "cache_sizes": {
+      "route": 403,
+      "grid": 1
+    }
+  }
+}

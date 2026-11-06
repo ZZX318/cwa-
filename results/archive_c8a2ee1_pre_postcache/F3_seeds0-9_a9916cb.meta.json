@@ -1,0 +1,20 @@
+{
+  "commit": "a9916cb",
+  "command": "/home/box/.venvs/mpl/bin/python scripts/f3_seed_expand.py",
+  "workers": 5,
+  "elapsed_seconds": 5574.240639898002,
+  "main_csv": "F3_seeds0-9_a9916cb_main.csv",
+  "geom_csv": "F3_seeds0-9_a9916cb_geom.csv",
+  "skip_main_verify": false,
+  "f2_csv": "results/F2_noninteger_dw_71278c2.csv",
+  "hash_mismatches": [
+    "('b_boundary', 2, 2.0, 0): new=dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12 frozen=4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c (src=0e0715a)"
+  ],
+  "hash_missing": [],
+  "status_main": {
+    "success": 80
+  },
+  "status_geom": {
+    "success": 120
+  }
+}

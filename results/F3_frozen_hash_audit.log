@@ -1,0 +1,46 @@
+auditing 40 frozen keys with workers=5
+[1/40] ('b_boundary', 1, 2.0, 0): OK solve=82.1
+[2/40] ('b_boundary', 0, 2.0, 90): OK solve=90.3
+[3/40] ('b_boundary', 0, 2.0, 0): OK solve=122.6
+[4/40] ('b_boundary', 0, 4.0, 90): OK solve=165.1
+[5/40] ('b_boundary', 2, 2.0, 0): OK solve=78.9
+[6/40] ('b_boundary', 1, 2.0, 90): OK solve=199.3
+[7/40] ('b_boundary', 1, 4.0, 0): OK solve=223.7
+[8/40] ('b_boundary', 0, 4.0, 0): OK solve=322.8
+[9/40] ('b_boundary', 2, 2.0, 90): OK solve=112.9
+[10/40] ('b_boundary', 3, 2.0, 90): OK solve=69.9
+[11/40] ('b_boundary', 2, 4.0, 0): OK solve=170.2
+[12/40] ('b_boundary', 3, 2.0, 0): OK solve=157.2
+[13/40] ('b_boundary', 1, 4.0, 90): OK solve=393.1
+[14/40] ('b_boundary', 2, 4.0, 90): OK solve=214.1
+[15/40] ('b_boundary', 4, 2.0, 0): OK solve=72.1
+[16/40] ('b_boundary', 3, 4.0, 90): OK solve=120.3
+[17/40] ('heuristic', 0, 2.0, 0): OK solve=128.5
+[18/40] ('b_boundary', 4, 4.0, 0): OK solve=198.1
+[19/40] ('b_boundary', 4, 2.0, 90): OK solve=231.8
+[20/40] ('b_boundary', 3, 4.0, 0): OK solve=353.0
+[21/40] ('heuristic', 1, 2.0, 0): OK solve=82.8
+[22/40] ('heuristic', 2, 2.0, 0): OK solve=82.6
+[23/40] ('heuristic', 1, 4.0, 0): OK solve=232.2
+[24/40] ('heuristic', 2, 4.0, 0): OK solve=178.0
+[25/40] ('b_boundary', 4, 4.0, 90): OK solve=470.5
+[26/40] ('heuristic', 3, 2.0, 0): OK solve=163.6
+[27/40] ('heuristic', 0, 4.0, 0): OK solve=331.9
+[28/40] ('heuristic', 4, 2.0, 0): OK solve=75.8
+[29/40] ('oh_rot', 0, 2.0, 90): OK solve=91.0
+[30/40] ('oh_rot', 0, 4.0, 90): OK solve=168.5
+[31/40] ('heuristic', 4, 4.0, 0): OK solve=195.4
+[32/40] ('oh_rot', 1, 2.0, 90): OK solve=201.5
+[33/40] ('oh_rot', 2, 2.0, 90): OK solve=115.5
+[34/40] ('heuristic', 3, 4.0, 0): OK solve=352.7
+[35/40] ('oh_rot', 3, 2.0, 90): OK solve=69.6
+[36/40] ('oh_rot', 2, 4.0, 90): OK solve=219.2
+[37/40] ('oh_rot', 3, 4.0, 90): OK solve=121.4
+[38/40] ('oh_rot', 1, 4.0, 90): OK solve=394.7
+[39/40] ('oh_rot', 4, 2.0, 90): OK solve=225.2
+[40/40] ('oh_rot', 4, 4.0, 90): OK solve=454.5
+{
+  "n": 40,
+  "mismatches": 0,
+  "all_ok": true
+}

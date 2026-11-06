@@ -1,0 +1,23 @@
+{
+  "commit": "46360be",
+  "command": "/home/box/.venvs/mpl/bin/python scripts/f3_seed_expand.py",
+  "workers": 4,
+  "elapsed_seconds": 5178.484387564997,
+  "main_csv": "F3_main_postcache_46360be_main.csv",
+  "geom_csv": "F3_main_postcache_46360be_geom.csv",
+  "skip_main_verify": false,
+  "f2_csv": "",
+  "reuse_geom_csv": "results/F3_seeds0-9_a9916cb_geom.csv",
+  "main_checkpoint": "/workspace/wt-F/results/F3_main_postcache_checkpoint.jsonl",
+  "geom_checkpoint": "/workspace/wt-F/results/F3_geom_checkpoint.jsonl",
+  "out_stem": "F3_main_postcache_46360be",
+  "max_tasks_per_child": 1,
+  "hash_mismatches": [],
+  "hash_missing": [],
+  "status_main": {
+    "success": 80
+  },
+  "status_geom": {
+    "success": 120
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "mode": "inspect_keys",
+  "pred_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "heuristic",
+    "family": "main"
+  },
+  "target_job": {
+    "seed": 2,
+    "U": 2.0,
+    "heading": 0,
+    "variant": "b_boundary",
+    "family": "main"
+  },
+  "frozen_b_hash": "4a81e0ea87be1bbc291cf334a1ad82a4c8162711ad60ddc445d3d91bca98443c",
+  "pool_b_hash": "dc9c98d65faa6dd350207837387a4b8aba106bd50086c9653ae42d0260432f12",
+  "cache_key_fields_route": [
+    "fingerprint(scene)",
+    "config_fingerprint(effective)",
+    "objective",
+    "tuple(round(v,9) for v in start)",
+    "tuple(round(v,9) for v in goal)",
+    "step_xy",
+    "step_z",
+    "max_expansions",
+    "max_grid_nodes",
+    "smoothing"
+  ],
+  "cache_key_fields_grid": [
+    "fingerprint(scene)",
+    "config_fingerprint(config)",
+    "step_xy",
+    "step_z",
+    "round(start[2],9)",
+    "round(goal[2],9)",
+    "NOTE: start/goal XY omitted from grid key (intentional shared occupancy)"
+  ],
+  "note_round9": "route3d stores path=[start,...goal] from the first caller; a later caller whose start/goal round-equal at 9 decimals but differ at full float precision receives the first caller's endpoints.",
+  "offset_heuristic": 0.15000000000000036,
+  "offset_b_boundary": 0.1499999999999999,
+  "offset_diff": 4.440892098500626e-16,
+  "round9_equal": true,
+  "example_point_heuristic": [
+    10.15,
+    50.0,
+    6.994
+  ],
+  "example_point_b": [
+    10.15,
+    50.0,
+    6.994
+  ],
+  "example_round9_equal": true,
+  "example_bit_identical": true
+}

@@ -124,6 +124,7 @@ def worker_geom(job):
 
 
 def run_pool(jobs, worker, workers, checkpoint):
+    """Run jobs with one-task-per-child pool (max_tasks_per_child=1) when available."""
     rows, geoms = [], {}
     def ident(r):
         return (r.get('family'), int(r['seed']), float(r.get('U') or 2.0),
@@ -141,7 +142,15 @@ def run_pool(jobs, worker, workers, checkpoint):
         if item['geom'] is not None: geoms[str(key)]=item['geom']
     todo=[j for j in jobs if ident(j) not in saved]
     if saved: print(f'Resumed {len(saved)} completed rows from {checkpoint.name}; todo={len(todo)}',flush=True)
-    with ProcessPoolExecutor(max_workers=workers) as pool:
+    max_tasks = 1
+    try:
+        pool = ProcessPoolExecutor(max_workers=workers, max_tasks_per_child=1)
+        print(f'ProcessPoolExecutor max_tasks_per_child=1 (one job per process); workers={workers}', flush=True)
+    except TypeError:
+        pool = ProcessPoolExecutor(max_workers=workers)
+        max_tasks = None
+        print(f'ProcessPoolExecutor fallback without max_tasks_per_child; workers={workers}', flush=True)
+    with pool:
         pending = {pool.submit(worker, j): j for j in todo}
         for fut in as_completed(pending):
             job = pending[fut]
@@ -160,6 +169,7 @@ def run_pool(jobs, worker, workers, checkpoint):
             print(f"[{len(rows)}/{len(jobs)}] {key}: {row.get('status')}; "
                   f"d={row.get('d')}; viol={row.get('violations')}; "
                   f"reason={row.get('reason','')[:120]}", flush=True)
+    run_pool.last_max_tasks_per_child = max_tasks
     return rows, geoms
 
 
@@ -272,15 +282,40 @@ def min_time_summary(rows):
     return out
 
 
+
+def load_geom_csv(path):
+    rows = []
+    with path.open(encoding="utf-8", newline="") as fh:
+        for raw in csv.DictReader(fh):
+            r = dict(raw)
+            for k in ("extra_info", "cut_geometry"):
+                if r.get(k) and isinstance(r[k], str) and r[k].startswith(("{", "[")):
+                    r[k] = json.loads(r[k])
+            for k in ("seed", "heading", "violations"):
+                if r.get(k) not in (None, ""):
+                    r[k] = int(float(r[k]))
+            for k in ("U", "d", "requested_d", "offset", "total_time", "A_extra_tau0",
+                      "A_extra_tau0.5", "A_extra_tau1"):
+                if r.get(k) not in (None, ""):
+                    r[k] = float(r[k])
+            r["family"] = "geom"
+            rows.append(r)
+    return rows
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=5)
     ap.add_argument("--report-only", action="store_true", help="Render from completed checkpoint files; no replanning")
     ap.add_argument("--f2-csv", default="", help="Reuse F2 CSV for geom seeds 0-4")
+    ap.add_argument("--reuse-geom-csv", default="",
+                    help="Load full geom rows from CSV when no geom jobs (postcache main-only reruns)")
     ap.add_argument("--skip-main-verify", action="store_true",
                     help="Copy frozen 0-4 main rows instead of re-planning (still records source hashes)")
     ap.add_argument("--main-seeds", default="0-9")
     ap.add_argument("--geom-seeds", default="0-9")
+    ap.add_argument("--main-checkpoint", default="results/F3_main_checkpoint.jsonl")
+    ap.add_argument("--geom-checkpoint", default="results/F3_geom_checkpoint.jsonl")
+    ap.add_argument("--out-stem", default="", help="Output stem; default F3_seeds0-9_{sha}")
     a = ap.parse_args()
 
     T.self_test()
@@ -288,6 +323,9 @@ def main():
     frozen = frozen_index(load_frozen())
 
     def parse_seeds(s):
+        s = (s or "").strip()
+        if not s or s.lower() in ("none", "-", "skip"):
+            return []
         if "-" in s:
             lo, hi = s.split("-", 1)
             return list(range(int(lo), int(hi) + 1))
@@ -340,6 +378,10 @@ def main():
                 dict(seed=seed, requested_d=d, heading=90, variant="b_boundary", family="geom"),
             ]
 
+    if a.reuse_geom_csv and not geom_jobs and not reuse_rows:
+        reuse_rows = load_geom_csv(ROOT / a.reuse_geom_csv)
+        print(f"reused {len(reuse_rows)} geom rows from {a.reuse_geom_csv} (no new geom jobs)", flush=True)
+
     # Optionally skip re-planning frozen main 0-4
     copied_main = []
     if a.skip_main_verify:
@@ -367,20 +409,24 @@ def main():
         main_jobs = keep
         print(f"copied {len(copied_main)} frozen main rows; will plan {len(main_jobs)} new main jobs", flush=True)
 
+    main_cp = ROOT / a.main_checkpoint
+    geom_cp = ROOT / a.geom_checkpoint
     t0 = time.perf_counter()
     print(f"F3 main jobs={len(main_jobs)} geom jobs={len(geom_jobs)} workers={a.workers} sha={sha}", flush=True)
+    run_pool.last_max_tasks_per_child = None
     if a.report_only:
-        def read_checkpoint(name, expected):
-            p=ROOT/'results'/name
+        def read_checkpoint(path, expected):
+            p = path if path.is_absolute() else ROOT / path
             items=[json.loads(line) for line in p.read_text().splitlines()]
-            assert len(items)==expected, (name,len(items),expected)
+            assert len(items)==expected, (str(p),len(items),expected)
             return [i['row'] for i in items], {str(n):i['geom'] for n,i in enumerate(items) if i['geom'] is not None}
-        main_rows,main_geoms=read_checkpoint('F3_main_checkpoint.jsonl',len(main_jobs))
-        geom_rows,geom_geoms=read_checkpoint('F3_geom_checkpoint.jsonl',len(geom_jobs))
+        main_rows,main_geoms=read_checkpoint(main_cp,len(main_jobs)) if main_jobs else ([], {})
+        geom_rows,geom_geoms=read_checkpoint(geom_cp,len(geom_jobs)) if geom_jobs else ([], {})
     else:
-        main_rows, main_geoms = run_pool(main_jobs, worker_main, a.workers, ROOT/"results/F3_main_checkpoint.jsonl") if main_jobs else ([], {})
-        geom_rows, geom_geoms = run_pool(geom_jobs, worker_geom, a.workers, ROOT/"results/F3_geom_checkpoint.jsonl") if geom_jobs else ([], {})
+        main_rows, main_geoms = run_pool(main_jobs, worker_main, a.workers, main_cp) if main_jobs else ([], {})
+        geom_rows, geom_geoms = run_pool(geom_jobs, worker_geom, a.workers, geom_cp) if geom_jobs else ([], {})
     elapsed = time.perf_counter() - t0
+    max_tasks_used = getattr(run_pool, 'last_max_tasks_per_child', None)
 
     all_main = copied_main + main_rows
     all_geom = reuse_rows + geom_rows
@@ -388,7 +434,7 @@ def main():
     mismatches, missing = assert_frozen_hashes(
         [r for r in all_main if int(r["seed"]) <= 4], frozen)
 
-    stem = f"F3_seeds0-9_{sha}"
+    stem = a.out_stem.strip() or f"F3_seeds0-9_{sha}"
     out = ROOT / "results"
     if (out / f"{stem}_main.csv").exists():
         stem += "_" + time.strftime("%Y%m%dT%H%M%S")
@@ -399,6 +445,9 @@ def main():
         commit=sha, command=COMMAND, workers=a.workers, elapsed_seconds=elapsed,
         main_csv=f"{stem}_main.csv", geom_csv=f"{stem}_geom.csv",
         skip_main_verify=a.skip_main_verify, f2_csv=a.f2_csv,
+        reuse_geom_csv=a.reuse_geom_csv,
+        main_checkpoint=str(main_cp), geom_checkpoint=str(geom_cp),
+        out_stem=stem, max_tasks_per_child=max_tasks_used,
         hash_mismatches=mismatches, hash_missing=missing,
         status_main=dict(Counter(r.get("status") for r in all_main)),
         status_geom=dict(Counter(r.get("status") for r in all_geom)),
@@ -481,7 +530,11 @@ def main():
         "",
         f"复现：`{COMMAND}` --workers {a.workers}"
         + (f" --f2-csv {a.f2_csv}" if a.f2_csv else "")
+        + (f" --reuse-geom-csv {a.reuse_geom_csv}" if a.reuse_geom_csv else "")
+        + (f" --out-stem {stem}" if a.out_stem else "")
         + (" --skip-main-verify" if a.skip_main_verify else ""),
+        "",
+        f"池：ProcessPoolExecutor max_tasks_per_child={max_tasks_used}（每任务新进程，与 routing3d float.hex 精确缓存键双保险）。",
         "",
         "Wilcoxon n=10 最小双侧 p=2/2^10=0.001953…≈0.002；只写描述，不写显著。",
         "几何违规仅指所定义的程序检查，不代表真实环境安全验证。",
