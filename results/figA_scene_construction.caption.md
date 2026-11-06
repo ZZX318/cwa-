@@ -2,4 +2,4 @@
 
 Fig. A Scene-construction panel (main experiment and random maps). (a) Top view of the main-experiment orchard: ha_orchard, seed 0, buffer_expand=1, wind-speed tier U=2 m/s → effective buffer d=10 m (Kong et al., 2026 lookup). Red hatch: exterior/edge-adjacent no-spray zone; orange: upwind buffer strip F; blue hatch: in-orchard island no-spray demo (ns-island-demo, figure-only injection; geometry unchanged after expansion). Arrow points to the wind-from direction (wind_direction=0, from +x). (b) jitter_rows, seed 1; (c) clusters_gaps, seed 2; (d) random_obstacles_zones, seed 0. Re-rendered from scene data only; no planning was run.
 
-数据与脚本 / Data & script: a_trial_heading.scene0(0); planning.drift.resolve_effective_buffer + expand_sensitive_inward; a_trial_eval.buffer_set; scene.random_map.build; scripts/figA_scene_construction.py; commit 1a18cbc75c9f1818c91c598305732a2b13296016.
+数据与脚本 / Data & script: a_trial_heading.scene0(0); planning.drift.resolve_effective_buffer + expand_sensitive_inward; a_trial_eval.buffer_set; scene.random_map.build; scripts/figA_scene_construction.py; commit 20680f6410b4d2ae2e652aeec5a136f562fd615f.
