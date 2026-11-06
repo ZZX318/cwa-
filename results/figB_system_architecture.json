@@ -1,7 +1,7 @@
 {
   "figure": "B",
   "section": "§1.8 appendix",
-  "commit": "5d0e7d3b0b0d460036e70dcff58d39f15854306d",
+  "commit": "328876a360a39511db07f46cf9047559c79b064d",
   "planning_ran": false,
   "layout": "snake: row1 L→R ①②③④; CAW right of ④; ⑤ under ④; row2 R→L ⑤⑥⑦",
   "nodes": [
@@ -42,7 +42,7 @@
     {
       "key": "freeze",
       "title": "⑦ 冻结复现",
-      "code": "planning/model.py（fingerprint） | *checks.py · main.py --check | 固定种子 · hash · 检查"
+      "code": "planning/model.py | （fingerprint） | *checks.py · main.py --check | 固定种子 · hash · 检查"
     }
   ],
   "note": "模块路径对照 ARCHITECTURE.md 与仓库实际文件；未画不存在的模块。CAW-A* 仅作实现手段。",

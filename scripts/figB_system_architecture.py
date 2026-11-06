@@ -104,7 +104,7 @@ NODES = [
     dict(
         key="freeze",
         title="⑦ 冻结复现",
-        code="planning/model.py（fingerprint）\n*checks.py · main.py --check\n固定种子 · hash · 检查",
+        code="planning/model.py\n（fingerprint）\n*checks.py · main.py --check\n固定种子 · hash · 检查",
         primary=True,
     ),
 ]
@@ -158,7 +158,7 @@ def main():
     ax.axis("off")
     ax.set_title("系统架构与数据流（附录）", fontsize=9, pad=4)
 
-    box_w, box_h = 3.05, 2.20
+    box_w, box_h = 3.12, 2.28
     gap = 0.32
     top_y = 6.40
     bot_y = 1.55
@@ -176,7 +176,7 @@ def main():
     # CAW to the RIGHT of ④, short dashed link into its left side.
     plan = next(n for n in NODES if n["key"] == "plan")
     s = plan["secondary"]
-    caw_w, caw_h = 3.15, 2.35
+    caw_w, caw_h = 3.05, 2.35
     caw_gap = 0.28
     caw_x = xs_top[3] + box_w + caw_gap
     caw_y = top_y + (box_h - caw_h) / 2
