@@ -59,7 +59,11 @@ MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/figA_scene_cons
 MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/fig1b_noninteger_buffer_lanes.py
 ```
 
-（在临时 worktree 中实测，结果见下节。）
+实测（2026-11-06 02:07 EST，在 `debe9e5` 的临时 detached worktree 中运行，随后删除该 worktree）：两条命令退出码均为 0，
+wall time 分别 2.1 s、3.4 s；两张 PNG 与入库版**逐字节相同**（sha256 `caa67906…`、`1f4ff503…`）；PDF 字节变化（内嵌时间戳）；
+`figA_scene_construction.json` 只有 `commit` 与 `outputs` 路径变化。**注意**：两份 `*.caption.md` 会被脚本内模板覆盖成旧措辞——
+入库 caption 是事后手工修订的（`70bd376` 把 fig1b 损失带写成 `[x_F, x_F+(w−r)]`，`979cf79` 给 figA 补 d=16 时 x_F=15），
+脚本模板没有同步（fig1b 模板仍写 `[x_F, x_F+r]`，图上图例同样是 `x_F+r`，图未重绘）。所以不要在入库目录直接运行这两个脚本。
 
 ## `--replan`（全量重规划；本次未运行）
 
@@ -72,3 +76,8 @@ F2 60 次 1772.9 s（`F2.report.md` L11）+ F3 首跑 5574.2 s（`F3_run.log` �
 + F3 postcache 主对比 5178.5 s（`F3_main_postcache_run.log` 末行）。另：表2 实测 12 次 303.1 s，几何档冷重跑 16 格 622.6 s。
 注意：`f3_seed_expand.py`（含 `--report-only`）会改写 `results/F3_tables.md` 与 `results/F3.report.md`；`c1_blind_plans.py` 要求
 `results/c1_blind_plans_{HEAD}.csv` 不存在且每次都重规划。重规划只应在临时 worktree 中手动运行。
+
+## 回归检查（debe9e5 工作树）
+
+`python3 -u drift_checks.py` → 通过 23、失败 0；`python3 -u main.py --check` → 通过 171、失败 0（日志 `results/p8_drift.log`、
+`results/p8_main_check.log`；冷跑输出与 `time` 记录 `results/p8_repro_main_cold.log`）。`git diff a32944b -- planning/` 为空。

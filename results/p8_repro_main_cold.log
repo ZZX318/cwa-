@@ -1,0 +1,62 @@
+OK  results/F3_main_postcache_46360be_geom.csv  609e7187e06da2e029e06589ed8fe094039214321f5a389ca81e88b691646892
+OK  results/F3_main_postcache_46360be_main.csv  52bf59e2a16789ee55218e8c79e2c7cabab55d41eff6e940b59605d5bcdf9bd7
+OK  results/F3_main_postcache_checkpoint.jsonl  1fcd2c8f6818251199bf372de103bce19b24ca685f89a8347b1911f0abcdae35
+OK  results/F2_noninteger_dw_71278c2.csv  b766203d3e1d125c99dd1cc90230346fafc2032205b99498ced25497569b6896
+OK  results/F2_noninteger_dw_71278c2.geom.json  207afd526a400218961485a6c1cc449f638ac195d8a8f9c2e1c633d3975b5354
+OK  results/c1_blind_predict_seed10.json  e0a8bc2ef1a6b311a0f805f5802fad3461bbabc1e8134820278a4f81f43de979
+OK  results/c1_blind_plans_ed94b82.csv  d2e95326825c99b7bca202b1ecc6e7018d8044ccba587fb00d7f40cf14973032
+OK  results/c1_blind_error_table.csv  3e062171801a82a614a2f2e34fc7c115bc971588b16a73773e78e2dd695e1c18
+OK  results/c1_geom_cold_rerun.csv  e6907dd057ba03aebabecc73226a89554d9b07e05520c7926d5ada13d5a4072a
+OK  results/figA_scene_construction.png  caa67906badcd59477de7a6b683eb1a6bb2c0b637c62c8fad442b3875ff7e992
+OK  results/fig1b_noninteger_buffer_lanes.png  1f4ff5034cde5a988498b53eed206a5a74c7ce3f24189599b515fce560d206ef
+planner guard installed on: planning.planner.generate_plan, planning.generate_plan, multi.generate_plan, planner_api.generate_plan, planner_api.make_planner, experiment.make_planner, ablation_sort_vs_sort_drift.make_planner
+S_h 0.00±0.00 | 0.65±0.53 | 1.51±1.20 | 1616.14±19.25 lane_found=0/10 paired_n=0
+B-boundary 0.00±0.00 | 1.70±0.93 | 4.12±2.22 | 1460.19±12.94 lane_found=0/10 paired_n=0
+r2_extra_90_tau0           0.0000  表3 d=11 90° τ=0 mean
+r2_time_90              1382.1197  表3 d=11 90° time mean
+r3_dt_sh_b0              155.9444  mean(t S_h 0°) − mean(t B 0°)
+r3_pct_sh_b0              10.6797  Δt / mean(t B 0°) ×100
+r3_extra_sh_tau0           0.0000  表3 d=11 0° S_h τ=0 mean
+r3_extra_b0_tau0          41.1920  表3 d=11 0° B τ=0 mean
+r3_time_sh              1616.1356  表3 d=11 0° S_h time mean
+r3_time_b0              1460.1913  表3 d=11 0° B time mean
+r4_dt_sh_90              234.0159  mean(t S_h 0°) − mean(t B 90°)
+r4_pct_sh_90              16.9317  Δt / mean(t B 90°) ×100
+r4_dt_sh_b0              155.9444  mean(t S_h 0°) − mean(t B 0°)
+r4_pct_sh_b0              10.6797  Δt / mean(t B 0°) ×100
+r4_sh_tau05                0.4128  表3 d=11 0° S_h τ=0.5
+r4_sh_tau1                 0.9655  表3 d=11 0° S_h τ=1.0
+r4_b0_tau05               42.5918  表3 d=11 0° B τ=0.5
+r4_b0_tau1                44.5628  表3 d=11 0° B τ=1.0
+r4_b90_tau05              40.7098  表3 d=11 90° τ=0.5
+r4_b90_tau1               80.3488  表3 d=11 90° τ=1.0
+r4_time_sh              1616.1356  表3 d=11 0° S_h time
+r4_time_b0              1460.1913  表3 d=11 0° B time
+r4_time_90              1382.1197  表3 d=11 90° time
+{'r_d11': 1, 'CL_d11_nonempty': True, 'CL_d15_empty': True, 'r_d10': 0, 'r_d16': 0}
+Fields equal: 150/150
+Header equal: True; row counts equal: True
+Byte-identical: True
+Committed SHA256: 3e062171801a82a614a2f2e34fc7c115bc971588b16a73773e78e2dd695e1c18
+Rebuilt SHA256: 3e062171801a82a614a2f2e34fc7c115bc971588b16a73773e78e2dd695e1c18
+Wrote /workspace/wt-P8/results/repro_main/fig1_scene_construction.png
+Wrote /workspace/wt-P8/results/repro_main/fig1_scene_construction.pdf
+d= 10.0 commit= 42ff628471865b0f66adbcc7c61cbac9320ec099 planning_ran=False
+{"S_h": {"x_F": 10.0, "cut_segments": 1, "path_cut_off": 3.694366074070814, "spray_len_geom": 1234.8079200155146, "path_spray_csv": 1234.807920015516, "plan_hash": "da8fa90e9ca1c93b01073e60ab7a0aaa1ef41e0a71e6cf80e400ed93c1bff220", "n_lanes": 556, "strip_count": 36, "total_time": 1606.2534339144368, "A_extra_tau0": 0.0, "offset": 0.879999999999999, "cut_ids": [941]}, "B-boundary(0°)": {"x_F": 10.0, "cut_segments": 2, "path_cut_off": 5.60298999259382, "spray_len_geom": 1020.8039769363097, "path_spray_csv": 1020.8039769363097, "plan_hash": "ff9ecad05b0983cd0f0f0e607d6e8a3c51bd6071c2321b1611a4fb35da1f4f12", "n_lanes": 403, "strip_count": 37, "total_time": 1459.6232606305573, "A_extra_tau0": 42.61000000000001, "offset": 1.88, "cut_ids": [755, 765]}}
+图1(b) 非整数缓冲距离下的对齐对比（seed 0，U=2 m/s，航向 0°，d=11 m，喷幅 w=2 m）。(b1) S_h（o=0.88 m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o=1.88 m，对齐田块边界）。图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+r]=[10, 11] m；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。Z 角处被切条带与损失带无关，本图不绘。A_extra(τ=0)：S_h 0.00 m² vs B-boundary 42.61 m²，该差值即损失带内非 F 冠层面积（15 棵，42.61 m²），为几何核算，非独立实验证据。代价并列：航道 556 vs 403，总用时 1606.25 s vs 1459.62 s（S_h 多 146.63 s）。d=11 m 为几何假设档，不是孔令标风速档。B-boundary 为文献方法的简化代理，非原方法复现。
+
+数据来源：results/F2_noninteger_dw_71278c2.csv、results/F2_noninteger_dw_71278c2.geom.json [d11_s0_h0_heuristic, d11_s0_h0_b_boundary]；plan_hash S_h da8fa90e…，B ff9ecad0…；scene: a_trial_heading.scene0(0)；script: scripts/fig1b_noninteger_buffer_lanes.py。
+
+compare: PASS 316 FAIL 0  -> /workspace/wt-P8/results/repro_main/compare.md
+  图1: claim PASS=6, data PASS=10
+  图2: claim PASS=5, data PASS=10, label PASS=5
+  表1: claim PASS=3, data PASS=59, label PASS=8
+  表2: claim PASS=9, data PASS=33, label PASS=21
+  表3: claim PASS=4, data PASS=71, label PASS=20
+  表4: claim PASS=9, data PASS=26, label PASS=17
+planner calls: 0; live manuscript tables equal v3.7 snapshot: True
+elapsed (in-script): 5.6 s
+
+real	0m5.767s
+user	0m5.916s
+sys	0m0.631s
