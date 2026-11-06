@@ -240,17 +240,19 @@ def panel_a(ax, scene, F, d):
         alpha=0.55,
         zorder=3,
     )
-    # Wind-from arrow (wd=0 → from +x). Match fig1 convention: arrow points to wind origin.
+    # Code convention (planning/drift.py): wind_direction = 风的来向;
+    # upwind u=(cos wd, sin wd). wd=0 → u=(+1,0)=来自 +x；吹向 −x。
+    # Arrow shows blow direction (−x); buffer on the left is the upwind side of Z.
     ax.annotate(
         "",
-        xy=(92, 92),
-        xytext=(68, 92),
+        xy=(68, 92),
+        xytext=(92, 92),
         arrowprops=dict(arrowstyle="->", lw=1.2, color="#333333"),
     )
     ax.text(
         80,
         95.5,
-        "风来向 U=2 m/s",
+        "风向（吹向 −x）U=2 m/s",
         ha="center",
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.9, pad=0.3),
     )
@@ -382,9 +384,9 @@ def main():
     configure_fonts()
     scene, expanded, F, d, cfg = main_scene()
 
-    fig, axes = plt.subplots(2, 2, figsize=(170 * MM, 170 * MM))
+    fig, axes = plt.subplots(2, 2, figsize=(170 * MM, 178 * MM))
     fig.subplots_adjust(
-        left=0.07, right=0.98, bottom=0.10, top=0.94, wspace=0.22, hspace=0.28
+        left=0.07, right=0.98, bottom=0.175, top=0.945, wspace=0.22, hspace=0.30
     )
     panel_a(axes[0, 0], scene, F, d)
     panel_meta = []
@@ -413,7 +415,7 @@ def main():
             edgecolor="#D68416",
             label=f"上风缓冲 F (d={d:g} m)",
         ),
-        Line2D([], [], color="#333333", lw=1.2, label="风来向"),
+        Line2D([], [], color="#333333", lw=1.2, label="风向（吹向 −x）"),
         Patch(facecolor="#C0C0C0", edgecolor="#555555", label="障碍（随机图）"),
         Patch(
             facecolor="#F0E6FF",
@@ -425,12 +427,17 @@ def main():
     fig.legend(
         handles=handles,
         loc="lower center",
-        bbox_to_anchor=(0.5, 0.005),
+        bbox_to_anchor=(0.5, 0.008),
         ncol=4,
         frameon=False,
         columnspacing=1.0,
         handlelength=1.8,
+        borderaxespad=0.0,
     )
+
+    # Spec: equal-aspect axes on every panel (scale bar alternative not used).
+    for ax in axes.ravel():
+        ax.set_aspect("equal", adjustable="box")
 
     fig.savefig(str(PREFIX) + ".png", dpi=300)
     fig.savefig(str(PREFIX) + ".pdf")
@@ -445,6 +452,13 @@ def main():
         buffer_expand=1.0,
         wind_speed=2.0,
         wind_direction=0.0,
+        wind_convention={
+            "code": "planning/drift.py: wind_direction=风的来向; upwind u=(cos wd,sin wd)",
+            "wd0": "comes_from=+x; blows_toward=-x; buffer sweeps along +x (upwind)",
+            "figure_arrow": "blow direction −x",
+            "figure_label": "风向（吹向 −x）",
+        },
+        equal_aspect=True,
         d_m=d,
         d_tier="U=2 m/s → d=10 m（孔令标 2026，U≤3）",
         panel_a=dict(
@@ -490,9 +504,9 @@ def main():
         json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
 
-    caption = f"""图A 场景构建示意（主实验与随机地图）。(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（孔令标 2026 查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变）。箭头指向风来向（wind_direction=0，来自 +x）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。
+    caption = f"""图A 场景构建示意（主实验与随机地图）。(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（孔令标 2026 查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变）。箭头表示风向吹向 −x（代码中 wind_direction=0 为风的来向、来自 +x；上风缓冲在禁喷区右侧/园内侧）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。
 
-Fig. A Scene-construction panel (main experiment and random maps). (a) Top view of the main-experiment orchard: ha_orchard, seed 0, buffer_expand=1, wind-speed tier U=2 m/s → effective buffer d=10 m (Kong et al., 2026 lookup). Red hatch: exterior/edge-adjacent no-spray zone; orange: upwind buffer strip F; blue hatch: in-orchard island no-spray demo (ns-island-demo, figure-only injection; geometry unchanged after expansion). Arrow points to the wind-from direction (wind_direction=0, from +x). (b) jitter_rows, seed 1; (c) clusters_gaps, seed 2; (d) random_obstacles_zones, seed 0. Re-rendered from scene data only; no planning was run.
+Fig. A Scene-construction panel (main experiment and random maps). (a) Top view of the main-experiment orchard: ha_orchard, seed 0, buffer_expand=1, wind-speed tier U=2 m/s → effective buffer d=10 m (Kong et al., 2026 lookup). Red hatch: exterior/edge-adjacent no-spray zone; orange: upwind buffer strip F; blue hatch: in-orchard island no-spray demo (ns-island-demo, figure-only injection; geometry unchanged after expansion). Arrow shows the blow direction toward −x (in code, wind_direction=0 is the wind-from angle, from +x; the upwind buffer lies on the orchard side of the exterior no-spray zone). (b) jitter_rows, seed 1; (c) clusters_gaps, seed 2; (d) random_obstacles_zones, seed 0. Re-rendered from scene data only; no planning was run.
 
 数据与脚本 / Data & script: a_trial_heading.scene0(0); planning.drift.resolve_effective_buffer + expand_sensitive_inward; a_trial_eval.buffer_set; scene.random_map.build; scripts/figA_scene_construction.py; commit {commit}.
 """

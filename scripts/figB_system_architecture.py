@@ -110,7 +110,8 @@ NODES = [
 ]
 
 
-def draw_box(ax, x, y, w, h, title, code, *, fc, ec, title_color="#111111"):
+def draw_box(ax, x, y, w, h, title, code, *, fc, ec, title_color="#111111",
+             title_fs=7.5, code_fs=5.8, title_pad=0.18, body_y_frac=0.38):
     box = FancyBboxPatch(
         (x, y),
         w,
@@ -125,22 +126,22 @@ def draw_box(ax, x, y, w, h, title, code, *, fc, ec, title_color="#111111"):
     ax.add_patch(box)
     ax.text(
         x + w / 2,
-        y + h - 0.22,
+        y + h - title_pad,
         title,
         ha="center",
         va="top",
-        fontsize=7.5,
+        fontsize=title_fs,
         color=title_color,
         fontweight="bold",
         zorder=3,
     )
     ax.text(
         x + w / 2,
-        y + h / 2 - 0.05,
+        y + h * body_y_frac,
         code,
         ha="center",
         va="center",
-        fontsize=5.8,
+        fontsize=code_fs,
         color="#333333",
         linespacing=1.25,
         zorder=3,
@@ -149,139 +150,109 @@ def draw_box(ax, x, y, w, h, title, code, *, fc, ec, title_color="#111111"):
 
 def main():
     configure_fonts()
-    # Wide appendix figure: left-to-right primary chain; CAW as secondary under planning.
-    fig_w, fig_h = 170 * MM, 95 * MM
+    fig_w, fig_h = 170 * MM, 112 * MM
     fig, ax = plt.subplots(figsize=(fig_w, fig_h))
-    ax.set_xlim(0, 17)
-    ax.set_ylim(0, 9.5)
+    ax.set_xlim(0, 17.2)
+    ax.set_ylim(0, 10.6)
     ax.axis("off")
-    ax.set_title("系统架构与数据流（附录）", fontsize=9, pad=6)
+    ax.set_title("系统架构与数据流（附录）", fontsize=9, pad=4)
 
-    # Layout: 7 primary boxes in a row (wrapped? better 4 + 3 or single row compressed)
-    # Use two rows: 1-4 on top, 5-7 on bottom, with flow arrows.
-    # Planning (4) has secondary CAW below it.
+    box_w, box_h = 3.35, 2.25
+    gap = 0.38
+    top_y = 6.55
+    bot_y = 1.05
 
-    box_w, box_h = 3.6, 2.35
-    gap = 0.45
-    top_y = 5.9
-    bot_y = 1.15
-
-    # Top row: ①–④
     top_keys = ["scene", "buffer", "phase", "plan"]
     top_nodes = [n for k in top_keys for n in NODES if n["key"] == k]
     xs_top = []
-    x0 = 0.55
+    x0 = 0.35
     for i, n in enumerate(top_nodes):
         x = x0 + i * (box_w + gap)
         xs_top.append(x)
         draw_box(
-            ax,
-            x,
-            top_y,
-            box_w,
-            box_h,
-            n["title"],
-            n["code"],
-            fc="#E8F1DE",
-            ec="#3D5A2A",
+            ax, x, top_y, box_w, box_h, n["title"], n["code"],
+            fc="#E8F1DE", ec="#3D5A2A",
         )
-        if n.get("secondary"):
-            s = n["secondary"]
-            sx, sy = x + 0.35, top_y - 1.95
-            draw_box(
-                ax,
-                sx,
-                sy,
-                box_w - 0.7,
-                1.60,
-                s["title"],
-                s["code"],
-                fc="#F2F2F2",
-                ec="#888888",
-                title_color="#555555",
-            )
-            # dashed link from planning to CAW
-            ax.annotate(
-                "",
-                xy=(sx + (box_w - 0.7) / 2, sy + 1.60),
-                xytext=(x + box_w / 2, top_y),
-                arrowprops=dict(
-                    arrowstyle="->",
-                    lw=0.9,
-                    linestyle="--",
-                    color="#888888",
-                ),
-            )
 
-    # Bottom row: ⑤–⑦ centered-ish
+    # CAW secondary: to the RIGHT of ④, not under the ④→⑤ path.
+    plan = next(n for n in NODES if n["key"] == "plan")
+    s = plan["secondary"]
+    # CAW sits under ④; ④→⑤ elbow runs left of this column (never through the box).
+    caw_w, caw_h = 3.20, 2.55
+    caw_x = xs_top[3] + 0.10
+    caw_y = top_y - 0.28 - caw_h
+    from matplotlib.patches import FancyBboxPatch as _FBP
+    ax.add_patch(_FBP(
+        (caw_x, caw_y), caw_w, caw_h,
+        boxstyle="round,pad=0.02,rounding_size=0.08",
+        linewidth=LW, facecolor="#F2F2F2", edgecolor="#888888",
+        mutation_aspect=0.5, zorder=2,
+    ))
+    # Title near top; body starts below an explicit gap (no overlap).
+    ax.text(caw_x + caw_w/2, caw_y + caw_h - 0.16, "CAW-A*",
+            ha="center", va="top", fontsize=6.8, color="#555555",
+            fontweight="bold", zorder=5)
+    ax.text(caw_x + caw_w/2, caw_y + caw_h - 0.42, "（实现手段）",
+            ha="center", va="top", fontsize=6.2, color="#555555", zorder=5)
+    # Body anchored near bottom half — clear gap under the subtitle.
+    ax.text(caw_x + caw_w/2, caw_y + 0.55,
+            "planner_api.py\nplanning/routing3d.py\nplanning/order.py",
+            ha="center", va="center", fontsize=5.5, color="#333333",
+            linespacing=1.4, zorder=5)
+    # Dashed connector ④ → CAW
+    ax.annotate(
+        "",
+        xy=(caw_x + caw_w / 2, caw_y + caw_h),
+        xytext=(xs_top[3] + box_w / 2, top_y),
+        arrowprops=dict(arrowstyle="->", lw=0.9, linestyle="--", color="#888888"),
+    )
+
     bot_keys = ["exec", "eval", "freeze"]
     bot_nodes = [n for k in bot_keys for n in NODES if n["key"] == k]
     total_bot = 3 * box_w + 2 * gap
-    x0b = (17 - total_bot) / 2
+    x0b = (17.2 - total_bot) / 2
     xs_bot = []
     for i, n in enumerate(bot_nodes):
         x = x0b + i * (box_w + gap)
         xs_bot.append(x)
         draw_box(
-            ax,
-            x,
-            bot_y,
-            box_w,
-            box_h,
-            n["title"],
-            n["code"],
-            fc="#E8F1DE",
-            ec="#3D5A2A",
+            ax, x, bot_y, box_w, box_h, n["title"], n["code"],
+            fc="#E8F1DE", ec="#3D5A2A",
         )
 
-    def arrow(x1, y1, x2, y2, dashed=False):
+    def arrow(x1, y1, x2, y2):
         ax.annotate(
             "",
             xy=(x2, y2),
             xytext=(x1, y1),
-            arrowprops=dict(
-                arrowstyle="->",
-                lw=1.1,
-                color="#333333",
-                linestyle="--" if dashed else "-",
-            ),
+            arrowprops=dict(arrowstyle="->", lw=1.15, color="#333333"),
         )
 
-    # Horizontal arrows on top row
     for i in range(3):
-        arrow(
-            xs_top[i] + box_w,
-            top_y + box_h / 2,
-            xs_top[i + 1],
-            top_y + box_h / 2,
-        )
-    # From ④ down to ⑤
-    arrow(
-        xs_top[3] + box_w / 2,
-        top_y,
-        xs_bot[0] + box_w / 2,
-        bot_y + box_h,
+        arrow(xs_top[i] + box_w, top_y + box_h / 2, xs_top[i + 1], top_y + box_h / 2)
+
+    # Elbow ④→⑤ entirely LEFT of the CAW column: out left side of ④, down, across, into ⑤.
+    x_rail = caw_x - 0.70
+    y_out = top_y + box_h * 0.45
+    y_rail = caw_y - 0.48
+    x_in = xs_bot[0] + box_w / 2
+    ax.plot(
+        [xs_top[3], x_rail, x_rail, x_in],
+        [y_out, y_out, y_rail, y_rail],
+        color="#333333", lw=1.15, solid_capstyle="round", zorder=0,
+        clip_on=False,
     )
-    # Bottom row arrows
+    arrow(x_in, y_rail, x_in, bot_y + box_h)
+
     for i in range(2):
-        arrow(
-            xs_bot[i] + box_w,
-            bot_y + box_h / 2,
-            xs_bot[i + 1],
-            bot_y + box_h / 2,
-        )
+        arrow(xs_bot[i] + box_w, bot_y + box_h / 2, xs_bot[i + 1], bot_y + box_h / 2)
 
-    # Legend
-    ax.add_patch(
-        Rectangle((0.5, 0.25), 0.45, 0.35, facecolor="#E8F1DE", edgecolor="#3D5A2A", lw=LW)
-    )
-    ax.text(1.1, 0.42, "主流程模块", va="center", fontsize=6.5)
-    ax.add_patch(
-        Rectangle((4.2, 0.25), 0.45, 0.35, facecolor="#F2F2F2", edgecolor="#888888", lw=LW)
-    )
-    ax.text(4.8, 0.42, "次级：CAW-A* 实现手段（非主张主线）", va="center", fontsize=6.5)
+    ax.add_patch(Rectangle((0.4, 0.25), 0.4, 0.32, facecolor="#E8F1DE", edgecolor="#3D5A2A", lw=LW))
+    ax.text(0.95, 0.41, "主流程模块", va="center", fontsize=6.5)
+    ax.add_patch(Rectangle((4.0, 0.25), 0.4, 0.32, facecolor="#F2F2F2", edgecolor="#888888", lw=LW))
+    ax.text(4.55, 0.41, "次级：CAW-A* 实现手段（非主张主线）", va="center", fontsize=6.5)
 
-    fig.tight_layout(pad=0.4)
+    fig.tight_layout(pad=0.3)
     fig.savefig(str(PREFIX) + ".png", dpi=300)
     fig.savefig(str(PREFIX) + ".pdf")
     plt.close(fig)
@@ -292,16 +263,13 @@ def main():
         section="§1.8 appendix",
         commit=commit,
         planning_ran=False,
+        layout="elbow_4_to_5_left_of_CAW; CAW under ④ with enlarged title/body gap",
         nodes=[
             {
                 "key": n["key"],
                 "title": n["title"],
                 "code": n["code"].replace("\n", " | "),
-                **(
-                    {"secondary": n["secondary"]}
-                    if n.get("secondary")
-                    else {}
-                ),
+                **({"secondary": n["secondary"]} if n.get("secondary") else {}),
             }
             for n in NODES
         ],
@@ -315,9 +283,9 @@ def main():
     PREFIX.with_suffix(".json").write_text(
         json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    caption = f"""图B 系统架构与数据流（附录）。主流程：场景生成 → 约束与缓冲 → 条带相位对齐（S_h 或 B）→ 规划 → 执行时间 → 评价（A_extra、时间、violations）→ 冻结复现。灰色虚线框为 CAW-A*，仅作为规划步骤的实现手段。各模块标注对应代码路径，依据 ARCHITECTURE.md。本图由脚本生成，未运行规划。
+    caption = f"""图B 系统架构与数据流（附录）。主流程：场景生成 → 约束与缓冲 → 条带相位对齐（S_h 或 B）→ 规划 → 执行时间 → 评价（A_extra、时间、violations）→ 冻结复现。灰色框为 CAW-A*，仅作为规划步骤的实现手段；④→⑤ 用折线绕开该框。各模块标注对应代码路径，依据 ARCHITECTURE.md。本图由脚本生成，未运行规划。
 
-Fig. B System architecture and data flow (appendix). Main pipeline: scene generation → constraints & buffer → strip phase alignment (S_h or B) → planning → execution time → evaluation (A_extra, time, violations) → frozen reproduction. The grey dashed box is CAW-A*, shown only as an implementation means inside planning. Module labels cite code paths per ARCHITECTURE.md. Generated by script; no planning was run.
+Fig. B System architecture and data flow (appendix). Main pipeline: scene generation → constraints & buffer → strip phase alignment (S_h or B) → planning → execution time → evaluation (A_extra, time, violations) → frozen reproduction. The grey box is CAW-A*, an implementation means only; the ④→⑤ link is an elbow that avoids that box. Module labels cite code paths per ARCHITECTURE.md. Generated by script; no planning was run.
 
 脚本 / Script: scripts/figB_system_architecture.py; commit {commit}.
 """

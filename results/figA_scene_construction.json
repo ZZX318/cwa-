@@ -1,11 +1,18 @@
 {
   "figure": "A",
   "section": "§1.2",
-  "commit": "20680f6410b4d2ae2e652aeec5a136f562fd615f",
+  "commit": "c8899fb212c6d6287867a02427b0b5c46611e9f9",
   "planning_ran": false,
   "buffer_expand": 1.0,
   "wind_speed": 2.0,
   "wind_direction": 0.0,
+  "wind_convention": {
+    "code": "planning/drift.py: wind_direction=风的来向; upwind u=(cos wd,sin wd)",
+    "wd0": "comes_from=+x; blows_toward=-x; buffer sweeps along +x (upwind)",
+    "figure_arrow": "blow direction −x",
+    "figure_label": "风向（吹向 −x）"
+  },
+  "equal_aspect": true,
   "d_m": 10.0,
   "d_tier": "U=2 m/s → d=10 m（孔令标 2026，U≤3）",
   "panel_a": {

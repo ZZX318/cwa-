@@ -1,8 +1,9 @@
 {
   "figure": "B",
   "section": "§1.8 appendix",
-  "commit": "20680f6410b4d2ae2e652aeec5a136f562fd615f",
+  "commit": "c8899fb212c6d6287867a02427b0b5c46611e9f9",
   "planning_ran": false,
+  "layout": "elbow_4_to_5_left_of_CAW; CAW under ④ with enlarged title/body gap",
   "nodes": [
     {
       "key": "scene",
