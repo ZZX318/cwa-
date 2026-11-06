@@ -1,0 +1,69 @@
+{
+  "sources": {
+    "S_h": {
+      "csv": "F2_noninteger_dw_71278c2.csv",
+      "geometry": "F2_noninteger_dw_71278c2.geom.json",
+      "key": "d11_s0_h0_heuristic"
+    },
+    "B-boundary(0°)": {
+      "csv": "F2_noninteger_dw_71278c2.csv",
+      "geometry": "F2_noninteger_dw_71278c2.geom.json",
+      "key": "d11_s0_h0_b_boundary"
+    }
+  },
+  "lost_strip": [
+    10.0,
+    11.0,
+    5.0,
+    95.0
+  ],
+  "cut_geometry": {
+    "x_F": 10.0,
+    "lost_strip": [
+      10.0,
+      11.0,
+      5.0,
+      95.0
+    ],
+    "n_trees": 15,
+    "canopy_m2": 42.61000000000001,
+    "on_tree_row": true,
+    "r": 1
+  },
+  "checks": {
+    "S_h": {
+      "x_F": 10.0,
+      "cut_segments": 1,
+      "path_cut_off": 3.694366074070814,
+      "spray_len_geom": 1234.8079200155146,
+      "path_spray_csv": 1234.807920015516,
+      "plan_hash": "da8fa90e9ca1c93b01073e60ab7a0aaa1ef41e0a71e6cf80e400ed93c1bff220",
+      "n_lanes": 556,
+      "strip_count": 36,
+      "total_time": 1606.2534339144368,
+      "A_extra_tau0": 0.0,
+      "offset": 0.879999999999999,
+      "cut_ids": [
+        941
+      ]
+    },
+    "B-boundary(0°)": {
+      "x_F": 10.0,
+      "cut_segments": 2,
+      "path_cut_off": 5.60298999259382,
+      "spray_len_geom": 1020.8039769363097,
+      "path_spray_csv": 1020.8039769363097,
+      "plan_hash": "ff9ecad05b0983cd0f0f0e607d6e8a3c51bd6071c2321b1611a4fb35da1f4f12",
+      "n_lanes": 403,
+      "strip_count": 37,
+      "total_time": 1459.6232606305573,
+      "A_extra_tau0": 42.61000000000001,
+      "offset": 1.88,
+      "cut_ids": [
+        755,
+        765
+      ]
+    }
+  },
+  "png_sha256": "1f4ff5034cde5a988498b53eed206a5a74c7ce3f24189599b515fce560d206ef"
+}

@@ -1,0 +1,11 @@
+Regenerating both methods in separate spawned subprocesses...
+S_h: hash, geometry and CSV metric assertions passed.
+B-boundary(0°): hash, geometry and CSV metric assertions passed.
+S_h: offset=1.879999999999999, lane_offset_used=1.879999999999999
+B-boundary(0°): offset=1.88, lane_offset_used=1.88
+Maximum segment coordinate difference: 1.4210854715202004e-14
+(xmin − x_Z) mod w = (xmin − x_F) mod w because d=10 m is a multiple of w=2 m.
+S_h: o_h=1.88 m, A_extra(τ=0/0.5/1.0)=0.00/1.30/3.00 m², A_excluded=123.62 m², cut=1, path_cut_off=2.60 m；B-boundary(0°): o_h=1.88 m, A_extra(τ=0/0.5/1.0)=0.00/1.30/3.00 m², A_excluded=123.62 m², cut=1, path_cut_off=2.60 m
+Canopies intersecting F drawn (disc test; planner excluded_targets in CSV may differ): 17
+Wrote /workspace/wt-fig/results/fig1_scene_buffer_lanes.{png,pdf,json,caption.md}
+exit 0

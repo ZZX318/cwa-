@@ -1,0 +1,54 @@
+{
+  "figure": "B",
+  "section": "§1.8 appendix",
+  "commit": "7199b5e43c007b48e8c4159ea380ccc34abd4d0c",
+  "planning_ran": false,
+  "layout": "snake: row1 L→R ①②③④; CAW right of ④; ⑤ under ④; row2 R→L ⑤⑥⑦",
+  "nodes": [
+    {
+      "key": "scene",
+      "title": "① 场景生成",
+      "code": "scene/generator.py | scene/random_map.py | random_scene.py"
+    },
+    {
+      "key": "buffer",
+      "title": "② 约束与缓冲",
+      "code": "planning/drift.py | planning/zones.py | （禁喷区 · 上风外扩）"
+    },
+    {
+      "key": "phase",
+      "title": "③ 条带相位对齐",
+      "code": "S_h / B-boundary | scripts/a_trial_heading.py | （heuristic_offset 等）"
+    },
+    {
+      "key": "plan",
+      "title": "④ 规划",
+      "code": "planning/planner.py | （fixed-y 条带 · 禁区切割）",
+      "secondary": {
+        "title": "CAW-A*（实现手段）",
+        "code": "planner_api.py\nplanning/routing3d.py\nplanning/order.py"
+      }
+    },
+    {
+      "key": "exec",
+      "title": "⑤ 执行时间",
+      "code": "execution/__init__.py"
+    },
+    {
+      "key": "eval",
+      "title": "⑥ 评价",
+      "code": "evaluation/__init__.py | scripts/a_trial_eval.py | A_extra · 时间 · violations"
+    },
+    {
+      "key": "freeze",
+      "title": "⑦ 冻结复现",
+      "code": "planning/model.py | （fingerprint） | *checks.py · main.py --check | 固定种子 · hash · 检查"
+    }
+  ],
+  "note": "模块路径对照 ARCHITECTURE.md 与仓库实际文件；未画不存在的模块。CAW-A* 仅作实现手段。",
+  "outputs": {
+    "png": "/workspace/wt-fig/results/figB_system_architecture.png",
+    "pdf": "/workspace/wt-fig/results/figB_system_architecture.pdf",
+    "json": "/workspace/wt-fig/results/figB_system_architecture.json"
+  }
+}

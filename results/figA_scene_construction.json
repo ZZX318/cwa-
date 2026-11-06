@@ -1,0 +1,295 @@
+{
+  "figure": "A",
+  "section": "§1.2",
+  "commit": "2e35a7501d3256454b2806f48d66952632664dfe",
+  "planning_ran": false,
+  "buffer_expand": 1.0,
+  "wind_speed": 2.0,
+  "wind_direction": 0.0,
+  "wind_convention": {
+    "code": "planning/drift.py: wind_direction=风的来向; upwind u=(cos wd,sin wd)",
+    "wd0": "comes_from=+x; blows_toward=-x; buffer sweeps along +x (upwind)",
+    "figure_arrow": "blow direction −x",
+    "figure_label": "风向（吹向 −x）"
+  },
+  "equal_aspect": true,
+  "d_m": 10.0,
+  "d_tier": "U=2 m/s → d=10 m（孔令标 2026，U≤3）",
+  "panel_a": {
+    "scene": "ha_orchard 100x100 seed 0 + _inject_downwind_no_spray + ns-island-demo",
+    "seed": 0,
+    "style": "ha_orchard",
+    "island_demo": {
+      "id": "ns-island-demo",
+      "kind": "polygon_prism",
+      "footprint": {
+        "kind": "polygon",
+        "vertices": [
+          [
+            45.0,
+            45.0
+          ],
+          [
+            55.0,
+            45.0
+          ],
+          [
+            55.0,
+            55.0
+          ],
+          [
+            45.0,
+            55.0
+          ]
+        ]
+      },
+      "z_min": 0.0,
+      "z_max": 10.0
+    },
+    "island_note": "示意注入：主实验默认仅有园外禁喷；为展示园内岛状不外扩而加入 ns-island-demo",
+    "n_targets": 192,
+    "zones": [
+      {
+        "id": "ns-ablation",
+        "exterior": true,
+        "vertices": [
+          [
+            -8.0,
+            5.0
+          ],
+          [
+            -1.0,
+            5.0
+          ],
+          [
+            -1.0,
+            95.0
+          ],
+          [
+            -8.0,
+            95.0
+          ]
+        ]
+      },
+      {
+        "id": "ns-island-demo",
+        "exterior": false,
+        "vertices": [
+          [
+            45.0,
+            45.0
+          ],
+          [
+            55.0,
+            45.0
+          ],
+          [
+            55.0,
+            55.0
+          ],
+          [
+            45.0,
+            55.0
+          ]
+        ]
+      }
+    ],
+    "F": [
+      {
+        "id": "ns-ablation",
+        "swept": true,
+        "vertices": [
+          [
+            -8.0,
+            5.0
+          ],
+          [
+            9.0,
+            5.0
+          ],
+          [
+            9.0,
+            95.0
+          ],
+          [
+            -8.0,
+            95.0
+          ]
+        ]
+      },
+      {
+        "id": "ns-island-demo",
+        "swept": false,
+        "vertices": [
+          [
+            45.0,
+            45.0
+          ],
+          [
+            55.0,
+            45.0
+          ],
+          [
+            55.0,
+            55.0
+          ],
+          [
+            45.0,
+            55.0
+          ]
+        ]
+      }
+    ],
+    "x_F": 9.0,
+    "x_Z_exterior": -1.0
+  },
+  "panels_bcd": [
+    {
+      "style": "jitter_rows",
+      "seed": 1,
+      "n_targets": 24,
+      "n_no_spray": 0,
+      "n_no_fly": 0,
+      "n_obstacles": 0,
+      "generator_version": 1,
+      "source": {
+        "kind": "random_orchard",
+        "generator": "scene/random_map.py",
+        "generator_version": 1,
+        "style": "jitter_rows",
+        "seed": 1,
+        "parameters": {
+          "rows": 4,
+          "trees_per_row": 6,
+          "row_spacing": 6.0,
+          "plant_spacing": 4.0,
+          "jitter_xy": 0.6,
+          "canopy_radius_range": [
+            1.2,
+            1.8
+          ],
+          "canopy_height_range": [
+            2.0,
+            3.2
+          ],
+          "trunk_radius": 0.15,
+          "trunk_height": 1.8,
+          "plot_margin": 2.5,
+          "reserve": 6.0,
+          "ground_z": 0.0
+        }
+      }
+    },
+    {
+      "style": "clusters_gaps",
+      "seed": 2,
+      "n_targets": 32,
+      "n_no_spray": 0,
+      "n_no_fly": 0,
+      "n_obstacles": 0,
+      "generator_version": 1,
+      "source": {
+        "kind": "random_orchard",
+        "generator": "scene/random_map.py",
+        "generator_version": 1,
+        "style": "clusters_gaps",
+        "seed": 2,
+        "parameters": {
+          "cluster_rows": 2,
+          "cluster_cols": 3,
+          "cluster_spacing_x": 12.0,
+          "cluster_spacing_y": 14.0,
+          "trees_per_cluster_range": [
+            3,
+            7
+          ],
+          "cluster_radius": 4.5,
+          "missing_prob": 0.15,
+          "min_tree_distance": 2.5,
+          "canopy_radius_range": [
+            1.2,
+            1.8
+          ],
+          "canopy_height_range": [
+            2.0,
+            3.2
+          ],
+          "trunk_radius": 0.15,
+          "trunk_height": 1.8,
+          "margin": 2.5,
+          "reserve": 6.0,
+          "ground_z": 0.0
+        }
+      }
+    },
+    {
+      "style": "random_obstacles_zones",
+      "seed": 0,
+      "n_targets": 24,
+      "n_no_spray": 1,
+      "n_no_fly": 1,
+      "n_obstacles": 3,
+      "generator_version": 1,
+      "source": {
+        "kind": "random_orchard",
+        "generator": "scene/random_map.py",
+        "generator_version": 1,
+        "style": "random_obstacles_zones",
+        "seed": 0,
+        "parameters": {
+          "base_style": "jitter_rows",
+          "base_params": {
+            "rows": 4,
+            "trees_per_row": 6,
+            "row_spacing": 6.0,
+            "plant_spacing": 4.0,
+            "jitter_xy": 0.6,
+            "canopy_radius_range": [
+              1.2,
+              1.8
+            ],
+            "canopy_height_range": [
+              2.0,
+              3.2
+            ],
+            "trunk_radius": 0.15,
+            "trunk_height": 1.8,
+            "plot_margin": 2.5,
+            "reserve": 6.0,
+            "ground_z": 0.0
+          },
+          "obstacle_count": 3,
+          "obstacle_size_range": [
+            1.5,
+            4.0
+          ],
+          "obstacle_height_range": [
+            2.0,
+            6.0
+          ],
+          "no_fly_count": 1,
+          "no_spray_count": 1,
+          "zone_size_range": [
+            2.0,
+            6.0
+          ],
+          "no_fly_z_offset_range": [
+            0.0,
+            8.0
+          ],
+          "no_spray_z_offset_range": [
+            0.0,
+            5.0
+          ],
+          "allow_inside_plot": false
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "png": "/workspace/wt-fig/results/figA_scene_construction.png",
+    "pdf": "/workspace/wt-fig/results/figA_scene_construction.pdf",
+    "caption": "/workspace/wt-fig/results/figA_scene_construction.caption.md",
+    "json": "/workspace/wt-fig/results/figA_scene_construction.json"
+  }
+}
