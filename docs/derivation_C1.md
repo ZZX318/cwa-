@@ -263,3 +263,70 @@ $$\hat A_{\mathrm{nom}}(d)=16\sum_{i=0}^{11}A_\circ(3+8i,\,1.5;\,[x_F,x_F+\ell])
 | 喷幅出处 | `/workspace/lit_review/real_orchard_params.md` |
 
 **本提交禁止**：任何规划输出、plan_hash、A_extra 实测。仿真与误差表见后续 commit。
+
+## 6.5 实测与双假说误差表
+
+**规划**：`scripts/c1_blind_plans.py` → `results/c1_blind_plans_ed94b82.csv`（12 行）。
+
+### 时序证据（预测 commit 早于任何规划输出）
+
+- 预测 commit：`ed94b82b52c28c8d703ad64e42509fc58f708ea7 2026-11-06T01:09:29-05:00 docs C1: blind dual-hypothesis predictions for seed10 (no planning)`
+- 规划输出 mtime：
+
+| 文件 | mtime（America/New_York） |
+|---|---|
+| `results/c1_blind_plans_ed94b82.csv` | 2026-11-06T01:16:04 |
+| `results/c1_blind_plans_ed94b82.geom.json` | 2026-11-06T01:16:04 |
+| `results/c1_blind_plans_ed94b82.meta.json` | 2026-11-06T01:16:04 |
+
+### 逐组合表
+
+| w | d | 名义(a) | 预测Â_∪(a) | 名义(b) | 预测Â_∪(b) | 实测 B A_extra | 实测 S_h | err(a) | err(b) | 判定 | 适用 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---|
+| 4.5 | 10 | 113.0973 | 105.7800 | 12.3899 | 13.3500 | 105.7800 | 0.0000 | 0.0000 | 92.4300 | 假说 (a) 成立 | 是 |
+| 7 | 10 | 113.0973 | 107.8975 | 100.7074 | 94.9525 | 107.8975 | 0.0000 | 0.0000 | 12.9450 | 假说 (a) 成立 | 是 |
+| 2.23 | 10 | 18.0518 | 18.6250 | 15.3395 | 16.8025 | 18.6250 | 0.0000 | 0.0000 | 1.8225 | 假说 (a) 成立 | 是 |
+| 7 | 16 | 100.7074 | 99.8150 | 0.0000 | 0.0175 | — | 0.0000 | — | — | 无法判定（无实测 B） | 否 |
+| 3.5 | 10 | 0.0000 | 1.7625 | 100.7074 | 94.9525 | 1.7625 | 0.0000 | 0.0000 | -93.1900 | 假说 (a) 成立 | 是 |
+| 4.5 | 16 | 0.0000 | 0.0175 | 0.0000 | 2.3225 | 0.0175 | 0.0000 | 0.0000 | -2.3050 | 假说 (a) 成立 | 是 |
+
+### 失败 / 不适用明细
+
+- w=7, d=16: B status=failed: 任务结构不完整：目标缺少有效喷洒关联 ['target-tree-03-11']（不在任何禁喷/禁飞区排除范围内）; H=success, B=failed; lane_found=True
+
+### 小结
+
+- 12 个新规划中成功 11，失败 1。
+- 可对照实测 B 的组合里，假说 (a) 精确成立（|err|≤1e-9）共 5 个；假说 (b) 精确成立 0 个。
+- 规划失败无法对照：1 个（见上）。
+- 全部成功的 S_h 行 `heuristic_lane_found=True` 且 A_extra(τ=0)=0，无「邻缓冲首航道」不适用。
+- 名义反例 (3.5,10)/(4.5,16) 的假说 (a) Â_nom=0，但 seed=10 抖动产生薄切；实测 B 仍精确等于 seed 的 Â_∪(a)。
+
+## 6.6 几何档冷重跑（16 格）
+
+- 抽样种子固定 `sampling_seed=20261106`；来源 `results/F3_main_postcache_46360be_geom.csv`；12 层各 ≥1 + 4 随机补 = 16。
+- 冷跑：清空缓存目录；`ProcessPoolExecutor(max_tasks_per_child=1)`；脚本 `scripts/c1_geom_cold_rerun.py`。
+- 结果：成功 16/16；A_extra/time/violations 三项全等（|Δ|≤1e-9）**16/16**；wall=622.6s。
+- plan_hash 只记录、不判定。
+
+| role | stratum | seed | variant | A_extra 相等 | time 相等 | violations 相等 | new_hash==old（仅记录） |
+|---|---|---:|---|---|---|---|---|
+| stratum | d11_h0_B | 0 | b_boundary | 是 | 是 | 是 | 同 |
+| stratum | d11_h0_H | 1 | heuristic | 是 | 是 | 是 | 同 |
+| extra | d11_h0_H | 9 | heuristic | 是 | 是 | 是 | 同 |
+| stratum | d11_h90_B | 2 | b_boundary | 是 | 是 | 是 | 同 |
+| extra | d11_h90_B | 4 | b_boundary | 是 | 是 | 是 | 同 |
+| extra | d11_h90_H | 0 | oh_rot | 是 | 是 | 是 | 同 |
+| stratum | d11_h90_H | 3 | oh_rot | 是 | 是 | 是 | 同 |
+| extra | d11_h90_H | 8 | oh_rot | 是 | 是 | 是 | 同 |
+| stratum | d13_h0_B | 0 | b_boundary | 是 | 是 | 是 | 同 |
+| stratum | d13_h0_H | 9 | heuristic | 是 | 是 | 是 | 同 |
+| stratum | d13_h90_B | 5 | b_boundary | 是 | 是 | 是 | 同 |
+| stratum | d13_h90_H | 6 | oh_rot | 是 | 是 | 是 | 同 |
+| stratum | d15_h0_B | 4 | b_boundary | 是 | 是 | 是 | 同 |
+| stratum | d15_h0_H | 0 | heuristic | 是 | 是 | 是 | 同 |
+| stratum | d15_h90_B | 0 | b_boundary | 是 | 是 | 是 | 同 |
+| stratum | d15_h90_H | 1 | oh_rot | 是 | 是 | 是 | 同 |
+
+明细：`results/c1_geom_cold_rerun.csv` / `.json`；抽样表 `results/c1_geom_cold_sample.csv`。
+

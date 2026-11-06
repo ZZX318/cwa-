@@ -1,0 +1,17 @@
+[1/16] d11_h90_H seed3: status=success metrics_eq=True A=True t=True v=True
+[2/16] d11_h90_B seed2: status=success metrics_eq=True A=True t=True v=True
+[3/16] d11_h0_B seed0: status=success metrics_eq=True A=True t=True v=True
+[4/16] d13_h0_B seed0: status=success metrics_eq=True A=True t=True v=True
+[5/16] d13_h0_H seed9: status=success metrics_eq=True A=True t=True v=True
+[6/16] d13_h90_H seed6: status=success metrics_eq=True A=True t=True v=True
+[7/16] d11_h0_H seed1: status=success metrics_eq=True A=True t=True v=True
+[8/16] d13_h90_B seed5: status=success metrics_eq=True A=True t=True v=True
+[9/16] d15_h0_B seed4: status=success metrics_eq=True A=True t=True v=True
+[10/16] d15_h0_H seed0: status=success metrics_eq=True A=True t=True v=True
+[11/16] d15_h90_B seed0: status=success metrics_eq=True A=True t=True v=True
+[12/16] d11_h90_H seed0: status=success metrics_eq=True A=True t=True v=True
+[13/16] d15_h90_H seed1: status=success metrics_eq=True A=True t=True v=True
+[14/16] d11_h90_H seed8: status=success metrics_eq=True A=True t=True v=True
+[15/16] d11_h0_H seed9: status=success metrics_eq=True A=True t=True v=True
+[16/16] d11_h90_B seed4: status=success metrics_eq=True A=True t=True v=True
+{"n": 16, "n_success": 16, "n_metrics_equal": 16, "elapsed_seconds": 622.631492947}

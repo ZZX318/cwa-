@@ -1,0 +1,200 @@
+[
+  {
+    "w": 4.5,
+    "d": 10.0,
+    "r": 1.0,
+    "L_a": [
+      9.0,
+      12.5
+    ],
+    "A_nom_a": 113.09733552923255,
+    "A_pred_a": 105.78,
+    "L_b": [
+      9.0,
+      10.0
+    ],
+    "A_nom_b": 12.389928320447172,
+    "A_pred_b": 13.350000000000001,
+    "A_extra_B": 105.78000000000002,
+    "A_extra_Sh": 0.0,
+    "err_a": 1.4210854715202004e-14,
+    "err_b": 92.43,
+    "which": "假说 (a) 成立",
+    "heuristic_lane_found": true,
+    "applicable": true,
+    "B_status": "success",
+    "H_status": "success",
+    "B_time": 1160.8594166372832,
+    "H_time": 1149.1588897296085,
+    "B_violations": 0,
+    "H_violations": 0,
+    "note": "",
+    "sh_note": "S_h A_extra=0",
+    "source": "S18 DJI T10 标称有效喷幅 3–5.5 m（取 4.5）"
+  },
+  {
+    "w": 7.0,
+    "d": 10.0,
+    "r": 3.0,
+    "L_a": [
+      9.0,
+      13.0
+    ],
+    "A_nom_a": 113.09733552923255,
+    "A_pred_a": 107.89750000000002,
+    "L_b": [
+      9.0,
+      12.0
+    ],
+    "A_nom_b": 100.70740720878538,
+    "A_pred_b": 94.95250000000001,
+    "A_extra_B": 107.89750000000002,
+    "A_extra_Sh": 0.0,
+    "err_a": 0.0,
+    "err_b": 12.945000000000007,
+    "which": "假说 (a) 成立",
+    "heuristic_lane_found": true,
+    "applicable": true,
+    "B_status": "success",
+    "H_status": "success",
+    "B_time": 765.5698277400315,
+    "H_time": 821.8379262754413,
+    "B_violations": 0,
+    "H_violations": 0,
+    "note": "",
+    "sh_note": "S_h A_extra=0",
+    "source": "S14/S16 DJI T25/T20P 标称有效喷幅至 7 m"
+  },
+  {
+    "w": 2.23,
+    "d": 10.0,
+    "r": 1.08,
+    "L_a": [
+      9.0,
+      10.15
+    ],
+    "A_nom_a": 18.05177931449738,
+    "A_pred_a": 18.625,
+    "L_b": [
+      9.0,
+      10.08
+    ],
+    "A_nom_b": 15.339483933443091,
+    "A_pred_b": 16.802500000000002,
+    "A_extra_B": 18.625000000000004,
+    "A_extra_Sh": 0.0,
+    "err_a": 3.552713678800501e-15,
+    "err_b": 1.8225000000000016,
+    "which": "假说 (a) 成立",
+    "heuristic_lane_found": true,
+    "applicable": true,
+    "B_status": "success",
+    "H_status": "success",
+    "B_time": 1525.8234437364679,
+    "H_time": 1542.2210936372787,
+    "B_violations": 0,
+    "H_violations": 0,
+    "note": "",
+    "sh_note": "S_h A_extra=0",
+    "source": "S7 苹果园四旋翼实测有效喷幅 2.23 m"
+  },
+  {
+    "w": 7.0,
+    "d": 16.0,
+    "r": 2.0,
+    "L_a": [
+      15.0,
+      20.0
+    ],
+    "A_nom_a": 100.70740720878538,
+    "A_pred_a": 99.81500000000001,
+    "L_b": [
+      15.0,
+      17.0
+    ],
+    "A_nom_b": 0.0,
+    "A_pred_b": 0.0175,
+    "A_extra_B": null,
+    "A_extra_Sh": 0.0,
+    "err_a": null,
+    "err_b": null,
+    "which": "无法判定（无实测 B）",
+    "heuristic_lane_found": true,
+    "applicable": false,
+    "B_status": "failed",
+    "H_status": "success",
+    "B_time": null,
+    "H_time": 781.5812386734076,
+    "B_violations": null,
+    "H_violations": 0,
+    "note": "B status=failed: 任务结构不完整：目标缺少有效喷洒关联 ['target-tree-03-11']（不在任何禁喷/禁飞区排除范围内）",
+    "sh_note": "S_h A_extra=0",
+    "source": "S14/S16 + S11 侧风 3–5 m/s 缓冲 ≥16 m"
+  },
+  {
+    "w": 3.5,
+    "d": 10.0,
+    "r": 3.0,
+    "L_a": [
+      9.0,
+      9.5
+    ],
+    "A_nom_a": 0.0,
+    "A_pred_a": 1.7625000000000002,
+    "L_b": [
+      9.0,
+      12.0
+    ],
+    "A_nom_b": 100.70740720878538,
+    "A_pred_b": 94.95250000000001,
+    "A_extra_B": 1.7625000000000004,
+    "A_extra_Sh": 0.0,
+    "err_a": 2.220446049250313e-16,
+    "err_b": -93.19000000000001,
+    "which": "假说 (a) 成立",
+    "heuristic_lane_found": true,
+    "applicable": true,
+    "B_status": "success",
+    "H_status": "success",
+    "B_time": 1298.3691034742055,
+    "H_time": 1295.9915494126815,
+    "B_violations": 0,
+    "H_violations": 0,
+    "note": "",
+    "sh_note": "S_h A_extra=0",
+    "source": "S5 柑橘园航线间距=行距 3.5 m（反例候选）"
+  },
+  {
+    "w": 4.5,
+    "d": 16.0,
+    "r": 2.5,
+    "L_a": [
+      15.0,
+      17.0
+    ],
+    "A_nom_a": 0.0,
+    "A_pred_a": 0.0175,
+    "L_b": [
+      15.0,
+      17.5
+    ],
+    "A_nom_b": 0.0,
+    "A_pred_b": 2.3225000000000002,
+    "A_extra_B": 0.0175,
+    "A_extra_Sh": 0.0,
+    "err_a": 0.0,
+    "err_b": -2.305,
+    "which": "假说 (a) 成立",
+    "heuristic_lane_found": true,
+    "applicable": true,
+    "B_status": "success",
+    "H_status": "success",
+    "B_time": 1160.8594166372832,
+    "H_time": 1199.4474325584397,
+    "B_violations": 0,
+    "H_violations": 0,
+    "note": "",
+    "sh_note": "S_h A_extra=0",
+    "source": "S18 + S11（反例候选）"
+  }
+]

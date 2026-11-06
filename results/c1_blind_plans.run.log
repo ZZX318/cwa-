@@ -1,0 +1,14 @@
+C1 blind plans: 12 jobs, pred=ed94b82b @ 2026-11-06T01:09:29-05:00
+[1/12] w7_d10_s10_b_boundary: success; A0=107.89750000000002; lane_found=None; reason=
+[2/12] w4.5_d10_s10_b_boundary: success; A0=105.78000000000002; lane_found=None; reason=
+[3/12] w4.5_d10_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+[4/12] w7_d16_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+[5/12] w7_d10_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+[6/12] w7_d16_s10_b_boundary: failed; A0=None; lane_found=None; reason=任务结构不完整：目标缺少有效喷洒关联 ['target-tree-03-11']（不在任何禁喷/禁飞区排除范围内）
+[7/12] w2.23_d10_s10_b_boundary: success; A0=18.625000000000004; lane_found=None; reason=
+[8/12] w2.23_d10_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+[9/12] w3.5_d10_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+[10/12] w4.5_d16_s10_b_boundary: success; A0=0.0175; lane_found=None; reason=
+[11/12] w3.5_d10_s10_b_boundary: success; A0=1.7625000000000004; lane_found=None; reason=
+[12/12] w4.5_d16_s10_heuristic: success; A0=0.0; lane_found=True; reason=
+{"n": 12, "elapsed": 303.0788914549994, "csv": "/workspace/wt-F/results/c1_blind_plans_ed94b82.csv"}
