@@ -2,7 +2,7 @@
 
 默认模式只读冻结 CSV/JSON（先校验 9 个输入 + 2 张参照图的 SHA256），不重新规划；
 输出全部写到 results/repro_main/（已 gitignore），不改任何入库文件。
-逐格与稿件快照比对（scripts/p8_manuscript_expected.json，当前为 draft_v3_skeleton.md v3.9，
+逐格与稿件快照比对（scripts/p8_manuscript_expected.json，当前为 draft_v3_skeleton.md v3.12，
 版本与 sha256 记录在该文件内），比对表写 results/repro_main/compare.md；每次运行另查现行稿件是否仍与快照一致。
 
 用法（wt-P8 根目录）：
@@ -150,11 +150,14 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
     for k, v in W.items():
         C.sub("表1", f"note p (d={k[0]}, {k[1]})", note, r"\(p=0.0020\)", [v["p"]], G + " exact Wilcoxon")
     C.sub("表1", "note 冷重跑", note, "分层冷重跑 16 格", [T["notes"]["cold_rerun"][0]], "c1_geom_cold_rerun.csv")
-    C.claim("表1", "note 冷重跑 16/16 metrics_equal", "16 格指标一致", T["notes"]["cold_rerun"] == (16, 16),
+    C.claim("表1", "note 冷重跑 16/16 metrics_equal", "16 格指标一致（16/16）",
+            "16 格指标一致（16/16）" in note and T["notes"]["cold_rerun"] == (16, 16),
             f"{T['notes']['cold_rerun'][0]}/{T['notes']['cold_rerun'][1]}", "c1_geom_cold_rerun.csv")
     C.sub("表1", "note d=15 S_h 行数", note, r"\(S_h\) 的 10 行数据", [10], G)
-    C.claim("表1", "note d=15 heuristic_lane_found=False（10/10）", "`heuristic_lane_found=False`",
-            T["notes"]["d15_heuristic_lane_found_true"] == 0, f"True count={T['notes']['d15_heuristic_lane_found_true']}", G)
+    C.claim("表1", "note d=15 首条航道不存在（0/10）", r"首条航道不存在（0/10），前提 A0 不成立",
+            "首条航道不存在（0/10），前提 A0 不成立" in note
+            and T["notes"]["d15_heuristic_lane_found_true"] == 0,
+            f"True count={T['notes']['d15_heuristic_lane_found_true']}; n=10", G)
     C.sub("表1", "note d=15 可配对 n", note, r"可配对 \(n=0\)", [T["notes"]["d15_paired_n"]], G)
     C.sub("表1", "note d=15 L", note, r"\(L=[14,15]\)", T["notes"]["d15_lost_strip"], G + " cut_geometry.lost_strip")
 
@@ -184,11 +187,11 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
             C.claim("表2", f"{lab} 判定", c[9], c[9] == "不适用" and r["applicable"] == "False",
                     f"applicable={r['applicable']}; which={r['which']}", S2)
     C.sub("表2", "title", t["title"], r"seed 10，0°，\(\tau=0\)", [10, 0, 0], S2, "label")
-    src_note = cap["表2_source"]
+    src_note = cap["表2_note"]
     ok_sign = all(float(r["err_a"]) == float(r["A_extra_B"]) - float(r["A_pred_a"])
                   and float(r["err_b"]) == float(r["A_extra_B"]) - float(r["A_pred_b"])
                   for r in T2rows if r["B_status"] == "success")
-    C.claim("表2", "出处注 误差定义 = 实测 − 预测（与 CSV 符号一致）", "误差 = 实测 − 预测",
+    C.claim("表2", "表注 误差定义 = 实测 − 预测（与 CSV 符号一致）", "误差 = 实测 − 预测",
             "误差 = 实测 − 预测" in src_note and "误差 = 预测 − 实测" not in src_note and ok_sign,
             f"definition in note: {'实测 − 预测' if '误差 = 实测 − 预测' in src_note else 'NOT FOUND'}; "
             f"CSV err == A_extra_B − A_pred for all 5 measured rows: {ok_sign}", S2)
@@ -239,7 +242,7 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
     C.nums("表4", f"L{L[0]} 条件 d", re.sub(r"r=0", "", r1[0]), [10, 16], M, "label")
     C.nums("表4", f"L{L[0]} 可选航向", r1[2], [0, 90], M, "label")
     C.nums("表4", f"L{L[0]} 建议 (heading token)", r1[3], [90], M, "label")
-    C.claim("表4", f"L{L[0]} 建议: 同相位无差别 + 有滞后时 90° 漏喷更大、用时更短", r1[3],
+    C.claim("表4", f"L{L[0]} 建议: 同相位无差别 + 有滞后时 90° 漏喷更大、估算飞行时间更短", r1[3],
             ck["d10_0_S_h_equiv_B"]["equal"] and all(mean(i90, c) > mean(i10, c) for c in taus[1:])
             and mean(i90, "total_time") < mean(i10, "total_time"),
             f"0° S_h≡B={ck['d10_0_S_h_equiv_B']['equal']}; 90° τ0.5/1 {mean(i90,taus[1]):.2f}/{mean(i90,taus[2]):.2f} > "
@@ -274,11 +277,18 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
                                              90, V["r4_b90_tau05"], V["r4_b90_tau1"]], S4 + " (0/90 are heading tokens)")
     C.nums("表4", f"L{L[3]} 时间", r4[5], [V["r4_time_sh"], V["r4_time_b0"], V["r4_time_90"]], S4)
     # row 5
-    C.claim("表4", f"L{L[4]} 条件 C∩L=∅ (d=15, 0°)", r5[0], cond["CL_d15_empty"],
-            "d=15 0° B τ0 mean = 0 (表1)", G)
-    C.nums("表4", f"L{L[4]} 条件 d, heading", r5[0].replace(r"r\neq0", ""), [15, 0], G, "label")
+    C.claim("表4", f"L{L[4]} 判据推论；d=15 超出适用范围，仅作参照", r5[0] + "；" + r5[3],
+            "判据推论" in r5[0] and "超出适用范围，仅作参照" in r5[0]
+            and "本文无满足前提 A0 的此类算例" in r5[3]
+            and cond["CL_d15_empty"] and T["notes"]["d15_heuristic_lane_found_true"] == 0,
+            "d=15: C∩L=∅，但首条航道存在数 0/10，A0 不成立，不作为条件②的验证", G)
+    C.nums("表4", f"L{L[4]} 条件 d", r5[0].replace(r"r\neq0", ""), [15], G, "label")
     C.claim("表4", f"L{L[4]} 数值列", " / ".join(r5[1:]), r5[4] == r5[5] == "—" and r5[2] == "—", "no numbers (—)", S4)
     C.sub("表4", "title", t["title"], r"数值取 \(d=11\,\mathrm{m}\) 几何档", [11], S4, "label")
+    only_zero = sum(row["cells"][2] == "仅 0°" for row in t["rows"])
+    C.claim("表4", "note 「仅 0°」一行（按表体计数）", "表中「仅 0°」一行",
+            "表中「仅 0°」一行" in cap["表4_note"] and only_zero == 1,
+            f"表体共 {len(t['rows'])} 行；可选航向恰为「仅 0°」的行数={only_zero}", "稿件表4 可选航向列")
 
     # ---------------- 图1
     m = F1["meta"]
@@ -289,7 +299,25 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
           t1 + " + a_trial_eval.buffer_set(scene0(0), 16)")
     C.claim("图1", "note x_F=−1+d", "x_F=−1+d", m["panel_a"]["x_F"] == -1 + m["d_m"] and F1["x_F_d16"] == -1 + 16,
             f"{m['panel_a']['x_F']} = -1+{m['d_m']}; {F1['x_F_d16']} = -1+16", t1)
-    C.sub("图1", "note wind_direction", n1, "wind_direction=0", [m["wind_direction"]], t1)
+    from planning.wind import effective_speed
+    wind_cfg = dict(wind_speed=m["wind_speed"], wind_direction=m["wind_direction"], wind_cost=0.25)
+    toward_plus = effective_speed((0, 0, 0), (1, 0, 0), 2.0, wind_cfg)
+    toward_minus = effective_speed((0, 0, 0), (-1, 0, 0), 2.0, wind_cfg)
+    C.claim("图1", "note 风来自 +x，吹向 −x", "风来自 +x；箭头表示风向吹向 −x",
+            "风来自 +x" in n1 and "箭头表示风向吹向 −x" in n1
+            and m["wind_direction"] == 0 and toward_plus < 2.0 < toward_minus,
+            f"wind_direction=0 是来向 +x；沿 +x 逆风速度={toward_plus}，沿 −x 顺风速度={toward_minus}",
+            "planning/wind.py:8–10,38–44；planning/drift.py:217,231–234；scripts/figA_scene_construction.py:458")
+    C.claim("图1", "note 主实验配置 ha_orchard", "ha_orchard",
+            "ha_orchard" in n1 and m["panel_a"]["scene"].startswith("ha_orchard "), m["panel_a"]["scene"], t1)
+    provenance = cap["图1_source_B2"]
+    reference_commit = json.loads((ROOT / "results/figA_scene_construction.json").read_text(encoding="utf-8"))["commit"]
+    C.claim("图1", "附录 B.2 图1 出处", provenance,
+            all(s in provenance for s in ("wt-fig/results/figA_scene_construction.caption.md",
+                                          "scripts/figA_scene_construction.py", "2e35a75"))
+            and reference_commit.startswith("2e35a75") and (HERE / "figA_scene_construction.py").is_file(),
+            f"附录 B.2 保留图注文件、绘图脚本；历史 commit 与参照 JSON {reference_commit} 一致；脚本存在",
+            f"稿件 L{E['captions']['图1_source_B2']['line']} 附录 B.2")
     for (style, seed), pm in zip([("jitter_rows", 1), ("clusters_gaps", 2), ("random_obstacles_zones", 0)], m["panels_bcd"]):
         C.claim("图1", f"note panel style {style}", style, pm["style"] == style, pm["style"], t1)
         C.sub("图1", f"note {style} seed", n1, f"{style}，seed {seed}", [pm["seed"]], t1)
@@ -317,7 +345,7 @@ def compare_all(E, T, D4, T2rows, F1, F2) -> Cmp:
     C.sub("图2", "note w−r=r=1", n2, "本例 w−r=r=1 m", [r_], t2)
     C.claim("图2", "note w−r = r", "w−r=r", w_ - r_ == r_, f"w−r={w_ - r_}, r={r_}", t2)
     C.sub("图2", "note A_extra(τ=0)", n2, "S_h 0.00 m² vs B-boundary 42.61 m²", [s["A_extra_tau0"], b["A_extra_tau0"]], t2)
-    C.sub("图2", "note 总用时", n2, "总用时 1606.25 s vs 1459.62 s", [s["total_time"], b["total_time"]], t2)
+    C.sub("图2", "note 估算飞行时间", n2, "估算飞行时间 1606.25 s vs 1459.62 s", [s["total_time"], b["total_time"]], t2)
     for mm in ("S_h", "B-boundary(0°)"):
         ok = all(cc[mm][k] for k in ("plan_hash", "A_extra_tau0", "total_time", "offset"))
         C.claim("图2", f"json checks vs CSV ({mm}): plan_hash/A_extra/total_time/offset", "—", ok,
@@ -343,8 +371,26 @@ def write_compare(C: Cmp, out: Path, E: dict, live: dict, F1: dict, F2: dict):
         L.append(f"| {i} | {c[('data','PASS')]}/{c[('data','FAIL')]} | {c[('label','PASS')]}/{c[('label','FAIL')]} | "
                  f"{c[('claim','PASS')]}/{c[('claim','FAIL')]} |")
     tot = Counter(r["result"] for r in C.rows)
-    L += ["", f"**合计：PASS {tot['PASS']}，FAIL {tot['FAIL']}**", "",
-          "## 图像字节/像素比对（信息项，不计入 PASS/FAIL）", ""]
+    L += ["", f"**合计：PASS {tot['PASS']}，FAIL {tot['FAIL']}**", ""]
+    migration = E["migration"]
+    L += ["## v3.9 → v3.12 快照迁移", "",
+          f"旧稿件 sha256 `{migration['from_sha256']}`。{migration['data_audit']}", "",
+          "| 图表 | data 旧→新（Δ） | label 旧→新（Δ） | claim 旧→新（Δ） |",
+          "|---|---|---|---|"]
+    for item in items:
+        counts = []
+        for kind in ("data", "label", "claim"):
+            old = migration["previous_counts"][item][kind]
+            new = sum(cnt[item][(kind, result)] for result in ("PASS", "FAIL"))
+            counts.append(f"{old}→{new}（{new-old:+d}）")
+        L.append("| " + " | ".join([item] + counts) + " |")
+    L += ["", "### 删除、替换、迁移与新增检查项", ""]
+    L += ["- " + s for s in migration["check_changes"]]
+    L += ["", "### 每项文字变更：旧句 → 新句", "",
+          "以下逐字段列出中英文标题、表头、表体、图注、表注及出处的全部变化；行号变化不计为文字变更。", ""]
+    for change in migration["text_changes"]:
+        L += [f"- **{change['item']}**", f"  - 旧句：{change['old']}", f"  - 新句：{change['new']}"]
+    L += ["", "## 图像字节/像素比对（信息项，不计入 PASS/FAIL）", ""]
     for name, F in (("图1", F1), ("图2", F2)):
         p = F["png"]
         L.append(f"- {name}：`{p['new_png']}` sha256 `{p['new_sha256']}`；参照 `{p['ref_png']}` `{p['ref_sha256']}`；"
@@ -400,7 +446,7 @@ def live_manuscript_status(E: dict, path: Path, out: Path) -> dict:
         st["error"] = r.stderr[-500:]
         return st
     cur = json.loads(r.stdout)
-    strip = lambda e: ({k: [x["cells"] for x in v["rows"]] + [v["title"]] for k, v in e["tables"].items()},  # noqa: E731
+    strip = lambda e: (e["version"], {k: [x["cells"] for x in v["rows"]] + [v["title"], v["header"]] for k, v in e["tables"].items()},  # noqa: E731
                        {k: v["text"] for k, v in e["captions"].items()})
     st["tables_equal_snapshot"] = strip(cur) == strip(E)
     if not st["tables_equal_snapshot"]:
@@ -483,7 +529,8 @@ def main(argv=None) -> int:
     meta = dict(git_head=subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip(),
                 python=sys.executable, python_version=platform.python_version(), numpy=numpy.__version__,
                 matplotlib=matplotlib.__version__, planner_calls=GUARD["calls"], planner_guard=GUARD["patched"],
-                compare=dict(tot), live_manuscript=live, elapsed_seconds_in_script=round(elapsed, 2),
+                compare={"PASS": tot["PASS"], "FAIL": tot["FAIL"]}, snapshot_version=E["version"],
+                snapshot_sha256=E["source_sha256"], live_manuscript=live, elapsed_seconds_in_script=round(elapsed, 2),
                 tracked_changes_before=before, tracked_changes_after=after)
     (out / "run_meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"compare: PASS {tot['PASS']} FAIL {tot['FAIL']}  -> {out / 'compare.md'}")
@@ -496,7 +543,7 @@ def main(argv=None) -> int:
         return 4
     if rc_sub:
         return rc_sub
-    return 0 if tot["FAIL"] == 0 else 1
+    return 0 if tot["FAIL"] == 0 and live["tables_equal_snapshot"] else 1
 
 
 if __name__ == "__main__":

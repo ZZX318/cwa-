@@ -1,38 +1,89 @@
-"""Extract the 6 main-text figure/table bodies, titles and numeric notes from the manuscript (read-only).
+"""Read-only extraction of the six main figures/tables, including bilingual titles.
 
-Usage: python scripts/p8_extract_manuscript.py MANUSCRIPT.md [SOURCE_LABEL] > expected.json
+Usage: python scripts/p8_extract_manuscript.py MANUSCRIPT.md [SOURCE_LABEL]
+Notes are located within their figure/table, not by wording that changes on revision.
 """
-import json, hashlib, re, sys
-src = sys.argv[1]
-label = sys.argv[2] if len(sys.argv) > 2 else src
-txt = open(src, encoding='utf-8').read()
-lines = txt.splitlines()
-sha = hashlib.sha256(txt.encode('utf-8')).hexdigest()
-def table_after(prefix):
-    i = next(k for k, l in enumerate(lines) if l.startswith(prefix))
-    j = i
-    while not lines[j].startswith('|'): j += 1
-    hdr = [c.strip() for c in lines[j].strip('|').split('|')]
-    rows = []
-    k = j + 2
-    while k < len(lines) and lines[k].startswith('|'):
-        rows.append({'line': k + 1, 'cells': [c.strip() for c in lines[k].strip().strip('|').split('|')]})
-        k += 1
-    return {'title_line': i + 1, 'title': lines[i].strip(), 'header': hdr, 'rows': rows}
-m_ver = re.search(r'v3\.\d+(?= 可迭代骨架)', txt)
-out = {'source': label, 'source_sha256': sha, 'version': m_ver.group(0) if m_ver else 'unknown',
-       'tables': {t: table_after(t + '\u3000') for t in ['表1', '表2', '表3', '表4']}}
-def line_of(s):
-    return next(k + 1 for k, l in enumerate(lines) if s in l)
-# figure 1 / figure 2 caption lines and note lines with numbers (raw text, checked by scripts)
-out['captions'] = {
-  '图1_note': {'line': line_of('注：(a) 主实验果园俯视图'), 'text': lines[line_of('注：(a) 主实验果园俯视图') - 1]},
-  '图2_note': {'line': line_of('注：(b1) S_h'), 'text': lines[line_of('注：(b1) S_h') - 1]},
-  '表1_note': {'line': line_of('注：数据 `wt-F/results/F3_main_postcache_46360be_geom.csv`'), 'text': lines[line_of('注：数据 `wt-F/results/F3_main_postcache_46360be_geom.csv`') - 1]},
-  '表3_note': {'line': line_of('注：非整数档数据'), 'text': lines[line_of('注：非整数档数据') - 1]},
-  '表3_time': {'line': line_of('**时间代价（与结论同处）**'), 'text': lines[line_of('**时间代价（与结论同处）**') - 1]},
-  '图1_title': {'line': line_of('图1\u3000'), 'text': lines[line_of('图1\u3000') - 1]},
-  '图2_title': {'line': line_of('图2\u3000'), 'text': lines[line_of('图2\u3000') - 1]},
-  '表2_source': {'line': line_of('出处：`wt-F/results/c1_blind_predict_seed10.json`'), 'text': lines[line_of('出处：`wt-F/results/c1_blind_predict_seed10.json`') - 1]},
-}
-print(json.dumps(out, ensure_ascii=False, indent=1))
+import argparse
+import hashlib
+import json
+import re
+from pathlib import Path
+
+
+def extract(src, label=None):
+    raw = Path(src).read_bytes()
+    txt = raw.decode('utf-8')
+    lines = txt.splitlines()
+
+    def record(i):
+        return {'line': i + 1, 'text': lines[i].strip()}
+
+    def find(prefix, start=0, end=None):
+        return next(i for i in range(start, len(lines) if end is None else end)
+                    if lines[i].startswith(prefix))
+
+    version = re.search(r'v3\.\d+(?= 可迭代骨架)', txt)
+    out = dict(source=label or str(src), source_sha256=hashlib.sha256(raw).hexdigest(),
+               version=version.group(0) if version else 'unknown', tables={}, captions={})
+    for name in ('图1', '图2', '表1', '表2', '表3', '表4'):
+        start = find(name + '　')
+        end = next((i for i in range(start + 1, len(lines))
+                    if lines[i].startswith('### ') or re.match(r'[图表][1-4]　', lines[i])), len(lines))
+        english = ('Fig.' if name[0] == '图' else 'Table ') + name[1] + '　'
+        out['captions'][name + '_english'] = record(find(english, start, end))
+        if name[0] == '表':
+            j = find('|', start, end)
+            cells = lambda line: [c.strip() for c in line.strip().strip('|').split('|')]
+            rows = []
+            k = j + 2
+            while k < end and lines[k].startswith('|'):
+                rows.append(dict(line=k + 1, cells=cells(lines[k])))
+                k += 1
+            out['tables'][name] = dict(title_line=start + 1, title=lines[start].strip(),
+                                       header=cells(lines[j]), rows=rows)
+            note_start = k
+        else:
+            out['captions'][name + '_title'] = record(start)
+            note_start = start
+        note = next(i for i in range(note_start, end) if lines[i].startswith(('注：', '出处：')))
+        out['captions'][name + '_note'] = record(note)
+        if name == '表3':
+            out['captions']['表3_time'] = record(find('**时间代价（与结论同处）**', note, end))
+        if name[0] == '图':
+            source = next((i for i in range(note + 1, end)
+                           if lines[i].startswith(('（图注照 ', '（图注据 '))), None)
+            if source is not None:
+                out['captions'][name + '_source'] = record(source)
+
+    # Only this appendix section may supply the relocated provenance checks.
+    b2 = next((i for i, line in enumerate(lines) if line.startswith('**B.2 ')), None)
+    if b2 is not None:
+        end = next(i for i in range(b2 + 1, len(lines)) if lines[i].startswith('**B.3 '))
+        for name in ('图1', '图2'):
+            out['captions'][name + '_source_B2'] = record(find('- ' + name + '：', b2, end))
+    return out
+
+
+def text_changes(old, new):
+    """All changed titles, headers, body cells and notes, without line-number noise."""
+    def fields(e):
+        result = {k: v['text'] for k, v in e['captions'].items()}
+        for name, table in e['tables'].items():
+            result[name + ' title'] = table['title']
+            for j, cell in enumerate(table['header'], 1):
+                result[f'{name} header {j}'] = cell
+            for i, row in enumerate(table['rows'], 1):
+                for j, cell in enumerate(row['cells'], 1):
+                    result[f'{name} row {i} col {j}'] = cell
+        return result
+    a, b = fields(old), fields(new)
+    return [dict(item=k, old=a.get(k, '（无）'), new=b.get(k, '（删除；出处见附录 B.2）'))
+            for k in sorted(a.keys() | b.keys()) if a.get(k) != b.get(k)]
+
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('manuscript')
+    ap.add_argument('source_label', nargs='?')
+    args = ap.parse_args()
+    print(json.dumps(extract(args.manuscript, args.source_label), ensure_ascii=False, indent=1))

@@ -1,11 +1,11 @@
 {
- "source": "/workspace/paper/draft_v3_skeleton.md (v3.9, mtime 2026-11-06 02:18:58 EST)",
- "source_sha256": "6655de0af985ffe932e16416b949ba6ccc7ca042c3a947518c5662b347cab42f",
- "version": "v3.9",
+ "source": "/workspace/paper/draft_v3_skeleton.md",
+ "source_sha256": "6ecf7f84b33238fdd18d2afba5cdf5a62f38af51ec2aee2ed10fa640084f5f7f",
+ "version": "v3.12",
  "tables": {
   "表1": {
-   "title_line": 370,
-   "title": "表1　同一 0° 航向下两种相位锚定规则的额外漏喷面积与估算飞行时间（\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
+   "title_line": 379,
+   "title": "表1　同一 0° 航向下两种相位锚定规则的几何额外漏喷面积与估算飞行时间（\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
    "header": [
     "\\(d\\)/m",
     "规则",
@@ -16,7 +16,7 @@
    ],
    "rows": [
     {
-     "line": 375,
+     "line": 384,
      "cells": [
       "11",
       "\\(S_h\\)",
@@ -27,7 +27,7 @@
      ]
     },
     {
-     "line": 376,
+     "line": 385,
      "cells": [
       "11",
       "B-boundary",
@@ -38,7 +38,7 @@
      ]
     },
     {
-     "line": 377,
+     "line": 386,
      "cells": [
       "13",
       "\\(S_h\\)",
@@ -49,7 +49,7 @@
      ]
     },
     {
-     "line": 378,
+     "line": 387,
      "cells": [
       "13",
       "B-boundary",
@@ -60,7 +60,7 @@
      ]
     },
     {
-     "line": 379,
+     "line": 388,
      "cells": [
       "15",
       "\\(S_h\\)（仅作参照）",
@@ -71,7 +71,7 @@
      ]
     },
     {
-     "line": 380,
+     "line": 389,
      "cells": [
       "15",
       "B-boundary",
@@ -84,8 +84,8 @@
    ]
   },
   "表2": {
-   "title_line": 407,
-   "title": "表2　\\(w\\neq2\\) 盲预测与仿真实测（seed 10，0°，\\(\\tau=0\\)；B 为地块边界锚定的 \\(A_{\\mathrm{extra}}\\)，单位 m²）",
+   "title_line": 414,
+   "title": "表2　\\(w\\neq2\\) 盲预测与仿真实测（seed 10，0°，\\(\\tau=0\\)；B 为地块边界锚定的几何额外漏喷面积 \\(A_{\\mathrm{extra}}\\)，单位 m²）",
    "header": [
     "\\(w\\)/m",
     "\\(d\\)/m",
@@ -100,7 +100,7 @@
    ],
    "rows": [
     {
-     "line": 412,
+     "line": 419,
      "cells": [
       "4.5",
       "10",
@@ -115,7 +115,7 @@
      ]
     },
     {
-     "line": 413,
+     "line": 420,
      "cells": [
       "7",
       "10",
@@ -130,7 +130,7 @@
      ]
     },
     {
-     "line": 414,
+     "line": 421,
      "cells": [
       "2.23",
       "10",
@@ -145,7 +145,7 @@
      ]
     },
     {
-     "line": 415,
+     "line": 422,
      "cells": [
       "3.5",
       "10",
@@ -160,7 +160,7 @@
      ]
     },
     {
-     "line": 416,
+     "line": 423,
      "cells": [
       "4.5",
       "16",
@@ -175,7 +175,7 @@
      ]
     },
     {
-     "line": 417,
+     "line": 424,
      "cells": [
       "7",
       "16",
@@ -192,8 +192,8 @@
    ]
   },
   "表3": {
-   "title_line": 436,
-   "title": "表3　航向 × 等效喷施滞后下的额外漏喷面积与估算飞行时间（F3，\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
+   "title_line": 443,
+   "title": "表3　航向 × 等效喷施滞后下的几何额外漏喷面积与估算飞行时间（F3，\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
    "header": [
     "\\(d\\)/m",
     "航向",
@@ -205,7 +205,7 @@
    ],
    "rows": [
     {
-     "line": 441,
+     "line": 448,
      "cells": [
       "11",
       "0°",
@@ -217,7 +217,7 @@
      ]
     },
     {
-     "line": 442,
+     "line": 449,
      "cells": [
       "11",
       "0°",
@@ -229,7 +229,7 @@
      ]
     },
     {
-     "line": 443,
+     "line": 450,
      "cells": [
       "11",
       "90°",
@@ -241,7 +241,7 @@
      ]
     },
     {
-     "line": 444,
+     "line": 451,
      "cells": [
       "13",
       "0°",
@@ -253,7 +253,7 @@
      ]
     },
     {
-     "line": 445,
+     "line": 452,
      "cells": [
       "13",
       "0°",
@@ -265,7 +265,7 @@
      ]
     },
     {
-     "line": 446,
+     "line": 453,
      "cells": [
       "13",
       "90°",
@@ -277,7 +277,7 @@
      ]
     },
     {
-     "line": 447,
+     "line": 454,
      "cells": [
       "10（整数档，U=2）",
       "0°",
@@ -289,7 +289,7 @@
      ]
     },
     {
-     "line": 448,
+     "line": 455,
      "cells": [
       "10（整数档，U=2）",
       "90°",
@@ -303,30 +303,30 @@
    ]
   },
   "表4": {
-   "title_line": 454,
-   "title": "表4　侧风缓冲约束下航向与相位锚定选择建议（仅在本文仿真几何与参数范围内；数值取 \\(d=11\\,\\mathrm{m}\\) 几何档）",
+   "title_line": 461,
+   "title": "表4　侧风缓冲约束下航向与相位锚定选择建议（仅适用于本文仿真条件；数值取 \\(d=11\\,\\mathrm{m}\\) 几何档）",
    "header": [
     "条件",
     "τ",
     "可选航向",
     "建议",
-    "额外漏喷/m²",
+    "几何额外漏喷面积/m²",
     "估算飞行时间/s"
    ],
    "rows": [
     {
-     "line": 459,
+     "line": 466,
      "cells": [
       "\\(r=0\\)（孔令标档 \\(d=10/16\\)）",
       "任意",
       "0° 或 90°",
-      "两规则同相位，相位锚定无差别；差异来自航向：有滞后时 90° 漏喷更大、用时更短",
+      "两规则同相位，相位锚定无差别；差异来自航向：有滞后时 90° 漏喷更大、估算飞行时间更短",
       "见表3 整数档",
       "见表3"
      ]
     },
     {
-     "line": 460,
+     "line": 467,
      "cells": [
       "\\(r\\neq0\\)，\\(C\\cap L\\neq\\varnothing\\)",
       "0",
@@ -337,7 +337,7 @@
      ]
     },
     {
-     "line": 461,
+     "line": 468,
      "cells": [
       "\\(r\\neq0\\)，\\(C\\cap L\\neq\\varnothing\\)",
       "0",
@@ -348,7 +348,7 @@
      ]
     },
     {
-     "line": 462,
+     "line": 469,
      "cells": [
       "\\(r\\neq0\\)，\\(C\\cap L\\neq\\varnothing\\)",
       "0.5 / 1.0 s",
@@ -359,12 +359,12 @@
      ]
     },
     {
-     "line": 463,
+     "line": 470,
      "cells": [
-      "\\(r\\neq0\\)，\\(C\\cap L=\\varnothing\\)（如 \\(d=15\\)，0°，仅作参照）",
+      "\\(r\\neq0\\)，\\(C\\cap L=\\varnothing\\)（判据推论；\\(d=15\\) 超出适用范围，仅作参照）",
       "任意",
       "—",
-      "无可避免的损失带漏喷，不在适用范围内",
+      "按判据无相位损失带漏喷；本文无满足前提 A0 的此类算例",
       "—",
       "—"
      ]
@@ -373,37 +373,235 @@
   }
  },
  "captions": {
-  "图1_note": {
-   "line": 216,
-   "text": "注：(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（孔令标 2026 查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变）。d=16 m 档时布局不变，仅缓冲外缘 x_F 由 9 m 变为 15 m（x_F=−1+d）。箭头表示风向吹向 −x（代码中 wind_direction=0 为风的来向、来自 +x；上风缓冲在禁喷区右侧/园内侧）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。"
-  },
-  "图2_note": {
-   "line": 397,
-   "text": "注：(b1) S_h（o=0.88 m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o=1.88 m，对齐田块边界）。图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+(w−r)]=[10, 11] m（本例 w−r=r=1 m）；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。A_extra(τ=0)：S_h 0.00 m² vs B-boundary 42.61 m²，为几何核算，非独立实验证据；单种子示意，正文统计用 n=10 均值（表1）。代价并列：总用时 1606.25 s vs 1459.62 s。d=11 m 为几何档，不是孔令标风速档。B-boundary 为文献方法的简化代理，非原方法复现。"
-  },
-  "表1_note": {
-   "line": 382,
-   "text": "注：数据 `wt-F/results/F3_main_postcache_46360be_geom.csv`（commit `d859d76`）；τ>0 数字见 `F3.report.md` L73（0°）、L85–86（90°）（\\(d=13\\) 同表 L75–76、L88–89）；已按 CSV 逐格复核。几何档 120 行早于缓存修复 `07d10b7`，分层冷重跑 16 格指标一致（`c1_geom_cold_rerun.csv`，`0222201`）。配对检验：\\(d=11/13\\) 各 τ 下 10 个配对差同号（\\(S_h\\) 漏喷更少），精确 Wilcoxon 符号秩检验双侧 \\(p=0.0020\\)（\\(n=10\\) 时可达最小值 \\(2/2^{10}\\)，样本为仿真种子，只作描述；τ=0 为几何核算，\\(p\\) 不作解读；`F3.report.md` L71–76，全表见附表 A6）。\\(d=15\\) 仅作参照：\\(S_h\\) 的 10 行数据真实存在，但 `heuristic_lane_found=False`，前提 A0 不成立，不参与配对比较；可配对 \\(n=0\\)，不适用（L77–79）；该档损失带 \\(L=[14,15]\\) 落在行间空带。"
-  },
-  "表3_note": {
-   "line": 450,
-   "text": "注：非整数档数据 `F3_main_postcache_46360be_geom.csv`，τ>0 数字见 `F3.report.md` L73（0°）、L85–86（90°）（\\(d=13\\) 同表 L75–76、L88–89）；整数档 `F3_main_postcache_46360be_main.csv`；commit `d859d76`。\\(d=15\\)（仅作参照）的数值见表1；其 90° 为 0/2.31/5.59 m²。整数档的差异由航向选择驱动，与相位无关。"
-  },
-  "表3_time": {
-   "line": 452,
-   "text": "**时间代价（与结论同处）**：0° \\(S_h\\) 的估算飞行时间 1616.14 s，比 90° 的 1382.12 s 多 234.02 s（约 +16.9%），比 0° B-boundary 的 1460.19 s 多 155.94 s（约 +10.7%）。"
+  "图1_english": {
+   "line": 226,
+   "text": "Fig.1　Construction of the simulated orchard scenes (main experiment and random maps)"
   },
   "图1_title": {
-   "line": 212,
+   "line": 224,
    "text": "图1　果园仿真场景构建示意（主实验与随机地图）"
   },
+  "图1_note": {
+   "line": 228,
+   "text": "注：(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（按文献[1]查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变；主实验与几何档的评价场景中不含该区）。d=16 m 档时布局不变，仅缓冲外缘 x_F 由 9 m 变为 15 m（x_F=−1+d）。箭头表示风向吹向 −x（风来自 +x，上风缓冲在禁喷区右侧/园内侧）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。"
+  },
+  "图2_english": {
+   "line": 404,
+   "text": "Fig.2　Strips under the two phase-anchoring rules at a non-integer buffer distance (seed 0, U = 2 m/s, heading 0°, d = 11 m, w = 2 m)"
+  },
   "图2_title": {
-   "line": 393,
+   "line": 402,
    "text": "图2　非整数缓冲距离下两种相位锚定规则的条带对比（seed 0，U=2 m/s，航向 0°，d=11 m，w=2 m）"
   },
-  "表2_source": {
-   "line": 419,
-   "text": "出处：`wt-F/results/c1_blind_predict_seed10.json`（预测，`ed94b82`）、`c1_blind_plans_ed94b82.csv`（实测，`0222201`）、`c1_blind_error_table.csv`；误差 = 实测 − 预测。各数值已按文件核对。"
+  "图2_note": {
+   "line": 406,
+   "text": "注：(b1) S_h（o=0.88 m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o=1.88 m，对齐田块边界）。图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+(w−r)]=[10, 11] m（本例 w−r=r=1 m）；(b2) 红色斜线为几何额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。A_extra(τ=0)：S_h 0.00 m² vs B-boundary 42.61 m²，为几何核算，非独立实验证据；单种子示意，正文统计用 n=10 均值（表1）。代价并列：估算飞行时间 1606.25 s vs 1459.62 s。d=11 m 为几何档，不是孔令标风速档。B-boundary 为文献方法的简化代理，非原方法复现。"
+  },
+  "表1_english": {
+   "line": 380,
+   "text": "Table 1　Geometric extra missed-spray area and estimated flight time of the two phase-anchoring rules under the same 0° heading (w = 2 m, n = 10, mean ± SD)"
+  },
+  "表1_note": {
+   "line": 391,
+   "text": "注：数值已按原始 CSV 逐格复核（数据文件见附录 B）。几何档 120 行早于一次缓存修复，分层冷重跑 16 格指标一致（16/16）。配对检验：\\(d=11/13\\) 各 τ 下 10 个配对差同号（\\(S_h\\) 漏喷更少），精确 Wilcoxon 符号秩检验双侧 \\(p=0.0020\\)（\\(n=10\\) 时可达最小值 \\(2/2^{10}\\)，重复单位为场景种子，未做多重比较校正，只作描述；τ=0 为几何核算，\\(p\\) 不作解读；全表见附表 A6）。\\(d=15\\) 超出适用范围，仅作参照：\\(S_h\\) 的 10 行数据真实存在，但 \\(S_h\\) 紧邻缓冲前沿的首条航道不存在（0/10），前提 A0 不成立，不参与配对比较，可配对 \\(n=0\\)，不适用；该档损失带 \\(L=[14,15]\\) 落在行间空带，但不作为条件②的验证。"
+  },
+  "表2_english": {
+   "line": 415,
+   "text": "Table 2　Blind predictions versus simulated results for w ≠ 2 m (seed 10, 0°, τ = 0; B: geometric extra missed-spray area under field-boundary anchoring, m²)"
+  },
+  "表2_note": {
+   "line": 426,
+   "text": "注：误差 = 实测 − 预测。各数值已按预测与实测文件核对（文件见附录 B）。"
+  },
+  "表3_english": {
+   "line": 444,
+   "text": "Table 3　Geometric extra missed-spray area and estimated flight time by heading and equivalent spray lag (F3, w = 2 m, n = 10, mean ± SD)"
+  },
+  "表3_note": {
+   "line": 457,
+   "text": "注：非整数档与整数档数据均取自 F3 冻结结果（数据文件见附录 B）。\\(d=15\\) 超出适用范围，仅作参照，其 0° 数值见表1；其 90° 为 0/2.31/5.59 m²。整数档的差异由航向选择驱动，与相位无关。"
+  },
+  "表3_time": {
+   "line": 459,
+   "text": "**时间代价（与结论同处）**：0° \\(S_h\\) 的估算飞行时间 1616.14 s，比 90° 的 1382.12 s 多 234.02 s（约 +16.9%），比 0° B-boundary 的 1460.19 s 多 155.94 s（约 +10.7%）。"
+  },
+  "表4_english": {
+   "line": 462,
+   "text": "Table 4　Recommended heading and phase-anchoring choices under crosswind buffer constraints (applicable only to the simulation conditions of this study; values from the d = 11 m geometric tier)"
+  },
+  "表4_note": {
+   "line": 472,
+   "text": "注：本表仅适用于本文仿真条件（圆柱冠层、行距 8 m、株距 6 m、喷幅 2 m、航速 2 m/s、全场稳态风、几何覆盖评价），不作为通用作业规范。航向受限（禁止改飞 90°）的场景未检验，表中「仅 0°」一行只是把 0° 下的仿真结果列出，不代表对航向受限作业的建议；见 §3。末行为判据推论；\\(d=15\\) 超出适用范围（前提 A0 不成立），仅作参照，不作为该行的验证。"
+  },
+  "图1_source_B2": {
+   "line": 806,
+   "text": "- 图1：图注据 `wt-fig/results/figA_scene_construction.caption.md`；数据与脚本 `scripts/figA_scene_construction.py`，commit `2e35a75`。"
+  },
+  "图2_source_B2": {
+   "line": 807,
+   "text": "- 图2：图注据 `wt-fig/results/fig1b_noninteger_buffer_lanes.caption.md`（commit `1a18cbc`）改写：损失带上界由 \\(r\\) 更正为 \\(w-r\\)，图不重画；删去航道数一句。"
   }
+ },
+ "migration": {
+  "from_version": "v3.9",
+  "from_sha256": "6655de0af985ffe932e16416b949ba6ccc7ca042c3a947518c5662b347cab42f",
+  "data_audit": "写文件前只读逐项核对：208 个保留的 data 数字与 v3.9 全部相同，无数值变化；另删除 1 个代码字段数字检查 wind_direction=0，改为风来向 claim。",
+  "previous_counts": {
+   "图1": {
+    "data": 10,
+    "label": 0,
+    "claim": 6
+   },
+   "图2": {
+    "data": 10,
+    "label": 5,
+    "claim": 5
+   },
+   "表1": {
+    "data": 59,
+    "label": 8,
+    "claim": 3
+   },
+   "表2": {
+    "data": 33,
+    "label": 21,
+    "claim": 10
+   },
+   "表3": {
+    "data": 71,
+    "label": 20,
+    "claim": 4
+   },
+   "表4": {
+    "data": 26,
+    "label": 17,
+    "claim": 9
+   }
+  },
+  "check_changes": [
+   "图1 删除 data「note wind_direction」（wind_direction=0，1 项），新增 claim「风来自 +x，吹向 −x」（1 项），按 planning/wind.py 与 planning/drift.py 的来向约定及实际速度计算核对。",
+   "图1 新增 claim「主实验配置 ha_orchard」（1 项）；原 seed/buffer_expand/U/d 检查保留，buffer_expand=1 仍由绘图元数据核对。",
+   "图1 正文出处段删除，出处迁至附录 B.2；新增 claim「附录 B.2 图1 出处」（1 项），在 B.2 范围内核对图注文件、脚本和历史 commit。旧版未单列正文出处 claim；原 metadata == reference json 检查是输出一致性检查，继续保留。图注新增岛状区说明及图2 出处迁移也纳入完整文字比对。",
+   "表1 删除 claim「note d=15 heuristic_lane_found=False（10/10）」的代码字段文字检查（1 项），替换为 claim「首条航道不存在（0/10），前提 A0 不成立」（1 项）；冻结 CSV 字段仍是计算依据。",
+   "表1 冷重跑 claim 改为要求新稿明确写「16 格指标一致（16/16）」且 CSV 为 16/16；p=0.0020 六项、可配对 n=0、L=[14,15] 及其他 data 全部保留。",
+   "表2「表2_source／出处注」改为「表2_note／表注」；误差 = 实测 − 预测定义 claim 保留，并核对全部 5 个可测组合的 CSV 误差符号。",
+   "表4 删除末行条件中的 heading 0° label（1 项），保留 d=15 label；末行 claim 改为判据推论及 d=15 超出适用范围（A0 不成立），不再把它作为条件②的验证。",
+   "表4 新增 claim「表中仅 0° 一行」（1 项），从可选航向列计数，表体共 5 行，其中仅 0° 恰为 1 行。",
+   "图2 data 检查用语「总用时」改为「估算飞行时间」（2 个数字不变）；表4 首行 claim 用语同步改为「估算飞行时间更短」。",
+   "表1/表3 注中的文件名、commit、报告行号，以及表2 原出处中的文件名/commit，不再作为正文文字匹配目标；旧版未对这些元信息单设 data/label/claim 数字检查，因此此项计数减少 0。出处文件名和 commit 不混入数据数字统计。",
+   "抽取器扩展覆盖中英文标题、表头、表4 注及附录 B.2 图1/图2 出处；现行稿件完整文字核对涵盖这些字段，属于稿件一致性门禁，不增加逐格 PASS/FAIL 行数。"
+  ],
+  "text_changes": [
+   {
+    "item": "图1_note",
+    "old": "注：(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（孔令标 2026 查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变）。d=16 m 档时布局不变，仅缓冲外缘 x_F 由 9 m 变为 15 m（x_F=−1+d）。箭头表示风向吹向 −x（代码中 wind_direction=0 为风的来向、来自 +x；上风缓冲在禁喷区右侧/园内侧）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。",
+    "new": "注：(a) 主实验果园俯视图：ha_orchard，seed 0，buffer_expand=1，风速档 U=2 m/s → 有效缓冲 d=10 m（按文献[1]查表）；红色斜线为园外/贴边禁喷区，橙色为沿风来向外扩的上风缓冲带 F，蓝色斜线为园内岛状禁喷示意区（ns-island-demo，仅作图注入，外扩前后几何不变；主实验与几何档的评价场景中不含该区）。d=16 m 档时布局不变，仅缓冲外缘 x_F 由 9 m 变为 15 m（x_F=−1+d）。箭头表示风向吹向 −x（风来自 +x，上风缓冲在禁喷区右侧/园内侧）。(b) jitter_rows，seed 1；(c) clusters_gaps，seed 2；(d) random_obstacles_zones，seed 0。本图仅由场景数据重绘，未运行任何规划。"
+   },
+   {
+    "item": "图1_source",
+    "old": "（图注照 `wt-fig/results/figA_scene_construction.caption.md`；数据与脚本：`scripts/figA_scene_construction.py`，commit `2e35a75`。(a) 中岛状禁喷区为示意性注入，主实验与几何档的评价场景中不含该区。）",
+    "new": "（删除；出处见附录 B.2）"
+   },
+   {
+    "item": "图1_source_B2",
+    "old": "（无）",
+    "new": "- 图1：图注据 `wt-fig/results/figA_scene_construction.caption.md`；数据与脚本 `scripts/figA_scene_construction.py`，commit `2e35a75`。"
+   },
+   {
+    "item": "图2_note",
+    "old": "注：(b1) S_h（o=0.88 m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o=1.88 m，对齐田块边界）。图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+(w−r)]=[10, 11] m（本例 w−r=r=1 m）；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。A_extra(τ=0)：S_h 0.00 m² vs B-boundary 42.61 m²，为几何核算，非独立实验证据；单种子示意，正文统计用 n=10 均值（表1）。代价并列：总用时 1606.25 s vs 1459.62 s。d=11 m 为几何档，不是孔令标风速档。B-boundary 为文献方法的简化代理，非原方法复现。",
+    "new": "注：(b1) S_h（o=0.88 m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o=1.88 m，对齐田块边界）。图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+(w−r)]=[10, 11] m（本例 w−r=r=1 m）；(b2) 红色斜线为几何额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。A_extra(τ=0)：S_h 0.00 m² vs B-boundary 42.61 m²，为几何核算，非独立实验证据；单种子示意，正文统计用 n=10 均值（表1）。代价并列：估算飞行时间 1606.25 s vs 1459.62 s。d=11 m 为几何档，不是孔令标风速档。B-boundary 为文献方法的简化代理，非原方法复现。"
+   },
+   {
+    "item": "图2_source",
+    "old": "（图注据 `wt-fig/results/fig1b_noninteger_buffer_lanes.caption.md`（commit `1a18cbc`）改写：损失带上界由 \\(r\\) 更正为 \\(w-r\\)，图不重画；删去航道数一句。）",
+    "new": "（删除；出处见附录 B.2）"
+   },
+   {
+    "item": "图2_source_B2",
+    "old": "（无）",
+    "new": "- 图2：图注据 `wt-fig/results/fig1b_noninteger_buffer_lanes.caption.md`（commit `1a18cbc`）改写：损失带上界由 \\(r\\) 更正为 \\(w-r\\)，图不重画；删去航道数一句。"
+   },
+   {
+    "item": "表1 title",
+    "old": "表1　同一 0° 航向下两种相位锚定规则的额外漏喷面积与估算飞行时间（\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
+    "new": "表1　同一 0° 航向下两种相位锚定规则的几何额外漏喷面积与估算飞行时间（\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）"
+   },
+   {
+    "item": "表1_english",
+    "old": "Table 1　Extra missed-spray area and estimated flight time of the two phase-anchoring rules under the same 0° heading (w = 2 m, n = 10, mean ± SD)",
+    "new": "Table 1　Geometric extra missed-spray area and estimated flight time of the two phase-anchoring rules under the same 0° heading (w = 2 m, n = 10, mean ± SD)"
+   },
+   {
+    "item": "表1_note",
+    "old": "注：数据 `wt-F/results/F3_main_postcache_46360be_geom.csv`（commit `d859d76`）；τ>0 数字见 `F3.report.md` L73（0°）、L85–86（90°）（\\(d=13\\) 同表 L75–76、L88–89）；已按 CSV 逐格复核。几何档 120 行早于缓存修复 `07d10b7`，分层冷重跑 16 格指标一致（`c1_geom_cold_rerun.csv`，`0222201`）。配对检验：\\(d=11/13\\) 各 τ 下 10 个配对差同号（\\(S_h\\) 漏喷更少），精确 Wilcoxon 符号秩检验双侧 \\(p=0.0020\\)（\\(n=10\\) 时可达最小值 \\(2/2^{10}\\)，样本为仿真种子，只作描述；τ=0 为几何核算，\\(p\\) 不作解读；`F3.report.md` L71–76，全表见附表 A6）。\\(d=15\\) 仅作参照：\\(S_h\\) 的 10 行数据真实存在，但 `heuristic_lane_found=False`，前提 A0 不成立，不参与配对比较；可配对 \\(n=0\\)，不适用（L77–79）；该档损失带 \\(L=[14,15]\\) 落在行间空带。",
+    "new": "注：数值已按原始 CSV 逐格复核（数据文件见附录 B）。几何档 120 行早于一次缓存修复，分层冷重跑 16 格指标一致（16/16）。配对检验：\\(d=11/13\\) 各 τ 下 10 个配对差同号（\\(S_h\\) 漏喷更少），精确 Wilcoxon 符号秩检验双侧 \\(p=0.0020\\)（\\(n=10\\) 时可达最小值 \\(2/2^{10}\\)，重复单位为场景种子，未做多重比较校正，只作描述；τ=0 为几何核算，\\(p\\) 不作解读；全表见附表 A6）。\\(d=15\\) 超出适用范围，仅作参照：\\(S_h\\) 的 10 行数据真实存在，但 \\(S_h\\) 紧邻缓冲前沿的首条航道不存在（0/10），前提 A0 不成立，不参与配对比较，可配对 \\(n=0\\)，不适用；该档损失带 \\(L=[14,15]\\) 落在行间空带，但不作为条件②的验证。"
+   },
+   {
+    "item": "表2 title",
+    "old": "表2　\\(w\\neq2\\) 盲预测与仿真实测（seed 10，0°，\\(\\tau=0\\)；B 为地块边界锚定的 \\(A_{\\mathrm{extra}}\\)，单位 m²）",
+    "new": "表2　\\(w\\neq2\\) 盲预测与仿真实测（seed 10，0°，\\(\\tau=0\\)；B 为地块边界锚定的几何额外漏喷面积 \\(A_{\\mathrm{extra}}\\)，单位 m²）"
+   },
+   {
+    "item": "表2_english",
+    "old": "Table 2　Blind predictions versus simulated results for w ≠ 2 m (seed 10, 0°, τ = 0; B: extra missed-spray area under field-boundary anchoring, m²)",
+    "new": "Table 2　Blind predictions versus simulated results for w ≠ 2 m (seed 10, 0°, τ = 0; B: geometric extra missed-spray area under field-boundary anchoring, m²)"
+   },
+   {
+    "item": "表2_note",
+    "old": "出处：`wt-F/results/c1_blind_predict_seed10.json`（预测，`ed94b82`）、`c1_blind_plans_ed94b82.csv`（实测，`0222201`）、`c1_blind_error_table.csv`；误差 = 实测 − 预测。各数值已按文件核对。",
+    "new": "注：误差 = 实测 − 预测。各数值已按预测与实测文件核对（文件见附录 B）。"
+   },
+   {
+    "item": "表3 title",
+    "old": "表3　航向 × 等效喷施滞后下的额外漏喷面积与估算飞行时间（F3，\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）",
+    "new": "表3　航向 × 等效喷施滞后下的几何额外漏喷面积与估算飞行时间（F3，\\(w=2\\,\\mathrm{m}\\)，\\(n=10\\)，均值±SD）"
+   },
+   {
+    "item": "表3_english",
+    "old": "Table 3　Extra missed-spray area and estimated flight time by heading and equivalent spray lag (F3, w = 2 m, n = 10, mean ± SD)",
+    "new": "Table 3　Geometric extra missed-spray area and estimated flight time by heading and equivalent spray lag (F3, w = 2 m, n = 10, mean ± SD)"
+   },
+   {
+    "item": "表3_note",
+    "old": "注：非整数档数据 `F3_main_postcache_46360be_geom.csv`，τ>0 数字见 `F3.report.md` L73（0°）、L85–86（90°）（\\(d=13\\) 同表 L75–76、L88–89）；整数档 `F3_main_postcache_46360be_main.csv`；commit `d859d76`。\\(d=15\\)（仅作参照）的数值见表1；其 90° 为 0/2.31/5.59 m²。整数档的差异由航向选择驱动，与相位无关。",
+    "new": "注：非整数档与整数档数据均取自 F3 冻结结果（数据文件见附录 B）。\\(d=15\\) 超出适用范围，仅作参照，其 0° 数值见表1；其 90° 为 0/2.31/5.59 m²。整数档的差异由航向选择驱动，与相位无关。"
+   },
+   {
+    "item": "表4 header 5",
+    "old": "额外漏喷/m²",
+    "new": "几何额外漏喷面积/m²"
+   },
+   {
+    "item": "表4 row 1 col 4",
+    "old": "两规则同相位，相位锚定无差别；差异来自航向：有滞后时 90° 漏喷更大、用时更短",
+    "new": "两规则同相位，相位锚定无差别；差异来自航向：有滞后时 90° 漏喷更大、估算飞行时间更短"
+   },
+   {
+    "item": "表4 row 5 col 1",
+    "old": "\\(r\\neq0\\)，\\(C\\cap L=\\varnothing\\)（如 \\(d=15\\)，0°，仅作参照）",
+    "new": "\\(r\\neq0\\)，\\(C\\cap L=\\varnothing\\)（判据推论；\\(d=15\\) 超出适用范围，仅作参照）"
+   },
+   {
+    "item": "表4 row 5 col 4",
+    "old": "无可避免的损失带漏喷，不在适用范围内",
+    "new": "按判据无相位损失带漏喷；本文无满足前提 A0 的此类算例"
+   },
+   {
+    "item": "表4 title",
+    "old": "表4　侧风缓冲约束下航向与相位锚定选择建议（仅在本文仿真几何与参数范围内；数值取 \\(d=11\\,\\mathrm{m}\\) 几何档）",
+    "new": "表4　侧风缓冲约束下航向与相位锚定选择建议（仅适用于本文仿真条件；数值取 \\(d=11\\,\\mathrm{m}\\) 几何档）"
+   },
+   {
+    "item": "表4_english",
+    "old": "Table 4　Recommended heading and phase-anchoring choices under crosswind buffer constraints (within the simulated geometry and parameter range; values from the d = 11 m geometric tier)",
+    "new": "Table 4　Recommended heading and phase-anchoring choices under crosswind buffer constraints (applicable only to the simulation conditions of this study; values from the d = 11 m geometric tier)"
+   },
+   {
+    "item": "表4_note",
+    "old": "注：航向受限（禁止改飞 90°）的场景未检验，表中「仅 0°」两行只是把 0° 下的仿真结果列出，不代表对航向受限作业的建议；见 §3。",
+    "new": "注：本表仅适用于本文仿真条件（圆柱冠层、行距 8 m、株距 6 m、喷幅 2 m、航速 2 m/s、全场稳态风、几何覆盖评价），不作为通用作业规范。航向受限（禁止改飞 90°）的场景未检验，表中「仅 0°」一行只是把 0° 下的仿真结果列出，不代表对航向受限作业的建议；见 §3。末行为判据推论；\\(d=15\\) 超出适用范围（前提 A0 不成立），仅作参照，不作为该行的验证。"
+   }
+  ]
  }
 }
