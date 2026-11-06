@@ -50,7 +50,7 @@ real 0m5.767s   user 0m5.916s   sys 0m0.631s
 ## 两个作图脚本单独运行的确切命令
 
 两脚本都把输出写到入库路径 `results/figA_scene_construction.*` / `results/fig1b_noninteger_buffer_lanes.*`（没有 `--out` 参数）。
-单独运行会改写入库的 json/caption（例如 figA json 的 `commit` 字段），所以只应在临时副本中运行；`repro_main.py` 用改 `PREFIX` 的方式避免了这一点。
+caption 模板已与入库 `*.caption.md` 同步（见下），直接运行时两份 caption 与 PNG 不变；但 figA json 的 `commit`/`outputs` 字段和两份 PDF 的字节会变，运行后用 `git checkout -- <file>` 还原即可。`repro_main.py` 改 `PREFIX` 写到 `results/repro_main/`，不碰入库文件。
 
 ```bash
 # 图1（figA，不规划，json 记 planning_ran: False）
@@ -59,10 +59,12 @@ MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/figA_scene_cons
 MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/fig1b_noninteger_buffer_lanes.py
 ```
 
-实测（2026-11-06 02:07 EST，在 `debe9e5` 的临时 detached worktree 中运行，随后删除该 worktree）：两条命令退出码均为 0，
-wall time 分别 2.1 s、3.4 s；两张 PNG 与入库版**逐字节相同**（sha256 `caa67906…`、`1f4ff503…`）；PDF 字节变化（内嵌时间戳）；
-`figA_scene_construction.json` 只有 `commit` 与 `outputs` 路径变化。**注意**：两份 `*.caption.md` 会被脚本内模板覆盖成旧措辞——
-入库 caption 是事后手工修订的（`70bd376` 把 fig1b 损失带写成 `[x_F, x_F+(w−r)]`，`979cf79` 给 figA 补 d=16 时 x_F=15），
+实测（2026-11-06 02:18 EST，在 wt-P8 入库目录按上面两条命令直接运行；caption 模板已同步：fig1b 写 `[x_F, x_F+(w−r)]`（同 `70bd376`），
+figA 中英文均含 d=16 时 x_F 由 9 m 变为 15 m 一句（同 `979cf79`），figA 图注末尾的 commit 固定为作图逻辑最后改动的 `2e35a75`（`FIG_LOGIC_COMMIT`），
+不再取运行时 HEAD）：两条命令退出码均为 0；两份 `*.caption.md` 与两张 PNG 均与入库版**逐字节相同**（git status 无变化）。
+仍会变化的入库文件只有三个，运行后已用 `git checkout --` 还原：`figA_scene_construction.json`（`commit` 取运行时 HEAD、`outputs` 为绝对路径）、
+`figA_scene_construction.pdf`（仅 `/CreationDate`）、`fig1b_noninteger_buffer_lanes.pdf`（`/CreationDate` 和一段内嵌字体流字节，大小不变；
+两份 PDF 用 pdftoppm 以 100 dpi 渲染，与入库版逐像素相同）。图上图例仍写 `x_F+r`，按约定不重绘。 给 figA 补 d=16 时 x_F=15），
 脚本模板没有同步（fig1b 模板仍写 `[x_F, x_F+r]`，图上图例同样是 `x_F+r`，图未重绘）。所以不要在入库目录直接运行这两个脚本。
 
 ## `--replan`（全量重规划；本次未运行）
@@ -81,3 +83,5 @@ F2 60 次 1772.9 s（`F2.report.md` L11）+ F3 首跑 5574.2 s（`F3_run.log` �
 
 `python3 -u drift_checks.py` → 通过 23、失败 0；`python3 -u main.py --check` → 通过 171、失败 0（日志 `results/p8_drift.log`、
 `results/p8_main_check.log`；冷跑输出与 `time` 记录 `results/p8_repro_main_cold.log`）。`git diff a32944b -- planning/` 为空。
+
+2026-11-06 02:30 EST 同步 caption 模板后复跑：`repro_main.py` exit 0、PASS 316 / FAIL 0、规划调用 0；drift 23/0；`main.py --check` 171/0（日志未覆盖，仍为上面三份）。

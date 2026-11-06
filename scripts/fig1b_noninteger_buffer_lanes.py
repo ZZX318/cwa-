@@ -104,7 +104,7 @@ def main():
     Path(str(PREFIX) + '.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     cap = (f"图1(b) 非整数缓冲距离下的对齐对比（seed 0，U=2 m/s，航向 0°，d=11 m，喷幅 w=2 m）。"
            f"(b1) S_h（o={s['offset']:.2f} m，首条带中心 x=11 m，对齐缓冲边界）；(b2) B-boundary(0°)（o={b['offset']:.2f} m，对齐田块边界）。"
-           f"图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+r]=[{x0:g}, {x1:g}] m；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。Z 角处被切条带与损失带无关，本图不绘。"
+           f"图为局部（y 0–22 m），非全场。紫色为损失带 [x_F, x_F+(w−r)]=[{x0:g}, {x1:g}] m；(b2) 红色斜线为额外漏喷冠层（损失带内、F 外冠层），(b1) 同处无此区域。Z 角处被切条带与损失带无关，本图不绘。"
            f"A_extra(τ=0)：S_h {s['A_extra_tau0']:.2f} m² vs B-boundary {b['A_extra_tau0']:.2f} m²，"
            f"该差值即损失带内非 F 冠层面积（{cg['n_trees']} 棵，{cg['canopy_m2']:.2f} m²），为几何核算，非独立实验证据。"
            f"代价并列：航道 {s['n_lanes']} vs {b['n_lanes']}，总用时 {s['total_time']:.2f} s vs {b['total_time']:.2f} s"
