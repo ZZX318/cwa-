@@ -17,3 +17,6 @@ __pycache__/
 
 # 按 README 示例在 examples/ 下生成的个人场景
 /examples/my.*.json
+
+# 项目8 一键复现输出（scripts/repro_main.py）
+/results/repro_main/
