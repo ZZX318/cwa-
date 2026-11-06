@@ -1,0 +1,301 @@
+{
+  "seed": 10,
+  "res": 0.05,
+  "note": "prediction-only; no planning; dual hypotheses a=w-r and b=r",
+  "combos": [
+    {
+      "w": 4.5,
+      "d": 10.0,
+      "source": "S18 DJI T10 标称有效喷幅 3–5.5 m（取 4.5）",
+      "x_F_nominal": 9.0,
+      "x_F_code": 9.0,
+      "x_F_match": true,
+      "r": 1.0,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 3.5,
+          "L": [
+            9.0,
+            12.5
+          ],
+          "A_nom": 113.09733552923255,
+          "A_sum": 105.81846956284808,
+          "A_union": 105.78,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 105.78,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        },
+        "b_r": {
+          "width": 1.0,
+          "L": [
+            9.0,
+            10.0
+          ],
+          "A_nom": 12.389928320447172,
+          "A_sum": 13.342515832969857,
+          "A_union": 13.350000000000001,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 13.350000000000001,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        }
+      }
+    },
+    {
+      "w": 7.0,
+      "d": 10.0,
+      "source": "S14/S16 DJI T25/T20P 标称有效喷幅至 7 m",
+      "x_F_nominal": 9.0,
+      "x_F_code": 9.0,
+      "x_F_match": true,
+      "r": 3.0,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 4.0,
+          "L": [
+            9.0,
+            13.0
+          ],
+          "A_nom": 113.09733552923255,
+          "A_sum": 107.9380832682086,
+          "A_union": 107.89750000000002,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 107.89750000000002,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        },
+        "b_r": {
+          "width": 3.0,
+          "L": [
+            9.0,
+            12.0
+          ],
+          "A_nom": 100.70740720878538,
+          "A_sum": 94.96503337854308,
+          "A_union": 94.95250000000001,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 94.95250000000001,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        }
+      }
+    },
+    {
+      "w": 2.23,
+      "d": 10.0,
+      "source": "S7 苹果园四旋翼实测有效喷幅 2.23 m",
+      "x_F_nominal": 9.0,
+      "x_F_code": 9.0,
+      "x_F_match": true,
+      "r": 1.08,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 1.15,
+          "L": [
+            9.0,
+            10.15
+          ],
+          "A_nom": 18.05177931449738,
+          "A_sum": 18.62362388391865,
+          "A_union": 18.625,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 18.625,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        },
+        "b_r": {
+          "width": 1.08,
+          "L": [
+            9.0,
+            10.08
+          ],
+          "A_nom": 15.339483933443091,
+          "A_sum": 16.089639868227323,
+          "A_union": 16.802500000000002,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 16.802500000000002,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        }
+      }
+    },
+    {
+      "w": 7.0,
+      "d": 16.0,
+      "source": "S14/S16 + S11 侧风 3–5 m/s 缓冲 ≥16 m",
+      "x_F_nominal": 15.0,
+      "x_F_code": 15.0,
+      "x_F_match": true,
+      "r": 2.0,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 5.0,
+          "L": [
+            15.0,
+            20.0
+          ],
+          "A_nom": 100.70740720878538,
+          "A_sum": 99.8503551727858,
+          "A_union": 99.81500000000001,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 99.81500000000001,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        },
+        "b_r": {
+          "width": 2.0,
+          "L": [
+            15.0,
+            17.0
+          ],
+          "A_nom": 0.0,
+          "A_sum": 0.015815175884722255,
+          "A_union": 0.0175,
+          "n_hit": 1,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 0.0175,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": true
+        }
+      }
+    },
+    {
+      "w": 3.5,
+      "d": 10.0,
+      "source": "S5 柑橘园航线间距=行距 3.5 m（反例候选）",
+      "x_F_nominal": 9.0,
+      "x_F_code": 9.0,
+      "x_F_match": true,
+      "r": 3.0,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 0.5,
+          "L": [
+            9.0,
+            9.5
+          ],
+          "A_nom": 0.0,
+          "A_sum": 1.7524930918860377,
+          "A_union": 1.7625000000000002,
+          "n_hit": 8,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 1.7625000000000002,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": true
+        },
+        "b_r": {
+          "width": 3.0,
+          "L": [
+            9.0,
+            12.0
+          ],
+          "A_nom": 100.70740720878538,
+          "A_sum": 94.96503337854308,
+          "A_union": 94.95250000000001,
+          "n_hit": 15,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 94.95250000000001,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": false
+        }
+      }
+    },
+    {
+      "w": 4.5,
+      "d": 16.0,
+      "source": "S18 + S11（反例候选）",
+      "x_F_nominal": 15.0,
+      "x_F_code": 15.0,
+      "x_F_match": true,
+      "r": 2.5,
+      "y_F": [
+        5.0,
+        95.0
+      ],
+      "hyp": {
+        "a_w_minus_r": {
+          "width": 2.0,
+          "L": [
+            15.0,
+            17.0
+          ],
+          "A_nom": 0.0,
+          "A_sum": 0.015815175884722255,
+          "A_union": 0.0175,
+          "n_hit": 1,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 0.0175,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": true
+        },
+        "b_r": {
+          "width": 2.5,
+          "L": [
+            15.0,
+            17.5
+          ],
+          "A_nom": 0.0,
+          "A_sum": 2.2991066302852468,
+          "A_union": 2.3225000000000002,
+          "n_hit": 11,
+          "on_tree_row": true,
+          "first_lane_n_hit": 15,
+          "predict_B": 2.3225000000000002,
+          "predict_Sh": 0.0,
+          "phase_nonzero": true,
+          "nominal_gap": true
+        }
+      }
+    }
+  ]
+}
