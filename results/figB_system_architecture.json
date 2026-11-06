@@ -1,7 +1,7 @@
 {
   "figure": "B",
   "section": "§1.8 appendix",
-  "commit": "866f4c06cd557eab9e718ee15258a103bddcda69",
+  "commit": "5d0e7d3b0b0d460036e70dcff58d39f15854306d",
   "planning_ran": false,
   "layout": "snake: row1 L→R ①②③④; CAW right of ④; ⑤ under ④; row2 R→L ⑤⑥⑦",
   "nodes": [
