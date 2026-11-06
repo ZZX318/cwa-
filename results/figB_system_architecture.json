@@ -1,9 +1,9 @@
 {
   "figure": "B",
   "section": "§1.8 appendix",
-  "commit": "2e35a7501d3256454b2806f48d66952632664dfe",
+  "commit": "866f4c06cd557eab9e718ee15258a103bddcda69",
   "planning_ran": false,
-  "layout": "elbow_4_to_5_left_of_CAW; CAW under ④ with enlarged title/body gap",
+  "layout": "snake: row1 L→R ①②③④; CAW right of ④; ⑤ under ④; row2 R→L ⑤⑥⑦",
   "nodes": [
     {
       "key": "scene",
