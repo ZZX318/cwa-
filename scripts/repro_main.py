@@ -363,6 +363,8 @@ def write_compare(C: Cmp, out: Path, E: dict, live: dict, F1: dict, F2: dict):
     L = [f"# 项目8 逐格比对：正文 6 张图表 vs 稿件 {E['version']}", "",
          f"- 快照版本：**{E['version']}**；稿件文件 sha256 `{E['source_sha256']}`（期望值 `scripts/p8_manuscript_expected.json`，抽自 `{E['source']}`）",
          f"- 现行稿件 `{live['path']}`：sha256 `{live['sha256']}`；6 张图表的表体/标题/注与快照{'一致' if live['tables_equal_snapshot'] else '**不一致**（见 live_manuscript_diff）'}",
+         f"- 信息项（不影响退出码）：现行 {live.get('version')}，快照 {live.get('snapshot_version')}；行号偏移 "
+         + ("、".join(f"{o:+d}" for o in live.get("line_offsets", [])) or "—"),
          "- 判定：稿件写几位小数就按几位比（f-string 四舍五入后字符串相等）；科学计数按有效数字；|Δ| 为稿件值与原始值之差。",
          "- kind：data＝数据数字；label＝参数/标签数字（d、w、seed、航向等，也从数据核对）；claim＝逻辑/等价/文本判定。", "",
          "| 图表 | data PASS/FAIL | label PASS/FAIL | claim PASS/FAIL |", "|---|---|---|---|"]
@@ -446,9 +448,16 @@ def live_manuscript_status(E: dict, path: Path, out: Path) -> dict:
         st["error"] = r.stderr[-500:]
         return st
     cur = json.loads(r.stdout)
-    strip = lambda e: (e["version"], {k: [x["cells"] for x in v["rows"]] + [v["title"], v["header"]] for k, v in e["tables"].items()},  # noqa: E731
+    # 退出码只看 6 张图表的内容（表体、标题、表头、注文字）；版本号与行号只作信息项写进 compare.md。
+    strip = lambda e: ({k: [x["cells"] for x in v["rows"]] + [v["title"], v["header"]] for k, v in e["tables"].items()},  # noqa: E731
                        {k: v["text"] for k, v in e["captions"].items()})
     st["tables_equal_snapshot"] = strip(cur) == strip(E)
+    st["version"], st["snapshot_version"] = cur.get("version"), E["version"]
+    lines = lambda e: ([("t", k, -1, v["title_line"]) for k, v in e["tables"].items()]  # noqa: E731
+                       + [("t", k, i, x["line"]) for k, v in e["tables"].items() for i, x in enumerate(v["rows"])]
+                       + [("c", k, -1, v["line"]) for k, v in e["captions"].items()])
+    a, b = {x[:3]: x[3] for x in lines(cur)}, {x[:3]: x[3] for x in lines(E)}
+    st["line_offsets"] = sorted({a[k] - b[k] for k in a.keys() & b.keys()})
     if not st["tables_equal_snapshot"]:
         (out / "live_manuscript_diff.json").write_text(r.stdout, encoding="utf-8")
     return st
