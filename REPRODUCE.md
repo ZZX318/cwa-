@@ -24,12 +24,15 @@ MPLCONFIGDIR=/tmp/mplcfg /workspace/.venv-fig/bin/python scripts/repro_main.py
 
 ## 实测耗时（冷跑一次）
 
-2026-11-06 02:05 EST，删除 `results/repro_main/` 并换用新的空 `MPLCONFIGDIR` 后：
+2026-11-08 01:12 PST，在 `1f4667a`（task/P8）上删除 `results/repro_main/` 与全部 `__pycache__`、换用新的空 `MPLCONFIGDIR` 后（日志 `results/p8_repro_main_cold_1f4667a.log`）：
 
 ```
-( time MPLCONFIGDIR=/tmp/mplcfg_cold /workspace/.venv-fig/bin/python scripts/repro_main.py ) → exit_code=0
-real 0m5.767s   user 0m5.916s   sys 0m0.631s
+( time MPLCONFIGDIR=/tmp/mplcfg_cold1f /workspace/.venv-fig/bin/python scripts/repro_main.py ) → exit_code=0
+real 0m6.382s   user 0m6.360s   sys 0m0.733s；脚本内计时 elapsed (in-script) 6.2 s
+PASS 319 / FAIL 0（data 208、label 70、claim 41），planner calls 0
 ```
+
+旧记录 5.6 s（脚本内）/ real 5.767 s 是 2026-11-06 02:05 EST 在 PASS 316 版本（v3.7 快照）上跑出的，日志 `results/p8_repro_main_cold.log`，不对应现版本。
 
 ## 流程与输出（`results/repro_main/`）
 
@@ -42,7 +45,7 @@ real 0m5.767s   user 0m5.916s   sys 0m0.631s
 | 表4 | 表3 d=11 行 → `p8_table4.py`（原为手工派生，补脚本） | `table4_values.csv` | 每个数字带来源；差值/百分比由均值计算 |
 | 图1 | `a_trial_heading.scene0(0)` + `scene/random_map.py` → `figA_scene_construction.py`（模块 `PREFIX` 改指输出目录后调用 `main()`，脚本未改） | `fig1_scene_construction.{png,pdf,json,caption.md}`、`fig1_numbers.json` | 图注数字；json 与入库 `figA_scene_construction.json` 除 commit/路径外相等；PNG 字节比对 |
 | 图2 | `F2_noninteger_dw_71278c2.csv/.geom.json` → `fig1b_noninteger_buffer_lanes.py`（同上） | `fig2_noninteger_buffer_lanes.{png,pdf,json,caption.md}`、`fig2_numbers.json` | json checks（plan_hash、A_extra、total_time、offset）与 CSV 一致；与入库 json checks 相等；PNG 字节比对 |
-| 比对 | `scripts/p8_manuscript_expected.json`（`p8_extract_manuscript.py` 抽自 `/workspace/paper/draft_v3_skeleton.md` v3.9，sha256 `6655de0a…`；原 v3.7 快照 `a5a4c194…`=`bak8.md`，两版 6 张图表只差表2 出处注误差定义一句） | `compare.md`、`compare.csv`、`run_meta.json` | 稿件写几位小数就按几位比；表2 出处注须写「误差 = 实测 − 预测」且与 CSV 符号一致（1 项 claim）；每次运行另查现行稿件的 6 张图表是否仍与快照一致 |
+| 比对 | `scripts/p8_manuscript_expected.json`（`p8_extract_manuscript.py` 抽自 `/workspace/paper/draft_v3_skeleton.md` v3.12，sha256 `6ecf7f84b33238fdd18d2afba5cdf5a62f38af51ec2aee2ed10fa640084f5f7f`（=`bak13.md`）；更早 v3.9 `6655de0a…`、v3.7 `a5a4c194…`=`bak8.md`） | `compare.md`、`compare.csv`、`run_meta.json` | 稿件写几位小数就按几位比；表2 出处注须写「误差 = 实测 − 预测」且与 CSV 符号一致（1 项 claim）；每次运行另查现行稿件的 6 张图表内容（表体/标题/表头/注）是否仍与快照一致，不一致则 exit 1；版本号与行号偏移只作信息项写进 compare.md，不影响退出码 |
 
 默认模式不调用规划器：`repro_main.py` 在导入后把所有已加载模块里的 `generate_plan` / `make_planner` 换成计数并报错的守卫，
 运行结束 `planner calls` 必须为 0（记录在 `run_meta.json`）。
@@ -87,3 +90,5 @@ F2 60 次 1772.9 s（`F2.report.md` L11）+ F3 首跑 5574.2 s（`F3_run.log` �
 2026-11-06 02:30 EST 同步 caption 模板后复跑：`repro_main.py` exit 0、PASS 316 / FAIL 0、规划调用 0；drift 23/0；`main.py --check` 171/0（日志未覆盖，仍为上面三份）。
 
 2026-11-06 02:29 EST 快照由 v3.7 换为 v3.9（只改表2 出处注误差定义为「实测 − 预测」）：比对项 316→317（新增上述 1 项 claim），原 316 项结果逐项不变；PASS 317 / FAIL 0。
+
+2026-11-08 01:12 PST 快照为 v3.12（稿件 sha256 `6ecf7f84b33238fdd18d2afba5cdf5a62f38af51ec2aee2ed10fa640084f5f7f`），`1f4667a` 起现行稿件一致性检查只比内容：PASS 319 / FAIL 0，分项数字 208、标签 70、口径句 41，规划调用 0，exit 0。现行稿件为 v3.13（sha256 `5c71fdab92c6445aef5baf88b5520968fe93c78812b36814a00cc04fe4d19e02`），内容与 v3.12 快照一致，行号偏移 +4。反向测试（`--manuscript` 指向 `/tmp` 临时副本）：改表1 一格数字（1616.14→1616.15）→ 判不一致、exit 1；只改版本号（v3.12→v3.99）→ exit 0。
