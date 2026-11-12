@@ -1,0 +1,6 @@
+{
+  "wind_speed": 2,
+  "wind_direction": 3.141592653589793,
+  "lane_phase": 0,
+  "transition_mode": "auto"
+}

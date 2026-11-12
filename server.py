@@ -111,6 +111,22 @@ class Handler(BaseHTTPRequestHandler):
             if not 0 < n <= 8000000:
                 raise ValueError("请求大小须在 1 至 8000000 字节")
             payload = json.loads(self.rfile.read(n))
+            if self.path == "/api/recover-coverage-options":
+                from coverage_alternatives import compare_recovery
+                result = compare_recovery(payload["scene"], payload.get("config", {}),
+                    payload.get("resolution", .25), payload.get("time_budget", 60))
+                self.respond(200, json.dumps(result, ensure_ascii=False))
+                return
+            if self.path == "/api/recover-coverage":
+                from coverage_recovery import recover
+                result = recover(payload["scene"], payload.get("config", {}), payload.get("resolution", .25))
+                self.respond(200, json.dumps(result, ensure_ascii=False))
+                return
+            if self.path == "/api/wind-buffer":
+                from wind_buffer import apply_buffer
+                result = apply_buffer(payload["scene"], payload["sources"], payload["distance"], payload["wind_speed"], payload["wind_direction"])
+                self.respond(200, json.dumps(result, ensure_ascii=False))
+                return
             if self.path == "/api/random":
                 self.respond(
                     200,

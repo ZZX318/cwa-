@@ -387,3 +387,38 @@ aside > details { margin-bottom: 18px; border-bottom: 1px solid #294050; padding
 #editor-json textarea {
   height:70px;
 }
+.compare-control {
+  display:block;
+  margin:8px 0;
+  color:var(--muted);
+}
+.compare-control select {
+  display:block;
+  max-width:100%;
+  margin-top:4px;
+}
+.compare-card {
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px;
+  margin:10px 0;
+  overflow-wrap:anywhere;
+}
+.compare-card h3 {
+  margin:0 0 8px;
+  color:var(--cyan);
+}
+.compare-card dl {
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:4px 8px;
+  margin:0;
+  font-size:12px;
+}
+.compare-card dt { color:var(--muted); }
+.compare-card dd { margin:0; text-align:right; }
+.compare-card p, #compare-contributions p { font-size:12px; }
+.compare-failed { color:#ffb4a9; }
+#compare-info { font-size:12px; }
+#compare-table { overflow-x:auto; }
+#compare-table table { min-width:1000px; }

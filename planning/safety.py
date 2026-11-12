@@ -32,6 +32,59 @@ def intersects(a, b, lo, hi):
     return True
 
 
+TOUCH = 1e-6
+
+
+def nofly_expanded_boxes(scene, clearance):
+    """Axis-aligned no-fly boxes expanded by clearance, matching safety.check."""
+    boxes = []
+    for zone in scene["no_fly_zones"]:
+        bounds = polygon_bounds(zone["footprint"])
+        boxes.append(
+            (
+                [bounds["min"][0] - clearance, bounds["min"][1] - clearance, zone["z_min"] - clearance],
+                [bounds["max"][0] + clearance, bounds["max"][1] + clearance, zone["z_max"] + clearance],
+            )
+        )
+    return boxes
+
+
+def obstacle_expanded_boxes(scene, clearance):
+    """Physical obstacle boxes expanded by aircraft clearance."""
+    return [
+        (
+            [v - clearance for v in obstacle["min"]],
+            [v + clearance for v in obstacle["max"]],
+        )
+        for obstacle in scene["obstacles"]
+    ]
+
+
+def remaining_y_intervals(x, z, y0, y1, boxes):
+    """Keep Y intervals outside the supplied closed restriction boxes."""
+    lo, hi = (y0, y1) if y0 <= y1 else (y1, y0)
+    if hi - lo <= TOUCH:
+        return []
+    segments = [(lo, hi)]
+    for blo, bhi in boxes:
+        if x < blo[0] - 1e-12 or x > bhi[0] + 1e-12:
+            continue
+        if z < blo[2] - 1e-12 or z > bhi[2] + 1e-12:
+            continue
+        cut_lo, cut_hi = blo[1] - TOUCH, bhi[1] + TOUCH
+        nxt = []
+        for a, b in segments:
+            if cut_hi <= a or cut_lo >= b:
+                nxt.append((a, b))
+                continue
+            if cut_lo > a:
+                nxt.append((a, min(b, cut_lo)))
+            if cut_hi < b:
+                nxt.append((max(a, cut_hi), b))
+        segments = [(a, b) for a, b in nxt if b - a > TOUCH]
+    return segments
+
+
 def check(scene: dict, plan: dict) -> None:
     """Independent safety and minimum task-structure checks; not coverage certification."""
     validate_scene(scene)
@@ -41,6 +94,8 @@ def check(scene: dict, plan: dict) -> None:
     if plan.get("status") != "success":
         raise ValueError("计划不是成功状态")
     c = configuration(plan["config"])
+    from wind_buffer import check_buffer_wind
+    check_buffer_wind(scene, c)
     if version in ("1.1", "1.2") and plan.get("config_hash") != config_fingerprint(c):
         raise ValueError("配置指纹不匹配")
     method = plan.get("method")
@@ -177,6 +232,12 @@ def check(scene: dict, plan: dict) -> None:
             if intersects(
                 a, b, [v - c["clearance"] for v in lo], [v + c["clearance"] for v in hi]
             ):
+                if kind in ("takeoff", "landing"):
+                    label = "起飞" if kind == "takeoff" else "降落"
+                    raise ValueError(
+                        f"{label}航段 {i} 与实体净空或禁飞包围盒冲突；"
+                        "请移动对应起降点或检查区域高度和净空"
+                    )
                 raise ValueError(f"航段 {i} 与实体净空或禁飞包围盒冲突")
         if s["spray"]:
             if not s["target_ids"] or abs(a[0] - b[0]) > 1e-8:
@@ -190,10 +251,10 @@ def check(scene: dict, plan: dict) -> None:
                     )
                 associated.add(target_id)
             # Exact strip rectangle against conservative polygon AABB, ignoring zone Z.
-            for zone in scene["no_spray_zones"]:
+            for zone in scene["no_spray_zones"] + scene["no_fly_zones"]:
                 bounds = polygon_bounds(zone["footprint"])
                 if boxes_touch(footprint, (bounds["min"], bounds["max"])):
-                    raise ValueError("喷洒足迹触及禁喷区；不支持禁喷切割")
+                    raise ValueError(f"喷洒足迹触及禁喷或禁飞区 {zone['id']}")
         previous = b
     if math.dist(previous, end) > 1e-8:
         raise ValueError("未返回终点")
@@ -201,4 +262,16 @@ def check(scene: dict, plan: dict) -> None:
         raise ValueError("任务结构不完整：没有喷洒航段")
     missing = ids - associated
     if missing and not plan.get("allow_partial", False):
-        raise ValueError(f"任务结构不完整：目标缺少有效喷洒关联 {sorted(missing)}")
+        if scene.get("no_fly_zones") or scene.get("no_spray_zones") or scene.get("obstacles"):
+            from .planner import fixed_y_lanes
+            try:
+                layout = fixed_y_lanes(scene, c)
+            except (ValueError, KeyError, TypeError):
+                layout = None
+            if layout is not None:
+                sprayable = {
+                    tid for lane in layout["lanes"] for tid in lane["target_ids"]
+                }
+                missing = missing & sprayable
+        if missing:
+            raise ValueError(f"任务结构不完整：目标缺少有效喷洒关联 {sorted(missing)}")

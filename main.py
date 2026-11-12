@@ -61,7 +61,7 @@ def main() -> int:
     p.add_argument("--job", type=Path)
     p.add_argument(
         "--transition-mode",
-        choices=("fixed", "search"),
+        choices=("fixed", "search", "auto"),
         help="覆盖作业 JSON 的 transition_mode；未给出时用配置值，配置也未给出时为 fixed",
     )
     p.add_argument("--save-plan", type=Path)
@@ -199,8 +199,12 @@ def main() -> int:
         from sortie_checks import run_checks as sortie_checks
         from multi_caw_checks import run as multi_caw_checks
         from regression_cli_checks import run_checks as regression_cli_checks
+        from wind_buffer_checks import run as wind_buffer_checks
+        from coverage_alternatives_checks import run as coverage_alternatives_checks
+        from restricted_spray_checks import run as restricted_spray_checks
+        from obstacle_planning_checks import run as obstacle_planning_checks
 
-        return max(run(), plan_checks(), execution_checks(), evaluation_checks(), comparison_checks(), multi_checks(), env_checks(), rl_checks(), plant_checks(), experiment_checks(), wind_checks(), routing_checks(), joint_checks(), coordination_checks(), surrogate_checks(), web_checks(), transition_checks(), transition_experiment_checks(), joint_transit_checks(), coordination_plan_checks(), playback_checks(), evaluation_swath_checks(), routing3d_checks(), wind_planning_checks(), planner_checks(), order_checks(), comparison_real_checks(), experiment_semantics_checks(), caw_checks(), random_map_checks(), scene_editor_checks(), depot_checks(), launch_checks(), sortie_checks(), multi_caw_checks(), regression_cli_checks())
+        return max(run(), plan_checks(), execution_checks(), evaluation_checks(), comparison_checks(), multi_checks(), env_checks(), rl_checks(), plant_checks(), experiment_checks(), wind_checks(), routing_checks(), joint_checks(), coordination_checks(), surrogate_checks(), web_checks(), transition_checks(), transition_experiment_checks(), joint_transit_checks(), coordination_plan_checks(), playback_checks(), evaluation_swath_checks(), routing3d_checks(), wind_planning_checks(), planner_checks(), order_checks(), comparison_real_checks(), experiment_semantics_checks(), caw_checks(), random_map_checks(), scene_editor_checks(), depot_checks(), launch_checks(), sortie_checks(), multi_caw_checks(), regression_cli_checks(), restricted_spray_checks(), obstacle_planning_checks(), wind_buffer_checks(), coverage_alternatives_checks())
     if a.random_scene:
         try:
             from random_scene import generate_with_report

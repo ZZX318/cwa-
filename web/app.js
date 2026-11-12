@@ -126,6 +126,10 @@ function accept(d, label) {
   status(`${label} · ${s.trees} 棵树\n障碍 ${s.obstacles} / 禁飞 ${s.no_fly_zones} / 禁喷 ${s.no_spray_zones}` + (s.warnings.length ? '\n' + s.warnings.join('\n') : ''));
   draw();
   if (typeof syncEditorFromScene === 'function') syncEditorFromScene();
+  if ($('buffer-sources')) {
+    $('buffer-sources').value = JSON.stringify(scene.wind_buffer?.sources || [], null, 2);
+    if (scene.wind_buffer) $('buffer-distance').value = scene.wind_buffer.distance;
+  }
 }
 $('config').onsubmit = async e => {
   e.preventDefault();
@@ -433,6 +437,22 @@ function draw() {
     });
     for (let f of faces) path(f.points, f.stroke, .5, f.fill);
   }
+  if (show.objects && scene.wind_buffer)
+    for (const source of scene.wind_buffer.sources) {
+      polygon(source.footprint, z + .03, '#ff7777', null, [5, 3]);
+      label('敏感区 ' + source.id, [...source.footprint.vertices[0], z + .05], '#ffaaaa');
+    }
+  if ($('job-wind_direction')) {
+    const a=Number($('job-wind_direction').value), speed=Number($('job-wind_speed').value);
+    const origin=[W-95,H-65], p0=project(center),p1=project([center[0]-Math.cos(a),center[1]-Math.sin(a),center[2]]);
+    const dx=p1[0]-p0[0],dy=p1[1]-p0[1],length=Math.hypot(dx,dy)||1;
+    const end=[origin[0]+35*dx/length,origin[1]+35*dy/length];
+    ctx.save();ctx.strokeStyle='#7edcff';ctx.fillStyle='#7edcff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(...origin);ctx.lineTo(...end);ctx.stroke();
+    const angle=Math.atan2(end[1]-origin[1],end[0]-origin[0]);
+    ctx.beginPath();ctx.moveTo(...end);ctx.lineTo(end[0]-9*Math.cos(angle-.45),end[1]-9*Math.sin(angle-.45));ctx.lineTo(end[0]-9*Math.cos(angle+.45),end[1]-9*Math.sin(angle+.45));ctx.closePath();ctx.fill();
+    ctx.font='12px sans-serif';ctx.fillText('风吹向 '+speed+' m/s',W-155,H-22);ctx.restore();
+  }
   if (show.targets)
     for (let t of scene.targets) {
       let g = t.geometry;
@@ -577,20 +597,42 @@ canvas.onwheel = e => {
 // Job settings and plans are independent of orchard generator settings.
 let currentPlan = null;
 const jobPanel = document.createElement('section');
-jobPanel.innerHTML = `<h3>单机作业计划</h3><p>几何喷幅模型 · 非执行结果。fixed-y 直线转场不会绕行；需要绕障碍/禁飞请选择旧转场 search 或算法 caw。场景编辑后必须重新“生成航线”。</p>
-<label class="field">算法<select id="job-algorithm"><option value="fixed-y-boustrophedon">fixed-y 固定 Y 条带</option><option value="naive-target-order">naive 逐目标短喷</option><option value="caw-a*-3d-wind">caw-a* 三维净空 + 顺序</option><option value="caw-a*-fixed-order">caw-a* 固定顺序（消融）</option><option value="caw-a*-nn">caw-a* NN 顺序（消融）</option></select></label>
+jobPanel.innerHTML = `<h3>单机作业计划</h3><p>几何喷幅与分段运动模型。默认 CAW：三维绕障＋最近邻与 2-opt 顺序优化。固定 Y 仅作直线基线，实际冲突时报错。场景编辑后必须重新“生成航线”。</p>
+<label class="field">规划方法<select id="job-algorithm"><optgroup label="主要算法"><option value="caw-a*-3d-wind" selected>CAW 顺序优化（默认主方法）</option></optgroup><optgroup label="基础对照与消融"><option value="fixed-y-boustrophedon">固定 Y：直线基线，冲突报错</option><option value="caw-a*-fixed-order">CAW 固定顺序（消融）</option><option value="caw-a*-nn">CAW 仅最近邻（消融）</option><option value="naive-target-order">逐目标直线（弱对照）</option></optgroup></select></label>
 <label class="field">目标口径<select id="job-objective"><option value="time">时间</option><option value="energy">能量代理（CAW）</option></select></label>
 <label class="field" id="job-caw-only">顺序策略<select id="job-order_strategy"><option value="nn+2opt">NN + 2-opt</option><option value="nn">最近邻</option><option value="fixed">固定 Y 顺序</option></select></label>
 <label class="field" id="job-caw-grid">网格步长 m<select id="job-step_xy"><option value="0.5">0.5</option><option value="1" selected>1.0</option><option value="2">2.0</option></select></label>
 <label class="field">有效喷幅 m<input id="job-swath" type="number" value="2" step="0.1"></label>
+<label class="field">航带向 +X 平移 m（小于喷幅）<input id="job-lane_phase" type="number" value="0" min="0" step="0.01"></label>
 <label class="field">冠顶高度差 m<input id="job-height_offset" type="number" value="2" step="0.1"></label>
 <label class="field">安全净空 m<input id="job-clearance" type="number" value="0.5" step="0.1"></label>
 <label class="field">目标速度 m/s<input id="job-speed" type="number" value="2" step="0.1"></label>
 <label class="field">风速 m/s<input id="job-wind_speed" type="number" value="0" min="0" step="0.1"></label>
+<label class="field">风吹向<select id="wind-preset"><option value="3.141592653589793">从左向右 →（来自 −X）</option><option value="0" selected>从右向左 ←（来自 +X）</option><option value="1.5707963267948966">从上向下 ↓（来自 +Y）</option><option value="4.71238898038469">从下向上 ↑（来自 −Y）</option><option value="custom">自定义来向</option></select></label>
 <label class="field">风向（来向） rad<input id="job-wind_direction" type="number" value="0" step="0.1"></label>
 <label class="field">风向代价<input id="job-wind_cost" type="number" value="0.25" min="0.01" step="0.05"></label>
-<label class="field">旧转场模式<select id="job-transition_mode"><option value="fixed">固定直线</option><option value="search">净空搜索</option></select></label>
+<input id="job-transition_mode" type="hidden" value="fixed">
 <button id="plan-generate">生成航线</button><button id="plan-save">保存计划</button><button id="plan-load">加载计划</button>
+<button id="plan-nofly-example">加载禁飞验证样例（替换当前场景）</button>
+<button id="plan-nospray-example">加载禁喷切段样例（替换当前场景）</button>
+<button id="plan-obstacle-example">加载障碍绕行样例（替换当前场景）</button>
+<p>CAW 按禁飞范围切开喷洒段，转场三维绕行；固定 Y 不绕障，冲突报错。区内树冠可能漏喷。禁飞高度限制飞行，水平范围同时禁止喷洒。生成后可在 03 面板点“查看最终覆盖”。</p>
+<p>禁喷区允许关喷飞越。与喷幅冲突的区间会自动切开，越过后继续喷洒；评价同时显示可喷树冠覆盖和约束外额外漏喷面积。</p>
+<p>CAW 会切除碰到实体障碍净空的喷洒区间，转场遇阻时搜索三维路径。障碍物是具有底高和顶高的三维实体；满足净空时可以绕侧或越顶。起降点被挡或完全无路可走时会提示原因。CAW 的转场由其自身规划器处理。</p>
+<details><summary>风与敏感区缓冲</summary>
+<p>优先点击地图工具栏“敏感区”，逐点绘制后按 Enter 闭合；系统自动生成缓冲。下方 JSON 为高级编辑入口，不会改动已有手工禁喷区。来向 0 = 从 +X 吹来，3.141592653589793 = 从 −X 吹来。缓冲朝来向扩展。</p>
+<label class="field">敏感区 JSON<textarea id="buffer-sources" rows="5">[]</textarea></label>
+<label class="field">缓冲距离 m（实验输入）<input id="buffer-distance" type="number" min="0" step="0.1" value="3.5"></label>
+<button id="buffer-apply">按当前风重新生成缓冲</button>
+<p id="buffer-status">距离从喷洒足迹边缘计；静风不新增缓冲。斜风/非矩形使用保守包围盒，未建立真实漂移模型。改变风或距离后需重新应用。</p></details>
+<button id="recover-coverage">计算区外漏喷恢复方案</button><p id="recover-status">区内树冠必须关喷；区外仍需喷洒。可比较候选航带相位，选择减少额外漏喷的方案，并显示时间代价。</p>
+<label class="field">额外时间上限 s<input id="recovery-budget" type="number" min="0" value="60" step="5"></label>
+<button id="recover-options">比较整体平移与局部边带</button>
+<p>按当前场景和相位建立 CAW 默认参数对照。保护范围不变；局部方案最多补4段，可能增加重复喷洒。修改场景或参数后需重新比较。</p>
+<div id="recovery-options"></div>
+<button id="plan-multi-sensitive-example">加载多敏感区密植样例（替换当前场景）</button>
+<button id="plan-wind-example">加载侧风压树样例（替换当前场景）</button>
+<p>红色虚线为原始敏感区，黄色为含缓冲的最终禁喷范围。禁飞是规定的三维禁入体积，实体障碍是实际占用空间，两者与允许关喷飞越的敏感区不同。区内关喷，区外额外漏喷单独评价。航带平移可作相位对照；喷头仍按航段即时开关，尚未模拟滞后。</p>
 <input id="plan-file" type="file" hidden><label><input id="plan-visible" type="checkbox" checked>航线</label><p id="plan-status">尚未生成计划</p>`;
 document.querySelector('aside').append(jobPanel);
 
@@ -602,7 +644,10 @@ function invalidatePlan() {
 }
 
 function jobConfig() {
-  const c=Object.fromEntries(['swath', 'height_offset', 'clearance', 'speed','wind_speed','wind_direction','wind_cost'].map(k => [k, Number($('job-' + k).value)])); c.transition_mode=$('job-transition_mode').value; return c;
+  if (scene?.wind_buffer && (Number($('buffer-distance').value) !== scene.wind_buffer.distance ||
+      JSON.stringify(JSON.parse($('buffer-sources').value)) !== JSON.stringify(scene.wind_buffer.sources)))
+    throw Error('敏感区设置已修改，请先重新生成缓冲');
+  const c=Object.fromEntries(['swath', 'height_offset', 'clearance', 'speed','wind_speed','wind_direction','wind_cost','lane_phase'].map(k => [k, Number($('job-' + k).value)])); c.transition_mode=$('job-transition_mode').value; return c;
 }
 function plannerMethod() { return $('job-algorithm').value; }
 function plannerOptions() {
@@ -614,6 +659,7 @@ function plannerOptions() {
   return {};
 }
 function syncCawFields() {
+  syncWindPreset();
   const caw = plannerMethod().startsWith('caw');
   if ($('job-caw-only')) $('job-caw-only').style.display = caw ? '' : 'none';
   if ($('job-caw-grid')) $('job-caw-grid').style.display = caw ? '' : 'none';
@@ -633,6 +679,149 @@ jobPanel.addEventListener('input', e => {
   }
 });
 $('plan-visible').onchange = draw;
+function syncWindPreset() {
+ const a=Number($('job-wind_direction').value);
+ const option=[...$('wind-preset').options].find(o=>o.value!=='custom'&&Math.abs(Number(o.value)-a)<1e-6);
+ $('wind-preset').value=option?option.value:'custom';
+}
+$('wind-preset').onchange = async () => {
+ if ($('wind-preset').value==='custom') return;
+ $('job-wind_direction').value=$('wind-preset').value; invalidatePlan(); draw();
+ if (scene?.wind_buffer) {try {await applyWindBuffer();}catch(e){$('buffer-status').textContent=e.message;}}
+};
+$('job-wind_direction').addEventListener('change',async()=>{syncWindPreset();if(scene?.wind_buffer){try{await applyWindBuffer();}catch(e){$('buffer-status').textContent=e.message;}}});
+$('job-wind_speed').addEventListener('change',async()=>{if(scene?.wind_buffer){try{await applyWindBuffer();}catch(e){$('buffer-status').textContent=e.message;}}});
+$('recover-coverage').onclick=async()=>{
+ try {
+  if(dirty) throw Error('请先生成场景');
+  const reference=scene, config=jobConfig(), signature=JSON.stringify(config);
+  $('recover-status').textContent='正在比较候选相位的合法覆盖、安全与时间…';
+  const r=await api('/api/recover-coverage',{scene,config,resolution:Number($('evaluation-resolution').value)});
+  if(scene!==reference||signature!==JSON.stringify(jobConfig()))return;
+  $('recover-status').textContent=r.message;
+  if(r.improved){$('job-lane_phase').value=r.recommended.phase;invalidatePlan();$('job-algorithm').value='caw-a*-3d-wind';$('job-order_strategy').value='nn+2opt';$('job-objective').value='time';$('job-step_xy').value='1';syncCawFields();$('plan-generate').click();}
+ }catch(e){$('recover-status').textContent='恢复方案失败：'+e.message;}
+};
+const recoveryNames={'baseline':'原相位','global-phase':'整体平移','local-border':'局部边带'};
+let recoveryRequest=0;
+$('recover-options').onclick=async()=>{
+ const token=++recoveryRequest, host=$('recovery-options');
+ try {
+  if(dirty)throw Error('请先生成场景');
+  const reference=scene, config=jobConfig(), signature=JSON.stringify(config);
+  const resolution=Number($('evaluation-resolution').value), budget=Number($('recovery-budget').value);
+  const unchanged=()=>token===recoveryRequest&&scene===reference&&!dirty&&signature===JSON.stringify(jobConfig())&&resolution===Number($('evaluation-resolution').value)&&budget===Number($('recovery-budget').value);
+  host.textContent='正在实际规划并比较覆盖、时间与保护约束…';
+  const r=await api('/api/recover-coverage-options',{scene,config,resolution,time_budget:budget});
+  if(!unchanged()){if(token===recoveryRequest)host.textContent='输入已改变，请重新比较';return;}
+  host.replaceChildren();
+  if(r.status!=='success'){host.textContent=r.message;return;}
+  const note=document.createElement('p');note.textContent=`额外时间上限 ${budget} s；网格 ${resolution} m。推荐 ${recoveryNames[r.recommended]}。`;host.append(note);
+  for(const row of r.alternatives){
+   const p=document.createElement('p');
+   p.textContent=`${recoveryNames[row.strategy]}：漏喷 ${row.extra_miss.toFixed(2)} m²；恢复 ${row.restored_area.toFixed(2)} m²；时间 ${row.duration.toFixed(2)} s（增加 ${row.added_seconds.toFixed(2)} s）；重复覆盖 ${row.repeated_area.toFixed(2)} m²·次；估算喷量 ${row.spray_amount.toFixed(2)}（模型量）；受限 ${row.restricted_area.toFixed(2)} m²；违规 ${row.illegal_count}。`;
+   const button=document.createElement('button');button.textContent='应用并回放';
+   button.onclick=async()=>{try{
+    if(!unchanged())throw Error('输入已改变，请重新比较');
+    const plan=await api('/api/plan-check',{scene,plan:row.plan});
+    if(!unchanged())throw Error('检查期间输入已改变，请重新比较');
+    invalidatePlan();$('job-lane_phase').value=plan.config.lane_phase;
+    $('job-algorithm').value='caw-a*-3d-wind';$('job-order_strategy').value='nn+2opt';$('job-objective').value='time';$('job-step_xy').value='1';syncCawFields();
+    currentPlan=plan;if(typeof prepareExecution==='function')await prepareExecution();
+    $('plan-status').textContent=`已应用${recoveryNames[row.strategy]}，完整航线已通过安全复核；时间 ${row.duration.toFixed(2)} s，区外漏喷 ${row.extra_miss.toFixed(2)} m²。请到03查看最终覆盖；保存计划会保留补喷段。`;
+    host.append(Object.assign(document.createElement('p'),{textContent:'已应用方案；再次选用其他方案请重新比较。'}));draw();
+    ++recoveryRequest;
+   }catch(e){$('plan-status').textContent=e.message;}};
+   p.append(button);host.append(p);
+  }
+  host.append(Object.assign(document.createElement('p'),{textContent:r.note}));
+  const save=document.createElement('button');save.textContent='保存恢复比较结果';
+  save.onclick=()=>{if(!unchanged()){host.textContent='输入已改变，请重新比较后保存';return;}
+   const url=URL.createObjectURL(new Blob([JSON.stringify(r,null,2)],{type:'application/json'}));
+   const a=document.createElement('a');a.href=url;a.download='orchard.recovery-comparison.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };host.append(save);
+ }catch(e){if(token===recoveryRequest)host.textContent='比较失败：'+e.message;}
+};
+$('plan-multi-sensitive-example').onclick=async()=>{
+ if((sceneEdited||dirty)&&!confirm('样例会替换当前场景，继续？'))return;
+ try{
+  const result=await api('/api/generate',{rows:4,trees_per_row:5,row_spacing:4,plant_spacing:3});
+  populate(result.scene.source.parameters);accept(result,'多敏感区密植样例');
+  for(const [k,v] of Object.entries({swath:2,height_offset:2,clearance:.5,speed:2,wind_speed:2,wind_direction:Math.PI,wind_cost:.25,lane_phase:0,transition_mode:'fixed'}))$('job-'+k).value=v;
+  $('job-algorithm').value='caw-a*-3d-wind';syncCawFields();
+  const source=(id,x0,y0,x1,y1)=>({id,kind:'polygon_prism',footprint:{kind:'polygon',vertices:[[x0,y0],[x1,y0],[x1,y1],[x0,y1]]},z_min:0,z_max:8});
+  $('buffer-sources').value=JSON.stringify([source('sensitive-a',9.8,0,10.5,6.5),source('sensitive-b',14,7.5,14.7,16)],null,2);
+  $('buffer-distance').value=1.3;await applyWindBuffer();setMode('top');
+  $('plan-status').textContent='两个敏感区，行距4 m、株距3 m。缓冲1.3 m为演示输入。点击“比较整体平移与局部边带”，查看同一保护范围内的覆盖和时间取舍；不是实际密植果园验证。';
+ }catch(e){$('plan-status').textContent='样例加载失败：'+e.message;}
+};
+async function loadRestrictionExample(kind) {
+  if ((sceneEdited || dirty) && !confirm('当前场景有编辑，加载样例会替换当前几何。继续？')) return;
+  const nofly = kind === 'no_fly_zones';
+  const obstacle = kind === 'obstacles';
+  const label = obstacle ? '障碍绕行' : nofly ? '禁飞验证' : '禁喷切段';
+  try {
+    const object = obstacle
+      ? {id: 'obstacle-example', kind: 'box', min: [1.8,5.8,5.7], max: [2.2,7.2,6.7]}
+      : {id: nofly ? 'no-fly-example' : 'no-spray-example', kind: 'polygon_prism',
+          footprint: {kind: 'polygon', vertices: nofly
+            ? [[0.5,12.5],[10.5,12.5],[10.5,20.5],[0.5,20.5]]
+            : [[1.8,6.2],[3.2,6.2],[3.2,6.8],[1.8,6.8]]},
+          z_min: 0, z_max: 8};
+    const example = await api('/api/generate', {
+      rows: 4, trees_per_row: 5,
+      [kind]: [object]
+    });
+    populate(example.scene.source.parameters);
+    accept(example, '已加载' + label + '样例');
+    $('job-algorithm').value = 'caw-a*-3d-wind';
+    for (const [key, value] of Object.entries({swath:2, height_offset:2, clearance:0.5, speed:2,
+      wind_speed:0, wind_direction:0, wind_cost:0.25, lane_phase:0, transition_mode:'fixed'})) {
+      $('job-' + key).value = value;
+    }
+    syncCawFields();
+    setMode('top');
+    if (obstacle) {
+      $('plan-status').textContent = '样例已就绪：一个悬空障碍挡住喷洒高度。点击“生成航线”，查看切段、自动三维绕行与最终覆盖；切换“固定 Y”重新生成，应提示实际冲突。';
+    } else {
+      $('plan-status').textContent = nofly
+        ? '样例已就绪：20 棵树，禁飞区覆盖其中一部分。点击“生成航线”，再点 03 面板“查看最终覆盖”，检查绕行、关喷与漏喷目标。'
+        : '样例已就绪：一棵树的中间部分与禁喷区重叠。点击“生成航线”，回放时应先喷洒、关喷穿过该段、再恢复喷洒；查看最终覆盖中的额外漏喷面积。';
+    }
+  } catch (error) {
+    $('plan-status').textContent = '样例加载失败：' + error.message;
+  }
+}
+$('plan-nofly-example').onclick = () => loadRestrictionExample('no_fly_zones');
+$('plan-nospray-example').onclick = () => loadRestrictionExample('no_spray_zones');
+$('plan-obstacle-example').onclick = () => loadRestrictionExample('obstacles');
+async function applyWindBuffer() {
+  if (dirty) throw Error('请先生成场景，再应用缓冲');
+  const reference = scene;
+  const inputs = JSON.stringify([$ ('buffer-sources').value, $('buffer-distance').value, $('job-wind_speed').value, $('job-wind_direction').value]);
+  const result = await api('/api/wind-buffer', {scene, sources:JSON.parse($('buffer-sources').value),
+    distance:Number($('buffer-distance').value), wind_speed:Number($('job-wind_speed').value), wind_direction:Number($('job-wind_direction').value)});
+  if (scene !== reference || inputs !== JSON.stringify([$ ('buffer-sources').value, $('buffer-distance').value, $('job-wind_speed').value, $('job-wind_direction').value])) return;
+  accept(result, '已更新敏感区缓冲');
+  sceneEdited = true;
+  $('buffer-status').textContent = `已应用：风 ${result.report.wind_speed} m/s，来向 ${result.report.wind_direction.toFixed(3)} rad，实际扩展 ${result.report.effective_distance} m。黄色禁喷，红色原区；区内不喷，区外额外漏喷见 03。`;
+}
+$('buffer-apply').onclick = async () => {try {await applyWindBuffer();} catch(e) {$('buffer-status').textContent = e.message;}};
+for (const id of ['buffer-sources','buffer-distance']) $(id).addEventListener('input', () => {invalidatePlan(); $('buffer-status').textContent='设置已修改，请重新生成缓冲。';});
+$('plan-wind-example').onclick = async () => {
+  if ((sceneEdited || dirty) && !confirm('加载侧风样例会替换当前几何。继续？')) return;
+  try {
+    const result = await api('/api/generate', {rows:4, trees_per_row:5});
+    populate(result.scene.source.parameters); accept(result, '侧风样例');
+    for (const [k,v] of Object.entries({swath:2,height_offset:2,clearance:.5,speed:2,wind_speed:2,wind_direction:Math.PI,wind_cost:.25,lane_phase:0,transition_mode:'fixed'})) $('job-'+k).value=v;
+    $('job-algorithm').value='caw-a*-3d-wind'; syncCawFields();
+    $('buffer-sources').value=JSON.stringify([{id:'sensitive-east',kind:'polygon_prism',footprint:{kind:'polygon',vertices:[[23,0],[24,0],[24,22],[23,22]]},z_min:0,z_max:8}],null,2);
+    $('buffer-distance').value=3.5;
+    await applyWindBuffer(); setMode('top');
+    $('plan-status').textContent='西风向东：敏感区从 x=23 向西扩到 x=19.5，压到最后一排树冠。先以平移 0 生成并查看最终覆盖，再改平移 0.49 m 重跑，对比同一禁喷范围外的额外漏喷。距离 3.5 m 为演示假设。';
+  } catch(e) {$('plan-status').textContent='侧风样例失败：'+e.message;}
+};
+
 $('plan-generate').onclick = async () => {
   if (typeof sceneEditorHasDraft === 'function' && sceneEditorHasDraft()) {
     const what = typeof sceneEditorDraftDescription === 'function' ? sceneEditorDraftDescription() : '多边形草稿';
@@ -645,10 +834,11 @@ $('plan-generate').onclick = async () => {
     $('plan-status').textContent = '场景参数尚未生成，请先生成场景';
     return;
   }
+  try {
   const reference = scene,
     request = {scene, config: jobConfig(), method: plannerMethod(), options: plannerOptions()},
     values = JSON.stringify({config: request.config, method: request.method, options: request.options});
-  try {
+  $('plan-status').textContent = '正在生成航线并检查净空、喷洒足迹与任务结构…';
     const result = await api('/api/plan', request);
     if (reference !== scene || values !== JSON.stringify({config: jobConfig(), method: plannerMethod(), options: plannerOptions()}) || dirty) return;
     if (result.status !== 'success') throw Error((result.stage ? result.stage + '：' : '') + result.reason);
@@ -659,13 +849,18 @@ $('plan-generate').onclick = async () => {
     const zs = result.segments.map(s => s.start[2]).concat(result.segments.map(s => s.end[2]));
     const transitZ = result.segments.filter(s => s.type === 'transit').flatMap(s => [s.start[2], s.end[2]]);
     const zText = transitZ.length ? `转场高度 ${Math.min(...transitZ).toFixed(2)}–${Math.max(...transitZ).toFixed(2)} m` : '无转场';
-    const search = result.search ? ` · 搜索节点 ${result.search.expanded ?? '-'} · 网格 ${result.search.step_xy ?? '-'} m` : '';
+    const search = result.search ? ` · ${result.search.model === 'layered-3d-clearance-a-star' ? '三维绕行' : '转场搜索'} · 搜索节点 ${result.search.expanded ?? result.search.nodes ?? '-'} · 网格 ${result.search.step_xy ?? result.search.step ?? '-'} m` : ' · 转场直线';
     const order = result.order ? ` · 顺序 [${result.order.join(', ')}]` : '';
     const orderSearch = result.order_search ? ` · 顺序策略 ${result.order_search.strategy}${result.order_search.matrix_mode ? ' · 矩阵 ' + result.order_search.matrix_mode : ''}${result.order_search.lower_bound != null ? ' · 相对下界 ' + result.order_search.lower_bound.toFixed(2) + ' s' : ''}` : '';
     const run = (typeof timeline !== 'undefined' && timeline) ? ` · 路径 ${timeline.segments.reduce((v, s) => v + s.length, 0).toFixed(2)} m · 时长 ${timeline.duration.toFixed(2)} s` : '';
     const wind = `风 ${result.config.wind_speed.toFixed(1)} m/s @ ${result.config.wind_direction.toFixed(2)} rad`;
     const objValue = result.objective_value == null ? '' : ` · 目标值 ${result.objective_value.toFixed(2)}${result.objective === 'energy' ? ' eu（代理）' : ' s'}`;
+    const associated = new Set(result.segments.flatMap(s => s.target_ids || []));
+    const skipped = scene.targets.filter(t => !associated.has(t.id));
     $('plan-status').textContent = `安全与任务结构通过 · ${planner} · v${result.version} · 目标 ${result.objective || 'time'}${objValue} · ${result.segments.length} 航段（喷洒 ${spray}）· 高度 ${result.work_height.toFixed(2)} m · ${zText}${search}${order}${orderSearch}${run} · ${wind} · 指纹 ${(result.plan_hash || '').slice(0,8) || '-'} / 配置 ${(result.config_hash || '').slice(0,8)}\n覆盖率为网格近似，见 03/04 面板；青色喷洒 / 橙色虚线转场`;
+    if (scene.no_fly_zones.length || scene.no_spray_zones.length || scene.obstacles.length) {
+      $('plan-status').textContent += `\n障碍及区域约束已处理 · ${skipped.length} 个目标没有合法喷洒关联，仍计入总漏喷。其余目标也可能只喷到一部分，请查看最终覆盖。`;
+    }
   } catch (e) {
     $('plan-status').textContent = '规划失败：' + e.message;
   }
@@ -784,6 +979,10 @@ window.sceneEditorHost = {
   status: (text, type) => status(text, type),
   markSceneEdited: () => {
     sceneEdited = true;
+    if ($('buffer-sources')) {
+      $('buffer-sources').value=JSON.stringify(scene.wind_buffer?.sources||[],null,2);
+      if(scene.wind_buffer)$('buffer-distance').value=scene.wind_buffer.distance;
+    }
   },
   isSceneEdited: () => sceneEdited,
   clearSceneEdited: () => {

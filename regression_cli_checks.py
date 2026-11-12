@@ -1,6 +1,7 @@
 import json
 import math
 import subprocess
+import sys
 from pathlib import Path
 from tempfile import gettempdir
 
@@ -13,10 +14,11 @@ TMP = Path(gettempdir())
 
 def _run(args, timeout=120):
     return subprocess.run(
-        [".venv/bin/python", "main.py", *args],
+        [sys.executable, "-X", "utf8", "main.py", *args],
         cwd=ROOT,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         timeout=timeout,
     )
 

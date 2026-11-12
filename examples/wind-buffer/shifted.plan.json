@@ -1,0 +1,1773 @@
+{
+  "version": "1.1",
+  "scene_hash": "5c90b1c821a7fd9677a3947a37ceeda2af0ba601d7c6d14324d8b0d0f59ccb74",
+  "method": "fixed-y-boustrophedon",
+  "status": "success",
+  "reason": "",
+  "segments": [
+    {
+      "start": [
+        -3.0,
+        10.5,
+        0.0
+      ],
+      "end": [
+        -3.0,
+        10.5,
+        6.2
+      ],
+      "type": "takeoff",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        -3.0,
+        10.5,
+        6.2
+      ],
+      "end": [
+        0.49,
+        1.3909914337571598,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        0.49,
+        1.3909914337571598,
+        6.2
+      ],
+      "end": [
+        0.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-01"
+      ]
+    },
+    {
+      "start": [
+        0.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "end": [
+        0.49,
+        5.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        0.49,
+        5.39099143375716,
+        6.2
+      ],
+      "end": [
+        0.49,
+        7.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-02"
+      ]
+    },
+    {
+      "start": [
+        0.49,
+        7.60900856624284,
+        6.2
+      ],
+      "end": [
+        0.49,
+        9.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        0.49,
+        9.39099143375716,
+        6.2
+      ],
+      "end": [
+        0.49,
+        11.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-03"
+      ]
+    },
+    {
+      "start": [
+        0.49,
+        11.60900856624284,
+        6.2
+      ],
+      "end": [
+        0.49,
+        13.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        0.49,
+        13.39099143375716,
+        6.2
+      ],
+      "end": [
+        0.49,
+        15.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-04"
+      ]
+    },
+    {
+      "start": [
+        0.49,
+        15.60900856624284,
+        6.2
+      ],
+      "end": [
+        0.49,
+        17.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        0.49,
+        17.39099143375716,
+        6.2
+      ],
+      "end": [
+        0.49,
+        19.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-05"
+      ]
+    },
+    {
+      "start": [
+        0.49,
+        19.60900856624284,
+        6.2
+      ],
+      "end": [
+        2.49,
+        20.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        2.49,
+        20.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        17.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-05"
+      ]
+    },
+    {
+      "start": [
+        2.49,
+        17.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        16.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        2.49,
+        16.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        13.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-04"
+      ]
+    },
+    {
+      "start": [
+        2.49,
+        13.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        12.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        2.49,
+        12.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        9.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-03"
+      ]
+    },
+    {
+      "start": [
+        2.49,
+        9.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        8.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        2.49,
+        8.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        5.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-02"
+      ]
+    },
+    {
+      "start": [
+        2.49,
+        5.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        4.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        2.49,
+        4.0,
+        6.2
+      ],
+      "end": [
+        2.49,
+        1.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-01"
+      ]
+    },
+    {
+      "start": [
+        2.49,
+        1.0,
+        6.2
+      ],
+      "end": [
+        4.49,
+        1.3731016017404232,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        4.49,
+        1.3731016017404232,
+        6.2
+      ],
+      "end": [
+        4.49,
+        3.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-01"
+      ]
+    },
+    {
+      "start": [
+        4.49,
+        3.626898398259577,
+        6.2
+      ],
+      "end": [
+        4.49,
+        5.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        4.49,
+        5.373101601740423,
+        6.2
+      ],
+      "end": [
+        4.49,
+        7.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-02"
+      ]
+    },
+    {
+      "start": [
+        4.49,
+        7.626898398259577,
+        6.2
+      ],
+      "end": [
+        4.49,
+        9.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        4.49,
+        9.373101601740423,
+        6.2
+      ],
+      "end": [
+        4.49,
+        11.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-03"
+      ]
+    },
+    {
+      "start": [
+        4.49,
+        11.626898398259577,
+        6.2
+      ],
+      "end": [
+        4.49,
+        13.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        4.49,
+        13.373101601740423,
+        6.2
+      ],
+      "end": [
+        4.49,
+        15.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-04"
+      ]
+    },
+    {
+      "start": [
+        4.49,
+        15.626898398259577,
+        6.2
+      ],
+      "end": [
+        4.49,
+        17.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        4.49,
+        17.373101601740423,
+        6.2
+      ],
+      "end": [
+        4.49,
+        19.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-01-05"
+      ]
+    },
+    {
+      "start": [
+        4.49,
+        19.626898398259577,
+        6.2
+      ],
+      "end": [
+        6.49,
+        19.609008566242842,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        6.49,
+        19.609008566242842,
+        6.2
+      ],
+      "end": [
+        6.49,
+        17.390991433757158,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-05"
+      ]
+    },
+    {
+      "start": [
+        6.49,
+        17.390991433757158,
+        6.2
+      ],
+      "end": [
+        6.49,
+        15.60900856624284,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        6.49,
+        15.60900856624284,
+        6.2
+      ],
+      "end": [
+        6.49,
+        13.39099143375716,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-04"
+      ]
+    },
+    {
+      "start": [
+        6.49,
+        13.39099143375716,
+        6.2
+      ],
+      "end": [
+        6.49,
+        11.60900856624284,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        6.49,
+        11.60900856624284,
+        6.2
+      ],
+      "end": [
+        6.49,
+        9.39099143375716,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-03"
+      ]
+    },
+    {
+      "start": [
+        6.49,
+        9.39099143375716,
+        6.2
+      ],
+      "end": [
+        6.49,
+        7.60900856624284,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        6.49,
+        7.60900856624284,
+        6.2
+      ],
+      "end": [
+        6.49,
+        5.39099143375716,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-02"
+      ]
+    },
+    {
+      "start": [
+        6.49,
+        5.39099143375716,
+        6.2
+      ],
+      "end": [
+        6.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        6.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "end": [
+        6.49,
+        1.3909914337571596,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-01"
+      ]
+    },
+    {
+      "start": [
+        6.49,
+        1.3909914337571596,
+        6.2
+      ],
+      "end": [
+        8.49,
+        1.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        8.49,
+        1.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        4.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-01"
+      ]
+    },
+    {
+      "start": [
+        8.49,
+        4.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        5.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        8.49,
+        5.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        8.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-02"
+      ]
+    },
+    {
+      "start": [
+        8.49,
+        8.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        9.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        8.49,
+        9.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        12.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-03"
+      ]
+    },
+    {
+      "start": [
+        8.49,
+        12.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        13.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        8.49,
+        13.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        16.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-04"
+      ]
+    },
+    {
+      "start": [
+        8.49,
+        16.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        17.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        8.49,
+        17.0,
+        6.2
+      ],
+      "end": [
+        8.49,
+        20.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-05"
+      ]
+    },
+    {
+      "start": [
+        8.49,
+        20.0,
+        6.2
+      ],
+      "end": [
+        10.49,
+        19.626898398259577,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        10.49,
+        19.626898398259577,
+        6.2
+      ],
+      "end": [
+        10.49,
+        17.373101601740423,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-05"
+      ]
+    },
+    {
+      "start": [
+        10.49,
+        17.373101601740423,
+        6.2
+      ],
+      "end": [
+        10.49,
+        15.626898398259577,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        10.49,
+        15.626898398259577,
+        6.2
+      ],
+      "end": [
+        10.49,
+        13.373101601740423,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-04"
+      ]
+    },
+    {
+      "start": [
+        10.49,
+        13.373101601740423,
+        6.2
+      ],
+      "end": [
+        10.49,
+        11.626898398259577,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        10.49,
+        11.626898398259577,
+        6.2
+      ],
+      "end": [
+        10.49,
+        9.373101601740423,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-03"
+      ]
+    },
+    {
+      "start": [
+        10.49,
+        9.373101601740423,
+        6.2
+      ],
+      "end": [
+        10.49,
+        7.626898398259577,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        10.49,
+        7.626898398259577,
+        6.2
+      ],
+      "end": [
+        10.49,
+        5.373101601740423,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-02"
+      ]
+    },
+    {
+      "start": [
+        10.49,
+        5.373101601740423,
+        6.2
+      ],
+      "end": [
+        10.49,
+        3.626898398259577,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        10.49,
+        3.626898398259577,
+        6.2
+      ],
+      "end": [
+        10.49,
+        1.3731016017404232,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-02-01"
+      ]
+    },
+    {
+      "start": [
+        10.49,
+        1.3731016017404232,
+        6.2
+      ],
+      "end": [
+        12.49,
+        1.3909914337571596,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        12.49,
+        1.3909914337571596,
+        6.2
+      ],
+      "end": [
+        12.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-01"
+      ]
+    },
+    {
+      "start": [
+        12.49,
+        3.6090085662428404,
+        6.2
+      ],
+      "end": [
+        12.49,
+        5.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        12.49,
+        5.39099143375716,
+        6.2
+      ],
+      "end": [
+        12.49,
+        7.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-02"
+      ]
+    },
+    {
+      "start": [
+        12.49,
+        7.60900856624284,
+        6.2
+      ],
+      "end": [
+        12.49,
+        9.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        12.49,
+        9.39099143375716,
+        6.2
+      ],
+      "end": [
+        12.49,
+        11.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-03"
+      ]
+    },
+    {
+      "start": [
+        12.49,
+        11.60900856624284,
+        6.2
+      ],
+      "end": [
+        12.49,
+        13.39099143375716,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        12.49,
+        13.39099143375716,
+        6.2
+      ],
+      "end": [
+        12.49,
+        15.60900856624284,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-04"
+      ]
+    },
+    {
+      "start": [
+        12.49,
+        15.60900856624284,
+        6.2
+      ],
+      "end": [
+        12.49,
+        17.390991433757158,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        12.49,
+        17.390991433757158,
+        6.2
+      ],
+      "end": [
+        12.49,
+        19.609008566242842,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-05"
+      ]
+    },
+    {
+      "start": [
+        12.49,
+        19.609008566242842,
+        6.2
+      ],
+      "end": [
+        14.49,
+        20.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        14.49,
+        20.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        17.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-05"
+      ]
+    },
+    {
+      "start": [
+        14.49,
+        17.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        16.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        14.49,
+        16.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        13.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-04"
+      ]
+    },
+    {
+      "start": [
+        14.49,
+        13.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        12.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        14.49,
+        12.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        9.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-03"
+      ]
+    },
+    {
+      "start": [
+        14.49,
+        9.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        8.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        14.49,
+        8.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        5.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-02"
+      ]
+    },
+    {
+      "start": [
+        14.49,
+        5.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        4.0,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        14.49,
+        4.0,
+        6.2
+      ],
+      "end": [
+        14.49,
+        1.0,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-01"
+      ]
+    },
+    {
+      "start": [
+        14.49,
+        1.0,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        1.3731016017404232,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        16.490000000000002,
+        1.3731016017404232,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        3.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-01"
+      ]
+    },
+    {
+      "start": [
+        16.490000000000002,
+        3.626898398259577,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        5.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        16.490000000000002,
+        5.373101601740423,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        7.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-02"
+      ]
+    },
+    {
+      "start": [
+        16.490000000000002,
+        7.626898398259577,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        9.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        16.490000000000002,
+        9.373101601740423,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        11.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-03"
+      ]
+    },
+    {
+      "start": [
+        16.490000000000002,
+        11.626898398259577,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        13.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        16.490000000000002,
+        13.373101601740423,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        15.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-04"
+      ]
+    },
+    {
+      "start": [
+        16.490000000000002,
+        15.626898398259577,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        17.373101601740423,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        16.490000000000002,
+        17.373101601740423,
+        6.2
+      ],
+      "end": [
+        16.490000000000002,
+        19.626898398259577,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-03-05"
+      ]
+    },
+    {
+      "start": [
+        16.490000000000002,
+        19.626898398259577,
+        6.2
+      ],
+      "end": [
+        18.49,
+        19.60900856624284,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        18.49,
+        19.60900856624284,
+        6.2
+      ],
+      "end": [
+        18.49,
+        17.39099143375716,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-04-05"
+      ]
+    },
+    {
+      "start": [
+        18.49,
+        17.39099143375716,
+        6.2
+      ],
+      "end": [
+        18.49,
+        15.609008566242839,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        18.49,
+        15.609008566242839,
+        6.2
+      ],
+      "end": [
+        18.49,
+        13.390991433757161,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-04-04"
+      ]
+    },
+    {
+      "start": [
+        18.49,
+        13.390991433757161,
+        6.2
+      ],
+      "end": [
+        18.49,
+        11.609008566242839,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        18.49,
+        11.609008566242839,
+        6.2
+      ],
+      "end": [
+        18.49,
+        9.390991433757161,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-04-03"
+      ]
+    },
+    {
+      "start": [
+        18.49,
+        9.390991433757161,
+        6.2
+      ],
+      "end": [
+        18.49,
+        7.609008566242839,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        18.49,
+        7.609008566242839,
+        6.2
+      ],
+      "end": [
+        18.49,
+        5.390991433757161,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-04-02"
+      ]
+    },
+    {
+      "start": [
+        18.49,
+        5.390991433757161,
+        6.2
+      ],
+      "end": [
+        18.49,
+        3.6090085662428386,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        18.49,
+        3.6090085662428386,
+        6.2
+      ],
+      "end": [
+        18.49,
+        1.3909914337571612,
+        6.2
+      ],
+      "type": "spray",
+      "spray": true,
+      "speed": 2.0,
+      "target_ids": [
+        "target-tree-04-01"
+      ]
+    },
+    {
+      "start": [
+        18.49,
+        1.3909914337571612,
+        6.2
+      ],
+      "end": [
+        -3.0,
+        10.5,
+        6.2
+      ],
+      "type": "transit",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    },
+    {
+      "start": [
+        -3.0,
+        10.5,
+        6.2
+      ],
+      "end": [
+        -3.0,
+        10.5,
+        0.0
+      ],
+      "type": "landing",
+      "spray": false,
+      "speed": 2.0,
+      "target_ids": []
+    }
+  ],
+  "config": {
+    "swath": 2.0,
+    "height_offset": 2.0,
+    "clearance": 0.5,
+    "speed": 2.0,
+    "target_type": "canopy_horizontal_projection",
+    "flow_rate": 1.0,
+    "wind_speed": 2,
+    "wind_direction": 3.141592653589793,
+    "wind_cost": 0.25,
+    "transition_mode": "auto",
+    "lane_phase": 0.49
+  },
+  "config_hash": "ab36748c3047c7ced6f8aadc275a688995b952c069e4fab6ba34e9a17c4ce6c8",
+  "strip_count": 10,
+  "work_height": 6.2
+}

@@ -1,0 +1,97 @@
+{
+  "improved": true,
+  "baseline": {
+    "phase": 0.0,
+    "status": "success",
+    "reason": "",
+    "duration": 85.95519642118587,
+    "restricted_area": 31.800000000000008,
+    "sprayable_area": 111.40000000000002,
+    "extra_miss": 4.000000000000001,
+    "sprayable_coverage": 0.9640933572710951,
+    "illegal_count": 0
+  },
+  "recommended": {
+    "phase": 0.48999999999999844,
+    "status": "success",
+    "reason": "",
+    "duration": 121.23392376736442,
+    "restricted_area": 31.800000000000008,
+    "sprayable_area": 111.40000000000002,
+    "extra_miss": 0.0,
+    "sprayable_coverage": 1.0,
+    "illegal_count": 0
+  },
+  "candidates": [
+    {
+      "phase": 0.0,
+      "status": "success",
+      "reason": "",
+      "duration": 85.95519642118587,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 4.000000000000001,
+      "sprayable_coverage": 0.9640933572710951,
+      "illegal_count": 0
+    },
+    {
+      "phase": 0.48999999999999844,
+      "status": "success",
+      "reason": "",
+      "duration": 121.23392376736442,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 0.0,
+      "sprayable_coverage": 1.0,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.0100000000000016,
+      "status": "success",
+      "reason": "",
+      "duration": 84.9412042545722,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 4.000000000000001,
+      "sprayable_coverage": 0.9640933572710951,
+      "illegal_count": 0
+    },
+    {
+      "phase": 0.5,
+      "status": "success",
+      "reason": "",
+      "duration": 114.31126644334715,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 4.000000000000001,
+      "sprayable_coverage": 0.9640933572710951,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.0,
+      "status": "success",
+      "reason": "",
+      "duration": 84.91416647565508,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 4.000000000000001,
+      "sprayable_coverage": 0.9640933572710951,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.5,
+      "status": "success",
+      "reason": "",
+      "duration": 85.84577745430583,
+      "restricted_area": 31.800000000000008,
+      "sprayable_area": 111.40000000000002,
+      "extra_miss": 4.000000000000001,
+      "sprayable_coverage": 0.9640933572710951,
+      "illegal_count": 0
+    }
+  ],
+  "resolution": 0.1,
+  "method": "bounded-phase-candidates",
+  "message": "候选平移 0.490 m：原方案 4.00 m² / 85.96 s，新方案区外漏喷 0.00 m² / 121.23 s。受限树冠 31.80 m² 仍关喷。已应用平移并重新生成 CAW 航线。",
+  "note": "同一保护几何；优先减少区外漏喷，再比较时间。网格采样，非连续零漏喷证明，非全局最优。"
+}

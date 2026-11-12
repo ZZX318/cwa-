@@ -36,17 +36,22 @@ function updateExecutionDom(state, force) {
 async function updateEvaluation(time) {
   if (!timeline || !currentPlan) return;
   const reference = timeline;
+  const resolution = Number($('evaluation-resolution').value);
   try {
-    const ev = await api('/api/evaluation',{scene,plan:currentPlan,timeline,time});
-    if (reference !== timeline) return;
+    const ev = await api('/api/evaluation',{scene,plan:currentPlan,timeline,time,resolution});
+    if (reference !== timeline || time !== playTime || resolution !== Number($('evaluation-resolution').value)) return;
     evaluationState = ev;
     const stat = ev.evaluation || ev;
     const missed = ev.missed_targets ?? stat.missed_targets ?? [];
     const repeated = ev.repeated_targets ?? stat.repeated_targets ?? [];
     $('evaluation-info').textContent = `目标覆盖 ${(ev.coverage*100).toFixed(1)}% · 漏喷目标 ${missed.length} · 重复目标 ${repeated.length} · 喷洒 ${ev.spray_seconds.toFixed(2)} s · 估算量 ${(ev.total_spray_amount??stat.total_spray_amount??0).toFixed(2)}（网格近似）`;
+    if (ev.sprayable_canopy_area_m2 != null) {
+      const coverage = ev.sprayable_coverage == null ? '无可喷面积' : (ev.sprayable_coverage*100).toFixed(1) + '%';
+      $('evaluation-info').textContent += `\n可喷树冠覆盖 ${coverage} · 受限树冠 ${ev.restricted_canopy_area_m2.toFixed(2)} m² · 约束外额外漏喷 ${ev.extra_miss_area_m2.toFixed(2)} m² · 足迹违规 ${ev.illegal.length} 处（${resolution} m 网格去重，区域采用保守包围矩形）`;
+    }
     draw();
   } catch (error) {
-    if (reference === timeline) $('evaluation-info').textContent = '覆盖评价失败：' + error.message;
+    if (reference === timeline && time === playTime && resolution === Number($('evaluation-resolution').value)) $('evaluation-info').textContent = '覆盖评价失败：' + error.message;
   }
 }
 const aside = document.querySelector('aside');
@@ -63,15 +68,17 @@ playbackGroup.innerHTML = `<summary>03 · 时间模型与回放</summary>
 <p>分段恒速运动学 · 非真实动力学</p>
 <button id="execution-prepare">准备回放</button><button id="execution-play" disabled>播放</button>
 <button id="execution-pause" disabled>暂停</button><button id="execution-reset" disabled>重置</button>
+<button id="execution-end" disabled>查看最终覆盖</button>
 <label>倍速 <select id="execution-rate"><option value="0.5">0.5×</option><option selected value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
 <label>仿真时间 s<input id="execution-seek" type="range" min="0" max="0" step="any" value="0" disabled></label>
 <label class="field">定位时间 s<input id="execution-time" type="number" step="0.1" value="0" disabled></label>
 <button id="execution-save" disabled>保存时间模型</button>
+<label>覆盖网格 m<select id="evaluation-resolution"><option value="0.5">0.5</option><option value="0.25" selected>0.25</option><option value="0.1">0.1</option></select></label>
 <p id="execution-info" role="status">无有效时间模型</p><p id="evaluation-info">覆盖评价未运行</p><label><input id="coverage-visible" type="checkbox" checked>覆盖图层（网格近似）</label><small>图标尺寸仅供辨识，不表示机体物理尺寸。+X 为初始机头方向。</small>`;
 aside.append(playbackGroup);
 
 function playbackButtons(enabled) {
-  for(const id of ['execution-play','execution-pause','execution-reset','execution-seek','execution-time','execution-save']) $(id).disabled = !enabled;
+  for(const id of ['execution-play','execution-pause','execution-reset','execution-end','execution-seek','execution-time','execution-save']) $(id).disabled = !enabled;
 }
 function resetExecution() {
   requestVersion++; clearTimeout(evaluationTimer); playing = false; timeline = null; executionState = null; evaluationState = null; playTime = 0;
@@ -137,6 +144,14 @@ $('execution-pause').onclick = () => {
   playing = false; queryTime(time, true);
 };
 $('execution-reset').onclick = () => {playing = false; if(timeline) queryTime(0, true);};
+$('execution-end').onclick = () => {
+  if (!timeline) return;
+  playing = false;
+  queryTime(timeline.duration, true);
+};
+$('evaluation-resolution').onchange = () => {
+  if (timeline) updateEvaluation(playTime);
+};
 function handleSeekInput(event) {
   if(!timeline) return;
   playing = false;
@@ -178,23 +193,118 @@ function drawAircraft() {
   path([world(.95,0),world(-.35,.3),world(-.35,-.3),world(.95,0)],color,1.5,color);
 }
 
-const comparisonGroup=document.createElement('details');comparisonGroup.innerHTML=`<summary>04 · 真实算法对照</summary><label>方法 <select id="compare-method"><option value="all">三种（fixed-y / naive / caw）</option><option value="both">fixed-y + naive（旧 both）</option><option value="fixed-y-boustrophedon">fixed-y</option><option value="naive-target-order">naive</option><option value="caw-a*-3d-wind">caw-a*</option></select></label><button id="compare-run">运行比较</button><p id="compare-info">同一场景、配置、执行器与评价器；安全列为独立检查结果</p><div id="compare-table"></div>`;aside.append(comparisonGroup);
-let comparison=null;
-function clearComparison(){comparison=null;if($('compare-info'))$('compare-info').textContent='比较结果已失效，请重新运行';if($('compare-table'))$('compare-table').innerHTML='';}
-const oldInvalidate=invalidatePlan;invalidatePlan=function(){oldInvalidate();clearComparison();};
-const cell=(v,d=2)=>v==null?'-':Number(v).toFixed(d);
-$('compare-run').onclick=async()=>{if(dirty){$('compare-info').textContent='场景参数尚未生成';return;}try{
-  comparison=await api('/api/compare',{scene,config:jobConfig(),method:$('compare-method').value,resolution:.5});
-  const rows=comparison.results;
-  const same=(a,b)=>a&&b&&a.status==='success'&&b.status==='success'&&a.path_length===b.path_length&&a.duration===b.duration&&a.coverage===b.coverage;
-  const fx=rows.find(r=>r.method==='fixed-y-boustrophedon'),nv=rows.find(r=>r.method==='naive-target-order');
-  $('compare-info').textContent='网格近似评价；结果不代表实测作物效果或普遍算法优劣'+(same(fx,nv)?' · 警告：fixed-y 与 naive 数值相同，疑似同一计划':'');
-  $('compare-table').innerHTML='<table><thead><tr><th>方法</th><th>状态/原因</th><th>版本</th><th>路径 m</th><th>转场 m</th><th>时间 s</th><th>喷洒 s</th><th>覆盖率</th><th>漏喷目标</th><th>重复目标</th><th>安全</th><th>搜索节点</th><th>顺序/矩阵</th></tr></thead><tbody>'+rows.map(r=>{
-    const status=r.status==='success'?'成功':`失败 [${r.stage||'-'}]：${r.reason||''}`;
-    const safety=r.status==='success'?'pass':(r.safety==='failed'?'failed':r.safety||'not_run');
-    return `<tr><td>${r.method}</td><td>${status}</td><td>${r.plan_version||'-'}</td><td>${cell(r.path_length)}</td><td>${cell(r.transition_length)}</td><td>${cell(r.duration)}</td><td>${cell(r.spray_seconds)}</td><td>${r.coverage==null?'-':(r.coverage*100).toFixed(1)+'%'}</td><td>${r.missed_targets??'-'}</td><td>${r.repeated_targets??'-'}</td><td>${safety}</td><td>${r.search_nodes??'-'}</td><td>${r.order?'['+r.order.join(',')+']':'无顺序'}${r.matrix_mode?' · '+r.matrix_mode:''}${r.lower_bound!=null?' · LB '+r.lower_bound.toFixed(2):''}</td></tr>`;
-  }).join('')+'</tbody></table>';
-}catch(e){$('compare-info').textContent='比较失败：'+e.message;}}
+const comparisonGroup = document.createElement('details');
+comparisonGroup.innerHTML = `<summary>04 · 真实算法对照</summary>
+<label class="compare-control">方法<select id="compare-method">
+<option value="five">主方法＋基础对照＋消融（五种）</option>
+<option value="ablation">固定 Y 与三个 CAW（消融）</option>
+<option value="all">三种（fixed-y / naive / caw）</option>
+<option value="both">固定 Y 与逐目标</option>
+</select></label>
+<label class="compare-control">覆盖网格 m<select id="compare-resolution"><option value="0.5">0.5</option><option value="0.25" selected>0.25</option><option value="0.1">0.1</option></select></label>
+<button id="compare-run">运行比较</button><button id="compare-save" disabled>保存比较 JSON</button>
+<details class="compare-notes"><summary>比较口径与方法说明</summary>
+<p>统一以估算作业时间为目标，采用相同场景、风参数和覆盖网格。CAW 使用各自默认顺序策略及 1 m 转场网格。</p>
+<p>固定 Y 为直线基线，遇实际实体净空或禁飞冲突报错。CAW 主方法默认采用最近邻与 2-opt，另外两种 CAW 用于消融。逐目标法的喷洒段不同，需要同时看覆盖率。单机面板的 CAW 顺序选择不覆盖这里的消融策略。</p>
+<p>计时统一采用 v1.2 风场规则，包含起降。节省率只对安全通过、喷洒段相同且覆盖一致的结果计算。规划耗时为单次测量。大场景排序可能使用近似成本，最终收益以实际生成航线的估算作业时间为准。</p></details>
+<p id="compare-info" role="status">选择方法后运行比较</p>
+<div id="compare-contributions"></div><div id="compare-cards"></div>
+<details><summary>展开完整指标表（可横向滚动）</summary><div id="compare-table"></div></details>`;
+aside.append(comparisonGroup);
+let comparison = null, comparisonRequestVersion = 0;
+const comparisonNames = {
+  'fixed-y-boustrophedon': '固定 Y 航带',
+  'naive-target-order': '逐目标直线',
+  'caw-a*-fixed-order': 'CAW 固定顺序',
+  'caw-a*-nn': 'CAW 最近邻',
+  'caw-a*-3d-wind': 'CAW 最近邻 + 2-opt'
+};
+const cell = (v, d=2) => v == null ? '-' : Number(v).toFixed(d);
+const comparisonPercent = value => value == null ? '-' : (value * 100).toFixed(1) + '%';
+function comparisonText(value) {
+  const span = document.createElement('span');
+  span.textContent = String(value ?? '');
+  return span.innerHTML;
+}
+function comparisonRoute(value) {
+  return ({straight:'直线', 'layered-3d-clearance-a-star':'三维 A*', 'clearance-grid-a-star':'平面 A*'})[value] || value || '-';
+}
+function comparisonSaving(pair) {
+  if (!pair || !pair.available) return pair?.reason || '无可用配对';
+  if (Math.abs(pair.time_saving_s) < .005) return '估算作业时间持平';
+  const action = pair.time_saving_s > 0 ? '节省' : '增加';
+  return `${action} ${Math.abs(pair.time_saving_s).toFixed(2)} s（${Math.abs(pair.time_saving_pct).toFixed(1)}%）`;
+}
+function clearComparison() {
+  comparisonRequestVersion++;
+  comparison = null;
+  if ($('compare-info')) $('compare-info').textContent = '比较结果已失效，请重新运行';
+  for (const id of ['compare-table', 'compare-cards', 'compare-contributions']) {
+    if ($(id)) $(id).replaceChildren();
+  }
+  if ($('compare-save')) $('compare-save').disabled = true;
+  if ($('compare-run')) $('compare-run').disabled = false;
+}
+const oldInvalidate = invalidatePlan;
+invalidatePlan = function() { oldInvalidate(); clearComparison(); };
+$('compare-method').onchange = clearComparison;
+$('compare-resolution').onchange = clearComparison;
+function renderComparison(result) {
+  const rows = result.results;
+  const success = rows.filter(row => row.status === 'success').length;
+  $('compare-info').textContent = `成功 ${success}/${rows.length} · 网格 ${result.resolution} m · 固定 Y 转场 ${result.config.transition_mode} · 场景 ${result.scene_hash.slice(0,8)}。下方按同任务、同覆盖条件给出配对结果。`;
+  $('compare-contributions').innerHTML = '<h3>这次改进体现在哪里</h3>' + result.contributions.map(pair => {
+    const detail = pair.available && pair.same_transition_model && pair.baseline === 'fixed-y-boustrophedon'
+      ? '；两者实际使用同类转场器' : '';
+    return `<p><strong>${comparisonText(pair.label)}</strong><br>${comparisonText(comparisonSaving(pair) + detail)}</p>`;
+  }).join('');
+  $('compare-cards').innerHTML = rows.map(row => {
+    const title = comparisonText(comparisonNames[row.method] || row.method);
+    if (row.status !== 'success') {
+      return `<article class="compare-card"><h3>${title}</h3><p class="compare-failed">失败 [${comparisonText(row.stage)}]</p><p>${comparisonText(row.reason)}</p><small>规划耗时 ${cell(row.planning_seconds == null ? null : row.planning_seconds*1000)} ms</small></article>`;
+    }
+    const saving = row.method === 'fixed-y-boustrophedon' ? '本次参照方法' : comparisonSaving(row.relative_to_fixed_y);
+    return `<article class="compare-card"><h3>${title}</h3>
+      <dl><dt>估算作业时间</dt><dd>${cell(row.duration)} s</dd><dt>路径</dt><dd>${cell(row.path_length)} m</dd>
+      <dt>总目标覆盖</dt><dd>${comparisonPercent(row.coverage)}</dd><dt>可喷树冠覆盖</dt><dd>${comparisonPercent(row.sprayable_coverage)}</dd>
+      <dt>额外漏喷</dt><dd>${cell(row.extra_miss_area_m2)} m²</dd><dt>规划耗时</dt><dd>${cell(row.planning_seconds*1000)} ms</dd></dl>
+      <p>${comparisonText(saving)}</p><small>${comparisonText(comparisonRoute(row.transition_strategy))} · 顺序 ${comparisonText(row.order_strategy)} · ${row.spray_segment_count} 个喷洒段 · 安全通过</small></article>`;
+  }).join('');
+  $('compare-table').innerHTML = '<table><thead><tr><th>方法</th><th>状态/原因</th><th>转场/顺序</th><th>路径 m</th><th>转场 m</th><th>作业 s</th><th>规划 ms</th><th>总覆盖</th><th>可喷覆盖</th><th>额外漏喷 m²</th><th>漏喷目标</th><th>重复目标</th><th>转场搜索节点</th><th>矩阵</th></tr></thead><tbody>' + rows.map(row => {
+    const state = row.status === 'success' ? '成功' : `失败 [${row.stage}] ${row.reason}`;
+    return `<tr><td>${comparisonText(comparisonNames[row.method] || row.method)}</td><td>${comparisonText(state)}</td><td>${comparisonText(comparisonRoute(row.transition_strategy))} / ${comparisonText(row.order_strategy)}</td><td>${cell(row.path_length)}</td><td>${cell(row.transition_length)}</td><td>${cell(row.duration)}</td><td>${cell(row.planning_seconds == null ? null : row.planning_seconds*1000)}</td><td>${comparisonPercent(row.coverage)}</td><td>${comparisonPercent(row.sprayable_coverage)}</td><td>${cell(row.extra_miss_area_m2)}</td><td>${row.missed_targets ?? '-'}</td><td>${row.repeated_targets ?? '-'}</td><td>${row.search_nodes ?? '-'}</td><td>${comparisonText(row.matrix_mode || '-')}</td></tr>`;
+  }).join('') + '</tbody></table>';
+}
+$('compare-run').onclick = async () => {
+  if (dirty) { $('compare-info').textContent = '场景参数尚未生成，请先生成场景'; return; }
+  if (typeof sceneEditorHasDraft === 'function' && sceneEditorHasDraft()) {
+    $('compare-info').textContent = '存在未闭合区域，请先闭合或取消草稿'; return;
+  }
+  clearComparison();
+  const version = comparisonRequestVersion, reference = scene;
+  try {
+  const request = {scene, config:jobConfig(), method:$('compare-method').value, resolution:Number($('compare-resolution').value)};
+  $('compare-run').disabled = true;
+  $('compare-info').textContent = '正在逐个运行规划、安全检查和最终覆盖评价…';
+    const result = await api('/api/compare', request);
+    if (version !== comparisonRequestVersion || reference !== scene || dirty) return;
+    if (!Array.isArray(result.contributions)) throw Error('当前后台仍是旧版本，请重启项目服务后刷新网页');
+    comparison = result;
+    renderComparison(result);
+    $('compare-save').disabled = false;
+  } catch (error) {
+    if (version === comparisonRequestVersion) $('compare-info').textContent = '比较失败：' + error.message;
+  } finally {
+    if (version === comparisonRequestVersion) $('compare-run').disabled = false;
+  }
+};
+$('compare-save').onclick = () => {
+  if (!comparison) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(comparison, null, 2)], {type:'application/json'}));
+  const link = document.createElement('a');
+  link.href = url; link.download = 'orchard.comparison.json'; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
 
 const multiGroup=document.createElement('details');multiGroup.innerHTML=`<summary>05 · 多机协同</summary>
 <label>无人机数量 <input id="multi-uavs" type="number" min="1" max="32" value="2"></label>

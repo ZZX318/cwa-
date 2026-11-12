@@ -319,7 +319,8 @@
       ...(s.obstacles || []),
       ...(s.no_fly_zones || []),
       ...(s.no_spray_zones || []),
-      ...(s.launch_points || [])
+      ...(s.launch_points || []),
+      ...(s.wind_buffer?.sources || [])
     ];
   }
 
@@ -668,7 +669,7 @@
     Boolean(draft && draft.kind === 'poly' && draft.vertices.length);
   window.sceneEditorDraftDescription = () =>
     draft && draft.kind === 'poly'
-      ? `${draft.zone === 'poly_no_fly' ? '禁飞' : '禁喷'}草稿（${draft.vertices.length} 点，未闭合）`
+      ? `${draft.zone === 'poly_sensitive' ? '敏感区' : draft.zone === 'poly_no_fly' ? '禁飞' : '禁喷'}草稿（${draft.vertices.length} 点，未闭合）`
       : '';
 
   // ------------------------------------------------------------------ hit test
@@ -970,14 +971,26 @@
       host().redraw();
       return;
     }
+    const sensitive = draft.zone === 'poly_sensitive';
     const noFly = draft.zone === 'poly_no_fly';
     const zone = {
-      id: nextId(noFly ? 'no-fly' : 'no-spray'),
+      id: nextId(sensitive ? 'sensitive' : noFly ? 'no-fly' : 'no-spray'),
       kind: 'polygon_prism',
       footprint: { kind: 'polygon', vertices },
       z_min: Number($('editor-zone-zmin').value),
       z_max: Number($('editor-zone-zmax').value)
     };
+    if (sensitive) {
+      const reference = scene();
+      const saved = draft; draft = null;
+      const sources = [...(reference.wind_buffer?.sources || []), zone];
+      host().api('/api/wind-buffer', {scene:reference,sources,distance:Number($('buffer-distance').value),
+        wind_speed:Number($('job-wind_speed').value),wind_direction:Number($('job-wind_direction').value)})
+        .then(result => {if (scene() !== reference) return; return commit(result.scene, '创建敏感区并生成上风缓冲 '+zone.id, null);})
+        .then(ok => {if (!ok) {draft=saved;host().redraw();}})
+        .catch(error => {draft=saved;setStatus('敏感区未创建：'+error.message,'error');host().redraw();});
+      return;
+    }
     const candidate = copy(scene());
     (noFly ? candidate.no_fly_zones : candidate.no_spray_zones).push(zone);
     const issues = zoneIssues(zone, candidate);
@@ -1500,6 +1513,7 @@
       <button type="button" data-tool="rect" aria-pressed="false" title="拖拽矩形障碍 (R)">矩形障碍 R</button>
       <button type="button" data-tool="poly_no_fly" aria-pressed="false" title="逐点绘制禁飞多边形 (P)">禁飞 P</button>
       <button type="button" data-tool="poly_no_spray" aria-pressed="false" title="逐点绘制禁喷多边形 (Shift+P)">禁喷 ⇧P</button>
+      <button type="button" data-tool="poly_sensitive" aria-pressed="false" title="逐点绘制敏感区；闭合后按当前风和距离生成缓冲">敏感区</button>
       <button type="button" data-tool="launch" aria-pressed="false" title="点击添加起降点 (L)">起降点 L</button>
       <button type="button" data-tool="place3d" aria-pressed="false" title="三维预设障碍放置 (O)">三维放置 O</button>
       <button type="button" id="editor-pan" title="平移 (H)">平移 H</button>
@@ -1640,7 +1654,7 @@
     if (
       draft &&
       draft.kind === 'poly' &&
-      (tool === 'poly_no_fly' || tool === 'poly_no_spray') &&
+      (tool === 'poly_no_fly' || tool === 'poly_no_spray' || tool === 'poly_sensitive') &&
       next !== tool
     ) {
       if (draft.vertices.length >= 3) {
@@ -1660,7 +1674,7 @@
     for (const button of document.querySelectorAll('#editor-toolbar button[data-tool]')) {
       button.setAttribute('aria-pressed', String(button.dataset.tool === tool));
     }
-    if (tool === 'rect' || tool === 'poly_no_fly' || tool === 'poly_no_spray' || tool === 'launch') {
+    if (tool === 'rect' || tool === 'poly_no_fly' || tool === 'poly_no_spray' || tool === 'poly_sensitive' || tool === 'launch') {
       if (host().getMode() !== 'top') host().setMode('top');
     } else if (tool === 'place3d') {
       if (host().getMode() !== 'iso') host().setMode('iso');
@@ -1669,6 +1683,7 @@
       select: '选择：点击对象；拖动本体移动；拖动角点/边中点缩放；拖动区域顶点改形状。',
       rect: '矩形障碍：左键拖动生成；松手提交。Alt 临时关闭吸附。',
       poly_no_fly: '禁飞多边形：逐点点击；点击首点、Enter 或双击闭合；Backspace 删最后一点；Esc 取消。',
+      poly_sensitive: '敏感区：逐点绘制，Enter 或点击首点闭合；按 02 当前风和缓冲距离生成保护范围。',
       poly_no_spray: '禁喷多边形：逐点点击；点击首点、Enter 或双击闭合；Backspace 删最后一点；Esc 取消。',
       launch: '起降点：点击空白处添加；选择工具可拖动。最后一个点不可删除。',
       place3d: '三维放置：移动鼠标预览 ghost；左键放置；Esc 退出；精确尺寸回二维或检查器。'
@@ -1709,7 +1724,7 @@
       host().redraw();
       return true;
     }
-    if (tool === 'poly_no_fly' || tool === 'poly_no_spray') {
+    if (tool === 'poly_no_fly' || tool === 'poly_no_spray' || tool === 'poly_sensitive') {
       const now = performance.now();
       const double =
         now - lastClick.t < 350 && Math.hypot(sx - lastClick.x, sy - lastClick.y) < 8;

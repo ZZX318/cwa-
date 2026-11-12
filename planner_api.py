@@ -81,7 +81,7 @@ class FixedYPlanner(Planner):
     version = "1.1"
     capabilities = dict(
         lane_geometry="fixed-y",
-        transition="straight-or-legacy-search",
+        transition="straight-conflict-fails",
         objective=["time"],
     )
 
@@ -90,7 +90,7 @@ class FixedYPlanner(Planner):
             self.validate_options(options)
         except ValueError as error:
             return _failed(scene, config or {}, self.name, str(error), "plan", version="1.1")
-        return generate_plan(scene, config or {})
+        return generate_plan(scene, dict(config or {}, transition_mode="fixed"))
 
 
 class NaivePlanner(Planner):
@@ -248,6 +248,13 @@ class CawAStarPlanner(Planner):
         return normalized
 
     def plan(self, scene, config=None, options=None):
+        return self._plan(scene, config, options)
+
+    def plan_with_supplement(self, scene, config, lanes):
+        """Internal recovery entry; supplemental strips pass the full final checker."""
+        return self._plan(scene, config, None, lanes)
+
+    def _plan(self, scene, config=None, options=None, supplemental=None):
         try:
             normalized = self.validate_options(options)
         except (ValueError, TypeError) as error:
@@ -257,7 +264,7 @@ class CawAStarPlanner(Planner):
             validate_scene(scene)
             c = configuration(config or {})
             layout = fixed_y_lanes(scene, c)
-            lanes = layout["lanes"]
+            lanes = layout["lanes"] + list(supplemental or [])
             height = layout["work_height"]
             resolved = resolve(scene, 1)
             home = list(resolved["start"]["position"])

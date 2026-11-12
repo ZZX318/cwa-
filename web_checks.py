@@ -7,6 +7,11 @@ def run():
     assert 'function localStateAt' in s and "'/api/state'" not in s
     assert "$('execution-seek').value = state.time" in s and "$('execution-time').value = state.time.toFixed(2)" in s
     assert 'queryTime(value, true)' in s and 'queryTime(desiredTime())' in s
+    assert 'id="execution-end"' in s and "$('execution-end').onclick" in s
+    assert 'queryTime(timeline.duration, true)' in s
+    for marker in ('value="five"', 'compare-contributions', 'comparisonRequestVersion', 'compare-save'):
+        assert marker in s, marker
+    assert 'id="evaluation-resolution"' in s and 'timeline,time,resolution' in s
 
     editor = Path('web/editor.js').read_text(encoding='utf8')
     for marker in (
@@ -25,6 +30,10 @@ def run():
     index = Path('web/index.html').read_text(encoding='utf8')
     assert 'src="/editor.js"' in index
     app = Path('web/app.js').read_text(encoding='utf8')
+    assert 'id="plan-nofly-example"' in app and "$('plan-nofly-example').onclick" in app
+    assert 'id="plan-nospray-example"' in app and "loadRestrictionExample('no_spray_zones')" in app
+    assert 'id="plan-obstacle-example"' in app and "loadRestrictionExample('obstacles')" in app
+    assert '<option value="caw-a*-3d-wind" selected>' in app
     assert 'window.sceneEditorHost' in app and 'typeof drawEditor' in app and 'typeof editorPointerDown' in app
     server = Path('server.py').read_text(encoding='utf8')
     assert '"/api/random"' in server and '"/api/validate"' in server and '"/editor.js"' in server

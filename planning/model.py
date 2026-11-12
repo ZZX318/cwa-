@@ -6,7 +6,7 @@ import math
 from scene import validate_scene
 from scene.geometry import polygon_bounds
 
-DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed")
+DEFAULT = dict(swath=2.0, height_offset=2.0, clearance=0.5, speed=2.0, target_type="canopy_horizontal_projection", flow_rate=1.0, wind_speed=0.0, wind_direction=0.0, wind_cost=0.25, transition_mode="fixed", lane_phase=0.0)
 
 PLAN_VERSIONS = ("1.0", "1.1", "1.2")
 OBJECTIVES = ("time", "energy")
@@ -62,7 +62,8 @@ def fingerprint(scene: dict) -> str:
 
 def config_fingerprint(config: dict) -> str:
     """Fingerprint of the effective job configuration, including transition mode."""
-    return _digest(config)
+    # Zero phase preserves fingerprints of existing saved configurations.
+    return _digest({k: v for k, v in config.items() if k != "lane_phase" or v != 0})
 
 
 def options_fingerprint(options: dict) -> str:
@@ -84,11 +85,14 @@ def configuration(raw: dict) -> dict:
         raise ValueError("未知作业配置字段")
     c.update(raw)
     if not isinstance(c["target_type"], str) or not c["target_type"]: raise ValueError("target_type 必须为非空字符串")
-    if c["transition_mode"] not in ("fixed", "search"): raise ValueError("transition_mode 必须为 fixed 或 search")
+    if c["transition_mode"] not in ("fixed", "search", "auto"):
+        raise ValueError("transition_mode 必须为 fixed、search 或 auto")
     for k, v in c.items():
         if k in ("target_type", "transition_mode"): continue
-        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction') else v <= 0):
+        if type(v) not in (int, float) or not math.isfinite(v) or (v < 0 if k in ('wind_speed','wind_direction','lane_phase') else v <= 0):
             raise ValueError(f"{k}={v!r}：需要有限正数")
     if c["height_offset"] <= c["clearance"]:
         raise ValueError("作业高度差必须大于安全净空")
+    if c["lane_phase"] >= c["swath"]:
+        raise ValueError("航带平移须满足 0 ≤ 平移 < 喷幅")
     return c

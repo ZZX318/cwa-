@@ -50,7 +50,9 @@ def run() -> int:
                 z_max=1,
             )
         ]
-        assert generate_plan(forbidden)["status"] == "failed"
+        forbidden_plan = generate_plan(forbidden)
+        assert forbidden_plan["status"] == "success", forbidden_plan.get("reason")
+        check(forbidden, forbidden_plan)
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "plan.json"
             save_plan(scene, p, path)
@@ -111,7 +113,98 @@ def run() -> int:
         print(
             "通过 · 第二阶段：连续往返、喷幅、高度、独立目标、重排、阻挡、禁喷、文件匹配与篡改检查"
         )
+
+        orchard = generate({"rows": 4, "trees_per_row": 5})
+        orchard["no_fly_zones"] = [
+            dict(
+                id="no-fly-01",
+                kind="polygon_prism",
+                footprint=dict(
+                    kind="polygon",
+                    vertices=[[0.5, 12.5], [10.5, 12.5], [10.5, 20.5], [0.5, 20.5]],
+                ),
+                z_min=0.0,
+                z_max=8.0,
+            )
+        ]
+        from scene import validate_scene
+
+        validate_scene(orchard)
+        from planner_api import make_planner
+        assert generate_plan(orchard)["status"] == "failed"
+        detour = make_planner("caw-a*-fixed-order").plan(orchard)
+        assert detour["status"] == "success", detour.get("reason")
+        check(orchard, detour)
+        inside, outside = [], []
+        for target in orchard["targets"]:
+            cx, cy = target["geometry"]["center"]
+            if 0.5 <= cx <= 10.5 and 12.5 <= cy <= 20.5:
+                inside.append(target["id"])
+            else:
+                outside.append(target["id"])
+        associated = {tid for seg in detour["segments"] for tid in seg["target_ids"]}
+        assert inside, "test setup: expected trees inside no-fly"
+        assert not (set(inside) & associated), (inside, associated)
+        assert set(outside) <= associated, set(outside) - associated
+        from planner_api import make_planner
+
+        caw = make_planner("caw").plan(orchard)
+        assert caw["status"] == "success", caw.get("reason")
+        print("通过 · 果园内禁飞：切断喷洒带并绕行，区内目标不喷")
+
+        # Aircraft clearance alone is insufficient: both neighbouring spray
+        # strips used to enter this narrow region while their centrelines cleared it.
+        fringe = copy.deepcopy(scene)
+        fringe["no_fly_zones"] = [
+            dict(
+                id="no-fly-fringe", kind="polygon_prism",
+                footprint=dict(kind="polygon", vertices=[[2.9, 6], [3.1, 6], [3.1, 7], [2.9, 7]]),
+                z_min=0.0, z_max=8.0,
+            )
+        ]
+        fringe_plan = make_planner("caw-a*-fixed-order").plan(fringe)
+        assert fringe_plan["status"] == "success", fringe_plan.get("reason")
+        check(fringe, fringe_plan)
+        for segment in fringe_plan["segments"]:
+            if segment["spray"]:
+                assert not boxes_touch(rectangle(segment, 2), ([2.9, 6], [3.1, 7]))
+        unsafe = copy.deepcopy(p)
+        unsafe["scene_hash"] = fingerprint(fringe)
+        try:
+            check(fringe, unsafe)
+        except ValueError as error:
+            assert "喷洒足迹" in str(error), str(error)
+        else:
+            raise AssertionError("检查器未检出喷幅边缘侵入禁飞区")
+
+        # A zone above the aircraft still prohibits spraying its XY footprint.
+        overhead = copy.deepcopy(fringe)
+        overhead["no_fly_zones"][0].update(z_min=8.0, z_max=10.0)
+        overhead_plan = make_planner("caw-a*-fixed-order").plan(overhead)
+        assert overhead_plan["status"] == "success", overhead_plan.get("reason")
+        check(overhead, overhead_plan)
+        from execution import build
+        from evaluation import build as evaluate, at
+        timeline = build(overhead, overhead_plan)
+        metrics = at(evaluate(overhead, overhead_plan, timeline, .25), timeline, timeline["duration"])
+        assert 0 < metrics["coverage"] < 1
+        assert all(not s["spray"] for s in timeline["segments"] if s["type"] != "spray")
+
+        sealed = copy.deepcopy(scene)
+        sealed["no_fly_zones"] = [
+            dict(
+                id="no-fly-all", kind="polygon_prism",
+                footprint=copy.deepcopy(scene["plot"]), z_min=8.0, z_max=10.0,
+            )
+        ]
+        sealed_plan = make_planner("caw-a*-fixed-order").plan(sealed)
+        assert sealed_plan["status"] == "failed"
+        assert "没有喷洒航段" in sealed_plan["reason"]
+        assert sealed_plan["segments"] == []
+        print("通过 · 禁飞喷幅边缘、上方区域、独立拒绝侵入、执行评价与全部受限提示")
         return 0
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         print("失败 · 第二阶段：", e)
         return 1

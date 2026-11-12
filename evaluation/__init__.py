@@ -37,6 +37,19 @@ def build(scene, plan, timeline, resolution=0.5):
                 if math.hypot(cx - x, cy - y) <= r:
                     row.append((target["id"], ix, iy))
         cells.extend(row)
+    restrictions = [
+        dict(id=zone["id"], bounds=polygon_bounds(zone["footprint"]))
+        for zone in scene["no_fly_zones"] + scene["no_spray_zones"]
+    ]
+    excluded_xy = []
+    for ix, iy in sorted({(ix, iy) for _, ix, iy in cells}):
+        cx, cy = (ix + 0.5) * resolution, (iy + 0.5) * resolution
+        if any(
+            region["bounds"]["min"][0] <= cx <= region["bounds"]["max"][0]
+            and region["bounds"]["min"][1] <= cy <= region["bounds"]["max"][1]
+            for region in restrictions
+        ):
+            excluded_xy.append((ix, iy))
     return dict(
         version="1.0",
         resolution=resolution,
@@ -44,6 +57,8 @@ def build(scene, plan, timeline, resolution=0.5):
         plan_hash=fingerprint(plan),
         timeline_id=timeline["execution_id"],
         cells=cells,
+        restrictions=restrictions,
+        excluded_xy=excluded_xy,
         duration=timeline["duration"],
         config=config,
     )
@@ -70,6 +85,18 @@ def at(evaluation, timeline, time):
                         for a, b in zip(seg["start"], seg["end"])
                     ]
                 foot = rectangle(flown, evaluation["config"]["swath"])
+                for region in evaluation.get("restrictions", []):
+                    bounds = region["bounds"]
+                    if boxes_touch(foot, (bounds["min"], bounds["max"])):
+                        illegal.append(dict(
+                            zone_id=region["id"], segment_index=seg["index"],
+                            t_start=start, t_end=end,
+                            overlap_area_m2=math.prod(
+                                max(0.0, min(foot[1][i], bounds["max"][i])
+                                    - max(foot[0][i], bounds["min"][i]))
+                                for i in (0, 1)
+                            ),
+                        ))
                 for target in evaluation["cells"]:
                     tid, ix, iy = target
                     cx = (ix + 0.5) * evaluation["resolution"]
@@ -82,6 +109,15 @@ def at(evaluation, timeline, time):
     total = len(evaluation["cells"])
     hit = sum(1 for v in covered.values() if v)
     repeat = sum(max(0, v - 1) for v in covered.values())
+    target_xy = {(ix, iy) for _, ix, iy in evaluation["cells"]}
+    excluded_xy = set(map(tuple, evaluation.get("excluded_xy", []))) & target_xy
+    sprayable_xy = target_xy - excluded_xy
+    covered_xy = {(ix, iy) for _, ix, iy in covered}
+    covered_sprayable_xy = sprayable_xy & covered_xy
+    union_passes = {}
+    for (_, ix, iy), passes in covered.items():
+        union_passes[(ix, iy)] = max(union_passes.get((ix, iy), 0), passes)
+    cell_area = evaluation["resolution"] ** 2
     target_stats=[]
     for tid in sorted({c[0] for c in evaluation["cells"]}):
         allc=[c for c in evaluation["cells"] if c[0]==tid]; hitc=sum(1 for c in allc if c in covered)
@@ -91,6 +127,16 @@ def at(evaluation, timeline, time):
         total_cells=total,
         covered_cells=hit,
         coverage=hit / total if total else 0,
+        canopy_union_area_m2=len(target_xy) * cell_area,
+        restricted_canopy_area_m2=len(excluded_xy) * cell_area,
+        sprayable_canopy_area_m2=len(sprayable_xy) * cell_area,
+        covered_sprayable_area_m2=len(covered_sprayable_xy) * cell_area,
+        extra_miss_area_m2=len(sprayable_xy - covered_xy) * cell_area,
+        repeated_sprayable_area_m2=sum(max(0, n-1) for xy,n in union_passes.items()
+                                       if xy in sprayable_xy) * cell_area,
+        sprayable_coverage=(
+            len(covered_sprayable_xy) / len(sprayable_xy) if sprayable_xy else None
+        ),
         repeated_cells=repeat,
         missed_cells=total - hit,
         spray_seconds=spray_seconds,
@@ -100,5 +146,8 @@ def at(evaluation, timeline, time):
         missed_targets=[x['target_id'] for x in target_stats if x['coverage'] < 1.0],
         repeated_targets=[x['target_id'] for x in target_stats if x['repeated'] > 0],
         total_spray_amount=spray_seconds * evaluation['config']['flow_rate'],
-        grid_note='网格近似；目标级统计按目标投影采样单元汇总',
+        grid_note=(
+            '网格中心采样近似；总覆盖率按目标分别统计；面积指标按空间网格去重；'
+            '可喷面积扣除禁飞/禁喷多边形的保守包围矩形，忽略区域高度'
+        ),
     )

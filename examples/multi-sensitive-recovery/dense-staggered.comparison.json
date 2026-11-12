@@ -1,0 +1,2909 @@
+{
+  "status": "success",
+  "alternatives": [
+    {
+      "strategy": "baseline",
+      "status": "success",
+      "plan": {
+        "version": "1.2",
+        "planner": "caw-a*-3d-wind",
+        "method": "caw-a*-3d-wind",
+        "objective": "time",
+        "scene_hash": "a3efe8c1902209729f3dd6cd607913e55398d106472106b26470c2cdc1a82e98",
+        "status": "success",
+        "reason": "",
+        "stage": "plan",
+        "segments": [
+          {
+            "start": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "takeoff",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              8.0,
+              9.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              9.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-03"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              8.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              8.0,
+              6.500001,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-02"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              10.0,
+              6.500001,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              10.0,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              10.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02",
+              "target-tree-03-03",
+              "target-tree-03-04",
+              "target-tree-03-05"
+            ]
+          },
+          {
+            "start": [
+              10.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              8.0,
+              15.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              15.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              13.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              13.085786437626904,
+              6.2
+            ],
+            "end": [
+              8.0,
+              12.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              12.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              10.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-04"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              10.085786437626904,
+              6.2
+            ],
+            "end": [
+              12.0,
+              7.499999,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              12.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-03"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              12.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              12.0,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              12.0,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              12.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-01"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              14.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              14.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              14.0,
+              7.499999,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01",
+              "target-tree-04-02",
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              14.0,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.5,
+              7.499999,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.5,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              15.5,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              15.5,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-02"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              15.5,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              15.5,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              6.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              6.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              6.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-01",
+              "target-tree-02-02",
+              "target-tree-02-03",
+              "target-tree-02-04",
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              6.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              4.0,
+              15.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              15.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              13.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              13.085786437626904,
+              6.2
+            ],
+            "end": [
+              4.0,
+              12.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              12.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              10.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-04"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              10.085786437626904,
+              6.2
+            ],
+            "end": [
+              4.0,
+              9.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              9.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-03"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              4.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              4.0,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-02"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              4.0,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              4.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              2.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              2.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              2.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01",
+              "target-tree-01-02",
+              "target-tree-01-03",
+              "target-tree-01-04",
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              2.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "type": "landing",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          }
+        ],
+        "work_height": 6.2,
+        "strip_count": 8,
+        "order": [
+          9,
+          10,
+          11,
+          7,
+          8,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          6,
+          1,
+          2,
+          3,
+          4,
+          5,
+          0
+        ],
+        "planner_options": {
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "max_expansions": 200000,
+          "max_grid_nodes": 2000000,
+          "order_strategy": "nn+2opt",
+          "objective": "time",
+          "matrix_mode": null
+        },
+        "planner_options_hash": "44527bdfa3d00fdbca6ad294bec37ec1adf59adf13351f09d4d503664b03ac97",
+        "config": {
+          "swath": 2.0,
+          "height_offset": 2.0,
+          "clearance": 0.5,
+          "speed": 2.0,
+          "target_type": "canopy_horizontal_projection",
+          "flow_rate": 1.0,
+          "wind_speed": 2,
+          "wind_direction": 3.141592653589793,
+          "wind_cost": 0.25,
+          "transition_mode": "fixed",
+          "lane_phase": 0.0
+        },
+        "config_hash": "40ec69d510a6e721d3fc50df3bd2a04b10049849084cffe056b77d1aac9c063a",
+        "search": {
+          "model": "layered-3d-clearance-a-star",
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "layers": 15,
+          "expanded": 501,
+          "routes": 20,
+          "grid_hash": "4fd66db8653dc6167023f66e380aa186a372951c4c8706d9f1a7d86ca4f837cb",
+          "max_effective_speed": 2.5,
+          "objective": "time"
+        },
+        "order_search": {
+          "strategy": "nn+2opt",
+          "evaluated": 190,
+          "cost_model": "exact3d-time",
+          "matrix_mode": "exact3d",
+          "routes_computed": 380,
+          "lower_bound": 53.536276333479115,
+          "gap_to_bound_abs": 12.094610790781793,
+          "gap_to_bound_rel": 0.22591430743976457,
+          "bound_type": "incoming-min-relaxation",
+          "route_failures_total": 0
+        },
+        "objective_value": 71.8308871242609
+      },
+      "duration": 71.8308871242609,
+      "extra_miss": 21.540000000000003,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8268488745980708,
+      "illegal_count": 0,
+      "repeated_cells": 300,
+      "spray_amount": 40.59188059203678,
+      "added_seconds": 0.0,
+      "restored_area": 0.0,
+      "within_budget": true,
+      "fine_grid_005": {
+        "duration": 71.8308871242609,
+        "extra_miss": 21.242500000000003,
+        "restricted_area": 18.600000000000005,
+        "sprayable_area": 122.80000000000003,
+        "sprayable_coverage": 0.8270154723127036,
+        "illegal_count": 0,
+        "repeated_cells": 1200,
+        "repeated_area": 3.0000000000000004,
+        "spray_amount": 40.59188059203678
+      },
+      "repeated_area": 3.0000000000000004
+    },
+    {
+      "strategy": "global-phase",
+      "status": "success",
+      "plan": {
+        "version": "1.2",
+        "planner": "caw-a*-3d-wind",
+        "method": "caw-a*-3d-wind",
+        "objective": "time",
+        "scene_hash": "a3efe8c1902209729f3dd6cd607913e55398d106472106b26470c2cdc1a82e98",
+        "status": "success",
+        "reason": "",
+        "stage": "plan",
+        "segments": [
+          {
+            "start": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "takeoff",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              1.5099999999999998,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              1.5099999999999998,
+              1.0,
+              6.2
+            ],
+            "end": [
+              1.5099999999999998,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01",
+              "target-tree-01-02",
+              "target-tree-01-03",
+              "target-tree-01-04",
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              1.5099999999999998,
+              16.0,
+              6.2
+            ],
+            "end": [
+              3.51,
+              15.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              3.51,
+              15.999966666296288,
+              6.2
+            ],
+            "end": [
+              3.51,
+              13.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              3.51,
+              13.000033333703712,
+              6.2
+            ],
+            "end": [
+              3.51,
+              12.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              3.51,
+              12.999966666296288,
+              6.2
+            ],
+            "end": [
+              3.51,
+              10.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-04"
+            ]
+          },
+          {
+            "start": [
+              3.51,
+              10.000033333703712,
+              6.2
+            ],
+            "end": [
+              3.51,
+              9.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              3.51,
+              9.999966666296288,
+              6.2
+            ],
+            "end": [
+              3.51,
+              7.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-03"
+            ]
+          },
+          {
+            "start": [
+              3.51,
+              7.000033333703712,
+              6.2
+            ],
+            "end": [
+              3.51,
+              6.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              3.51,
+              6.999966666296288,
+              6.2
+            ],
+            "end": [
+              3.51,
+              4.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-02"
+            ]
+          },
+          {
+            "start": [
+              3.51,
+              4.000033333703712,
+              6.2
+            ],
+            "end": [
+              3.51,
+              3.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              3.51,
+              3.999966666296288,
+              6.2
+            ],
+            "end": [
+              3.51,
+              1.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01"
+            ]
+          },
+          {
+            "start": [
+              3.51,
+              1.000033333703712,
+              6.2
+            ],
+            "end": [
+              5.51,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              5.51,
+              1.0,
+              6.2
+            ],
+            "end": [
+              5.51,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-01",
+              "target-tree-02-02",
+              "target-tree-02-03",
+              "target-tree-02-04",
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              5.51,
+              16.0,
+              6.2
+            ],
+            "end": [
+              7.51,
+              15.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              7.51,
+              15.999966666296288,
+              6.2
+            ],
+            "end": [
+              7.51,
+              13.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              7.51,
+              13.000033333703712,
+              6.2
+            ],
+            "end": [
+              7.51,
+              12.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              7.51,
+              12.999966666296288,
+              6.2
+            ],
+            "end": [
+              7.51,
+              10.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-04"
+            ]
+          },
+          {
+            "start": [
+              7.51,
+              10.000033333703712,
+              6.2
+            ],
+            "end": [
+              7.51,
+              9.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              7.51,
+              9.999966666296288,
+              6.2
+            ],
+            "end": [
+              7.51,
+              7.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-03"
+            ]
+          },
+          {
+            "start": [
+              7.51,
+              7.000033333703712,
+              6.2
+            ],
+            "end": [
+              7.51,
+              6.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              7.51,
+              6.999966666296288,
+              6.2
+            ],
+            "end": [
+              7.51,
+              6.500001,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-02"
+            ]
+          },
+          {
+            "start": [
+              7.51,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              9.51,
+              6.500001,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              9.51,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              9.51,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02",
+              "target-tree-03-03",
+              "target-tree-03-04",
+              "target-tree-03-05"
+            ]
+          },
+          {
+            "start": [
+              9.51,
+              16.0,
+              6.2
+            ],
+            "end": [
+              11.51,
+              15.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              15.999966666296288,
+              6.2
+            ],
+            "end": [
+              11.51,
+              13.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-05"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              13.000033333703712,
+              6.2
+            ],
+            "end": [
+              11.51,
+              12.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              12.999966666296288,
+              6.2
+            ],
+            "end": [
+              11.51,
+              10.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-04"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              10.000033333703712,
+              6.2
+            ],
+            "end": [
+              11.51,
+              9.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              9.999966666296288,
+              6.2
+            ],
+            "end": [
+              11.51,
+              7.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-03"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              7.000033333703712,
+              6.2
+            ],
+            "end": [
+              11.51,
+              6.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              6.999966666296288,
+              6.2
+            ],
+            "end": [
+              11.51,
+              4.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              4.000033333703712,
+              6.2
+            ],
+            "end": [
+              11.51,
+              3.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              3.999966666296288,
+              6.2
+            ],
+            "end": [
+              11.51,
+              1.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-01"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              1.000033333703712,
+              6.2
+            ],
+            "end": [
+              13.51,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              13.51,
+              1.0,
+              6.2
+            ],
+            "end": [
+              13.51,
+              7.499999,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01",
+              "target-tree-04-02",
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              13.51,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              7.499999,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.509999999999998,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              7.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              15.509999999999998,
+              7.000033333703712,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              6.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.509999999999998,
+              6.999966666296288,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              4.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-02"
+            ]
+          },
+          {
+            "start": [
+              15.509999999999998,
+              4.000033333703712,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              3.999966666296288,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.509999999999998,
+              3.999966666296288,
+              6.2
+            ],
+            "end": [
+              15.509999999999998,
+              1.000033333703712,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01"
+            ]
+          },
+          {
+            "start": [
+              15.509999999999998,
+              1.000033333703712,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "type": "landing",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          }
+        ],
+        "work_height": 6.2,
+        "strip_count": 8,
+        "order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "planner_options": {
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "max_expansions": 200000,
+          "max_grid_nodes": 2000000,
+          "order_strategy": "nn+2opt",
+          "objective": "time",
+          "matrix_mode": null
+        },
+        "planner_options_hash": "44527bdfa3d00fdbca6ad294bec37ec1adf59adf13351f09d4d503664b03ac97",
+        "config": {
+          "swath": 2.0,
+          "height_offset": 2.0,
+          "clearance": 0.5,
+          "speed": 2.0,
+          "target_type": "canopy_horizontal_projection",
+          "flow_rate": 1.0,
+          "wind_speed": 2,
+          "wind_direction": 3.141592653589793,
+          "wind_cost": 0.25,
+          "transition_mode": "fixed",
+          "lane_phase": 1.5099999999999998
+        },
+        "config_hash": "739e31ae0a469bbbc48f63da11499190c35e37bc6e875ee24dddf94a73c25b8a",
+        "search": {
+          "model": "layered-3d-clearance-a-star",
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "layers": 15,
+          "expanded": 2242,
+          "routes": 22,
+          "grid_hash": "4fd66db8653dc6167023f66e380aa186a372951c4c8706d9f1a7d86ca4f837cb",
+          "max_effective_speed": 2.5,
+          "objective": "time"
+        },
+        "order_search": {
+          "strategy": "nn+2opt",
+          "evaluated": 231,
+          "cost_model": "euclidean-lb-time",
+          "matrix_mode": "euclidean_lb",
+          "routes_computed": 0,
+          "lower_bound": 55.072038867148144,
+          "gap_to_bound_abs": 8.017091267340255,
+          "gap_to_bound_rel": 0.1455746224809311,
+          "bound_type": "incoming-min-relaxation",
+          "route_failures_total": 0
+        },
+        "objective_value": 74.67366658094518
+      },
+      "duration": 74.67366658094518,
+      "extra_miss": 15.400000000000002,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0,
+      "repeated_cells": 0,
+      "spray_amount": 45.999464660740614,
+      "added_seconds": 2.8427794566842834,
+      "restored_area": 6.140000000000001,
+      "within_budget": true,
+      "phase": 1.5099999999999998,
+      "fine_grid_005": {
+        "duration": 74.67366658094518,
+        "extra_miss": 15.200000000000003,
+        "restricted_area": 18.600000000000005,
+        "sprayable_area": 122.80000000000003,
+        "sprayable_coverage": 0.8762214983713354,
+        "illegal_count": 0,
+        "repeated_cells": 0,
+        "repeated_area": 0.0,
+        "spray_amount": 45.999464660740614
+      },
+      "repeated_area": 0.0
+    },
+    {
+      "strategy": "local-border",
+      "status": "success",
+      "plan": {
+        "version": "1.2",
+        "planner": "caw-a*-3d-wind",
+        "method": "caw-a*-3d-wind",
+        "objective": "time",
+        "scene_hash": "a3efe8c1902209729f3dd6cd607913e55398d106472106b26470c2cdc1a82e98",
+        "status": "success",
+        "reason": "",
+        "stage": "plan",
+        "segments": [
+          {
+            "start": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "takeoff",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              2.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              2.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              2.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01",
+              "target-tree-01-02",
+              "target-tree-01-03",
+              "target-tree-01-04",
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              2.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              4.0,
+              15.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              15.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              13.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-05"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              13.085786437626904,
+              6.2
+            ],
+            "end": [
+              4.0,
+              12.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              12.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              10.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-04"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              10.085786437626904,
+              6.2
+            ],
+            "end": [
+              4.0,
+              9.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              9.914213562373096,
+              6.2
+            ],
+            "end": [
+              4.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-03"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              4.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              4.0,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-02"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              4.0,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              4.0,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              4.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-01-01"
+            ]
+          },
+          {
+            "start": [
+              4.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              6.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              6.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              6.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-01",
+              "target-tree-02-02",
+              "target-tree-02-03",
+              "target-tree-02-04",
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              6.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              8.0,
+              15.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              15.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              13.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-05"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              13.085786437626904,
+              6.2
+            ],
+            "end": [
+              8.0,
+              12.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              12.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              10.085786437626904,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-04"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              10.085786437626904,
+              6.2
+            ],
+            "end": [
+              8.0,
+              9.914213562373096,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              9.914213562373096,
+              6.2
+            ],
+            "end": [
+              8.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-03"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              8.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              8.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              8.0,
+              6.500001,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-02"
+            ]
+          },
+          {
+            "start": [
+              8.0,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              10.0,
+              6.500001,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              10.0,
+              6.500001,
+              6.2
+            ],
+            "end": [
+              10.0,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02",
+              "target-tree-03-03",
+              "target-tree-03-04",
+              "target-tree-03-05"
+            ]
+          },
+          {
+            "start": [
+              10.0,
+              16.0,
+              6.2
+            ],
+            "end": [
+              12.0,
+              7.499999,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              12.0,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-03"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              12.0,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              12.0,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-02"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              12.0,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              12.0,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              12.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-01"
+            ]
+          },
+          {
+            "start": [
+              12.0,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              11.51,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              11.51,
+              1.0,
+              6.2
+            ],
+            "end": [
+              11.51,
+              15.900000000000002,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-03-01",
+              "target-tree-03-02",
+              "target-tree-03-03",
+              "target-tree-03-04",
+              "target-tree-03-05"
+            ]
+          },
+          {
+            "start": [
+              11.51,
+              15.900000000000002,
+              6.2
+            ],
+            "end": [
+              15.5,
+              7.499999,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.5,
+              7.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              7.085786437626905,
+              6.2
+            ],
+            "end": [
+              15.5,
+              6.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              6.914213562373095,
+              6.2
+            ],
+            "end": [
+              15.5,
+              4.085786437626905,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-02"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              4.085786437626905,
+              6.2
+            ],
+            "end": [
+              15.5,
+              3.914213562373095,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.5,
+              3.914213562373095,
+              6.2
+            ],
+            "end": [
+              15.5,
+              1.0857864376269049,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01"
+            ]
+          },
+          {
+            "start": [
+              15.5,
+              1.0857864376269049,
+              6.2
+            ],
+            "end": [
+              14.0,
+              1.0,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              14.0,
+              1.0,
+              6.2
+            ],
+            "end": [
+              14.0,
+              7.499999,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-01",
+              "target-tree-04-02",
+              "target-tree-04-03"
+            ]
+          },
+          {
+            "start": [
+              14.0,
+              7.499999,
+              6.2
+            ],
+            "end": [
+              15.71,
+              7.500000000000001,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              15.71,
+              7.500000000000001,
+              6.2
+            ],
+            "end": [
+              15.71,
+              16.0,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-04-03",
+              "target-tree-04-04",
+              "target-tree-04-05"
+            ]
+          },
+          {
+            "start": [
+              15.71,
+              16.0,
+              6.2
+            ],
+            "end": [
+              7.49,
+              1.1,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              7.49,
+              1.1,
+              6.2
+            ],
+            "end": [
+              7.49,
+              6.5,
+              6.2
+            ],
+            "type": "spray",
+            "spray": true,
+            "speed": 2.0,
+            "target_ids": [
+              "target-tree-02-01",
+              "target-tree-02-02"
+            ]
+          },
+          {
+            "start": [
+              7.49,
+              6.5,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "type": "transit",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          },
+          {
+            "start": [
+              -3.0,
+              8.5,
+              6.2
+            ],
+            "end": [
+              -3.0,
+              8.5,
+              0.0
+            ],
+            "type": "landing",
+            "spray": false,
+            "speed": 2.0,
+            "target_ids": []
+          }
+        ],
+        "work_height": 6.2,
+        "strip_count": 8,
+        "order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          19,
+          16,
+          17,
+          18,
+          15,
+          20,
+          21
+        ],
+        "planner_options": {
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "max_expansions": 200000,
+          "max_grid_nodes": 2000000,
+          "order_strategy": "nn+2opt",
+          "objective": "time",
+          "matrix_mode": null
+        },
+        "planner_options_hash": "44527bdfa3d00fdbca6ad294bec37ec1adf59adf13351f09d4d503664b03ac97",
+        "config": {
+          "swath": 2.0,
+          "height_offset": 2.0,
+          "clearance": 0.5,
+          "speed": 2.0,
+          "target_type": "canopy_horizontal_projection",
+          "flow_rate": 1.0,
+          "wind_speed": 2,
+          "wind_direction": 3.141592653589793,
+          "wind_cost": 0.25,
+          "transition_mode": "fixed",
+          "lane_phase": 0.0
+        },
+        "config_hash": "40ec69d510a6e721d3fc50df3bd2a04b10049849084cffe056b77d1aac9c063a",
+        "search": {
+          "model": "layered-3d-clearance-a-star",
+          "step_xy": 1.0,
+          "step_z": 1.0,
+          "layers": 15,
+          "expanded": 1343,
+          "routes": 23,
+          "grid_hash": "4fd66db8653dc6167023f66e380aa186a372951c4c8706d9f1a7d86ca4f837cb",
+          "max_effective_speed": 2.5,
+          "objective": "time"
+        },
+        "order_search": {
+          "strategy": "nn+2opt",
+          "evaluated": 253,
+          "cost_model": "euclidean-lb-time",
+          "matrix_mode": "euclidean_lb",
+          "routes_computed": 0,
+          "lower_bound": 66.3880505100938,
+          "gap_to_bound_abs": 15.941491720248806,
+          "gap_to_bound_rel": 0.2401259202185041,
+          "bound_type": "incoming-min-relaxation",
+          "route_failures_total": 0
+        },
+        "objective_value": 96.39490095674834,
+        "coverage_recovery": {
+          "strategy": "local-border",
+          "supplemental_count": 3,
+          "base_phase": 0.0,
+          "bounded": true
+        }
+      },
+      "duration": 96.39490095674834,
+      "extra_miss": 0.0,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 1.0,
+      "illegal_count": 0,
+      "repeated_cells": 1468,
+      "spray_amount": 54.991880592036786,
+      "added_seconds": 24.564013832487447,
+      "restored_area": 21.540000000000003,
+      "within_budget": true,
+      "supplemental_count": 3,
+      "fine_grid_005": {
+        "duration": 96.39490095674834,
+        "extra_miss": 0.0,
+        "restricted_area": 18.600000000000005,
+        "sprayable_area": 122.80000000000003,
+        "sprayable_coverage": 1.0,
+        "illegal_count": 0,
+        "repeated_cells": 5825,
+        "repeated_area": 14.562500000000004,
+        "spray_amount": 54.991880592036786
+      },
+      "repeated_area": 14.680000000000003
+    }
+  ],
+  "recommended": "local-border",
+  "frontier": [
+    "baseline",
+    "global-phase",
+    "local-border"
+  ],
+  "resolution": 0.1,
+  "time_budget": 60,
+  "scene_hash": "a3efe8c1902209729f3dd6cd607913e55398d106472106b26470c2cdc1a82e98",
+  "phase_candidates": [
+    {
+      "phase": 0.0,
+      "status": "success",
+      "reason": "",
+      "duration": 71.8308871242609,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 21.540000000000003,
+      "sprayable_coverage": 0.8268488745980708,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.4900000000000002,
+      "status": "success",
+      "reason": "",
+      "duration": 75.95549397013727,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.5099999999999998,
+      "status": "success",
+      "reason": "",
+      "duration": 74.67366658094518,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.6899999999999995,
+      "status": "success",
+      "reason": "",
+      "duration": 74.77839359804095,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.709999999999999,
+      "status": "success",
+      "reason": "",
+      "duration": 74.9493181577892,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 0.5,
+      "status": "success",
+      "reason": "",
+      "duration": 81.93307749483262,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.0,
+      "status": "success",
+      "reason": "",
+      "duration": 75.19756342469593,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 15.400000000000002,
+      "sprayable_coverage": 0.8762057877813505,
+      "illegal_count": 0
+    },
+    {
+      "phase": 1.5,
+      "status": "success",
+      "reason": "",
+      "duration": 71.33075965316912,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "extra_miss": 22.160000000000004,
+      "sprayable_coverage": 0.8218649517684887,
+      "illegal_count": 0
+    }
+  ],
+  "local_attempts": [
+    {
+      "start": [
+        15.71,
+        7.500000000000001,
+        6.2
+      ],
+      "end": [
+        15.71,
+        16.0,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 80.983574117087,
+      "extra_miss": 12.900000000000002,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8963022508038585,
+      "illegal_count": 0,
+      "repeated_cells": 300,
+      "spray_amount": 44.84188059203678,
+      "within_budget": true
+    },
+    {
+      "start": [
+        7.49,
+        1.1,
+        6.2
+      ],
+      "end": [
+        7.49,
+        6.5,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 75.54428593709963,
+      "extra_miss": 17.500000000000004,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8593247588424437,
+      "illegal_count": 0,
+      "repeated_cells": 568,
+      "spray_amount": 43.291880592036776,
+      "within_budget": true
+    },
+    {
+      "start": [
+        11.51,
+        1.0,
+        6.2
+      ],
+      "end": [
+        11.51,
+        15.900000000000002,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 83.35261209960522,
+      "extra_miss": 12.680000000000003,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8980707395498392,
+      "illegal_count": 0,
+      "repeated_cells": 1200,
+      "spray_amount": 48.04188059203678,
+      "within_budget": true
+    },
+    {
+      "start": [
+        11.69,
+        1.0,
+        6.2
+      ],
+      "end": [
+        11.69,
+        15.900000000000002,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 83.21536402529873,
+      "extra_miss": 13.780000000000003,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.8892282958199357,
+      "illegal_count": 0,
+      "repeated_cells": 1012,
+      "spray_amount": 48.041880592036776,
+      "within_budget": true
+    },
+    {
+      "start": [
+        15.71,
+        7.500000000000001,
+        6.2
+      ],
+      "end": [
+        15.71,
+        16.0,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 90.06427996774032,
+      "extra_miss": 4.040000000000001,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.967524115755627,
+      "illegal_count": 0,
+      "repeated_cells": 1200,
+      "spray_amount": 52.29188059203678,
+      "within_budget": true
+    },
+    {
+      "start": [
+        7.49,
+        1.1,
+        6.2
+      ],
+      "end": [
+        7.49,
+        6.5,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 87.33861052061143,
+      "extra_miss": 8.640000000000002,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 0.9305466237942123,
+      "illegal_count": 0,
+      "repeated_cells": 1468,
+      "spray_amount": 50.741880592036786,
+      "within_budget": true
+    },
+    {
+      "start": [
+        7.49,
+        1.1,
+        6.2
+      ],
+      "end": [
+        7.49,
+        6.5,
+        6.2
+      ],
+      "status": "success",
+      "reason": "",
+      "duration": 96.39490095674834,
+      "extra_miss": 0.0,
+      "restricted_area": 18.800000000000004,
+      "sprayable_area": 124.40000000000002,
+      "sprayable_coverage": 1.0,
+      "illegal_count": 0,
+      "repeated_cells": 1468,
+      "spray_amount": 54.991880592036786,
+      "within_budget": true
+    }
+  ],
+  "note": "同一保护范围、喷幅、作业高度与CAW默认参数。局部边带保持原相位，最多补4段，每轮试前4个候选；有限贪心，非全局最优。重复喷洒和估算喷量单列；网格零值不证明真实零漏喷。"
+}
